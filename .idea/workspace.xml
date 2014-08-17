@@ -2,379 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="01d2584b-d503-4af3-b97d-39bda4cf1a7a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_3.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_codec_commons_codec_1_6.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpclient_4_2_4.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_4_2_4.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/aping.iml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/README.md" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/.classpath" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/.project" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/.settings/org.eclipse.jdt.core.prefs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/AndroidManifest.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/AndroidManifest.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/ApiNG.apk" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes.dex" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/ApiNG$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/ApiNG$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/ApiNG.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/BuildConfig.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$attr.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$drawable.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$id.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$layout.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$menu.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$string.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R$style.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/api/ng/sample/R.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/ApingOperation.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$2.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$3.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$4.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$5.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$6.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$7.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations$8.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Operations.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Parameters.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Requester$Call.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/client/Requester.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/json/Constants.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/json/JsonResponseHandler.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/json/JsonrpcRequest.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/APINGException.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Competition.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Container.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Data.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Error.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Event.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/EventType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/ExBestOffersOverrides.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/ExchangePrices.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/LimitOnCloseOrder.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/LimitOrder.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketBettingType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketBook.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketCatalogue.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketDescription.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketFilter.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketOnCloseOrder.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketProjection.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MarketSort.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Match.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/MatchProjection.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Order.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/OrderProjection.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/OrderStatus.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/OrderType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PersistenceType.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PlaceExecutionReport.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PlaceInstruction.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PlaceInstructionReport.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PriceData.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PriceProjection.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/PriceSize.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Result.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/RollupModel.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Runner.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/RunnerCatalog.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/Side.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/StartingPrices.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/TimeGranularity.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/classes/com/betfair/api/ng/objects/TimeRange.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/HttpServer-b924ec3b3e58523a7b394dfe543a6b50.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/android-support-v4-6e96a6350188f44d8ad6959a43ba529e.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/commons-lang3-3.1-63efeebdef8de4a60a8342cfc26be401.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/gson-2.2.2-fac0269869dba7f4b687ef29c4fd8537.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-7.0.0.pre5-2ea2b3d087026cc65b7b8078f1414892.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-9b94d0eb75db7ecbf6363897a0eaa7b1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-continuation-7.6.1.v20120215-76f7b94b9ce9ffbad43379386979b293.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-http-7.6.1.v20120215-ce01b1b9949b09135879a2b10bca796e.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-io-7.6.1.v20120215-ae01b642db8f01399262058621b01d3f.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-server-7.6.1.v20120215-919db2af5093e4e3730f214deaacabb2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-util-7.0.0.pre5-5e058f4bd130d753135fb8962f6d90ab.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/jetty-util-7.6.1.v20120215-dc1cfe80fb3bb1fda0709414c9bc76d9.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/servlet-api-2.5-3c6b35498118ca44808a6229a334b73d.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/dexedLibs/servlet-api-3.0.pre4-b3ce7779e88ce83caef7fcd583409c37.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/jarlist.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/res/drawable-hdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/res/drawable-ldpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/res/drawable-mdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/res/drawable-xhdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/bin/resources.ap_" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/gen/com/api/ng/sample/BuildConfig.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/gen/com/api/ng/sample/R.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/ic_launcher-web.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/libs/android-support-v4.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/libs/commons-lang3-3.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/libs/gson-2.2.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/proguard-project.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/project.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/drawable-hdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/drawable-ldpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/drawable-mdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/drawable-xhdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/layout/activity_api_ng.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/menu/activity_api_ng.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/values-v11/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/values-v14/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/values/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/res/values/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/api/ng/sample/ApiNG.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/api/ng/sample/Api_NG.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/client/ApingOperation.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/client/Operations.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/client/Parameters.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/client/Requester.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/json/Constants.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/json/JsonResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/json/JsonrpcRequest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/APINGException.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Competition.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Container.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Data.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Error.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Event.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/EventType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/ExBestOffersOverrides.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/ExchangePrices.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/LimitOnCloseOrder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/LimitOrder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketBettingType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketBook.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketCatalogue.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketDescription.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketFilter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketOnCloseOrder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MarketSort.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Match.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/MatchProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Order.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/OrderProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/OrderStatus.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/OrderType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PersistenceType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PlaceExecutionReport.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PlaceInstruction.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PlaceInstructionReport.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PriceData.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PriceProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/PriceSize.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Result.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/RollupModel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Runner.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/RunnerCatalog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/Side.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/StartingPrices.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/TimeGranularity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/android/src/com/betfair/api/ng/objects/TimeRange.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code.sln" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Api-ng-sample-code.csproj" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Api-ng-sample-code.csproj.user" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/IClient.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Json/JsonConvert.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Json/JsonRequest.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Json/JsonResponse.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Json/RescriptRequest.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/JsonRpcClient.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Program.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/Properties/AssemblyInfo.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/RescriptClient.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/APINGException.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Competition.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/CompetitionResult.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Event.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/EventResult.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/EventType.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/EventTypeResult.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/ExBestOffersOverrides.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Exception.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/ExchangePrices.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/ExecutionReportErrorCode.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/ExecutionReportStatus.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/InstructionReportErrorCode.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/InstructionReportStatus.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/LimitOnCloseOrder.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/LimitOrder.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketBettingType.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketBook.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketCatalogue.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketDescription.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketFilter.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketOnCloseOrder.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketProjection.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketSort.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MarketStatus.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Match.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/MatchProjection.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Order.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/OrderProjection.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/OrderStatus.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/OrderType.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PersistenceType.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PlaceExecutionReport.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PlaceInstruction.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PlaceInstructionReport.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PriceData.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PriceProjection.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/PriceSize.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/RollUpModel.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Runner.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/RunnerDescription.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/RunnerStatus.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/Side.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/StartingPrices.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/TO/TimeRange.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Debug/Api-ng-sample-code.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Debug/Api-ng-sample-code.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Debug/Api-ng-sample-code.vshost.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Debug/Newtonsoft.Json.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Debug/Newtonsoft.Json.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Release/Api-ng-sample-code.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Release/Api-ng-sample-code.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Release/Newtonsoft.Json.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/bin/Release/Newtonsoft.Json.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Debug/Api-ng-sample-code.csproj.FileListAbsolute.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Debug/Api-ng-sample-code.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Debug/Api-ng-sample-code.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Debug/ResolveAssemblyReference.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Release/Api-ng-sample-code.csproj.FileListAbsolute.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Release/Api-ng-sample-code.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Release/Api-ng-sample-code.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/Api-ng-sample-code/obj/x86/Release/DesignTimeResolveAssemblyReferencesInput.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/lib/Newtonsoft.Json.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/lib/Newtonsoft.Json.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/lib/nunit.core.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cSharp/Api-ng-sample-code/lib/nunit.framework.dll" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/curl/README.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/curl/jsonrpc_curl.bash" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/curl/rescript_curl.bash" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/.name" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/libraries/Maven__com_google_code_gson_gson_2_3.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/libraries/Maven__commons_codec_commons_codec_1_6.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/libraries/Maven__junit_junit_3_8_1.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/libraries/Maven__org_apache_httpcomponents_httpclient_4_2_4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/libraries/Maven__org_apache_httpcomponents_httpcore_4_2_4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/misc.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/.idea/vcs.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/README.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/aping.iml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/pom.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/ApiNGDemo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/ApiNGJRescriptDemo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/ApiNGJsonRpcDemo.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/HttpClientSSO.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/LoginResponse.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/api/ApiNgJsonRpcOperations.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/api/ApiNgOperations.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/api/ApiNgRescriptOperations.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/api/HttpUtil.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/containers/Container.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/containers/EventTypeResultContainer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/containers/ListMarketBooksContainer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/containers/ListMarketCatalogueContainer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/containers/PlaceOrdersContainer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Competition.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Data.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Error.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Event.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/EventType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/EventTypeResult.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/ExBestOfferOverRides.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/ExchangePrices.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/LimitOnCloseOrder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/LimitOrder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/MarketBook.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/MarketCatalogue.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/MarketDescription.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/MarketFilter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/MarketOnCloseOrder.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Match.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Order.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/PlaceExecutionReport.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/PlaceInstruction.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/PlaceInstructionReport.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/PriceProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/PriceSize.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/Runner.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/RunnerCatalog.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/StartingPrices.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/entities/TimeRange.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/ApiNgOperation.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/ExecutionReportErrorCode.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/ExecutionReportStatus.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/InstructionReportErrorCode.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/InstructionReportStatus.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/MarketBettingType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/MarketProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/MarketSort.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/MatchProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/OrderProjection.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/OrderStatus.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/OrderType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/PersistenceType.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/PriceData.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/RollupModel.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/Side.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/enums/TimeGranularity.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/exceptions/APINGException.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/util/ISO8601DateTypeAdapter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/util/JsonConverter.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/util/JsonResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/util/JsonrpcRequest.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/java/com/betfair/aping/util/RescriptResponseHandler.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/java/ng/src/main/resources/apingdemo.properties" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/javascript/JsonRpcApiNgClient.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/javascript/RescriptApiNgClient.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI.sln" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI.suo" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI.vssscc" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Form1.Designer.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Form1.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Form1.resx" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Program.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Properties/AssemblyInfo.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Properties/Resources.Designer.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Properties/Resources.resx" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Properties/Settings.Designer.cs" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/Properties/Settings.settings" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/SampleAPI.csproj" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/SampleAPI.csproj.vspscc" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/bin/Debug/SampleAPI.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/bin/Debug/SampleAPI.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/bin/Debug/SampleAPI.vshost.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/bin/Debug/SampleAPI.vshost.exe.manifest" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/DesignTimeResolveAssemblyReferences.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/DesignTimeResolveAssemblyReferencesInput.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.Form1.resources" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.Properties.Resources.resources" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.csproj.FileListAbsolute.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.csproj.GenerateResource.Cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.csprojResolveAssemblyReference.cache" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.exe" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/SampleAPI/SampleAPI/obj/x86/Debug/SampleAPI.pdb" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/loginCode/Interactive-cSharp/readme.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/perl/ApiNgDemoJsonRpc.pl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/perl/ApiNgDemoRescript.pl" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/perl/ReadMe.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/php/README.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/php/jsonrpc.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/php/rescript.php" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/python/ApiNgDemoJsonRpc-python3.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/python/ApiNgDemoJsonRpc.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/python/ApiNgDemoRescript.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vba/SampleCode.xlsm" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vba/run_example.vbs" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/java/ng/.idea/compiler.xml" afterPath="$PROJECT_DIR$/java/ng/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/java/ng/.idea/encodings.xml" afterPath="$PROJECT_DIR$/java/ng/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/java/ng/.idea/modules.xml" afterPath="$PROJECT_DIR$/java/ng/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/java/ng/.idea/workspace.xml" afterPath="$PROJECT_DIR$/java/ng/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginConstants.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/com/betfair/aping/login/LoginTest.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_11.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/betfair/aping/HttpClientSSO.java" afterPath="$PROJECT_DIR$/src/main/java/com/betfair/aping/login/HttpClientSSO.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/com/betfair/aping/LoginResponse.java" afterPath="$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginResponse.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/aping.iml" afterPath="$PROJECT_DIR$/aping.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/apingdemo.properties" afterPath="$PROJECT_DIR$/src/main/resources/apingdemo.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="aping.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -436,38 +76,100 @@
     <favorites_list name="aping" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="LoginResponse.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/LoginResponse.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
-              <caret line="25" column="46" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ApiNGDemo.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/ApiNGDemo.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1830">
-              <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="HttpClientSSO.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/HttpClientSSO.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2777778" vertical-offset="135" max-vertical-offset="1140">
-              <caret line="42" column="94" selection-start-line="42" selection-start-column="94" selection-end-line="42" selection-end-column="94" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5217122">
+      <split-first>
+        <leaf>
+          <file leaf-file-name="LoginResponse.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginResponse.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
+                  <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ApiNGDemo.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/ApiNGDemo.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1830">
+                  <caret line="23" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="HttpClientSSO.java" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/HttpClientSSO.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="1.4266843" vertical-offset="0" max-vertical-offset="1620">
+                  <caret line="96" column="0" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#3595#3610#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/pom.xml">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="482" max-vertical-offset="1350">
+                  <caret line="67" column="20" selection-start-line="67" selection-start-column="20" selection-end-line="67" selection-end-column="20" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="apingdemo.properties" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/resources/apingdemo.properties">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
+                  <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="21" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="ApiNGJsonRpcDemo.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/ApiNGJsonRpcDemo.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2865">
+                  <caret line="39" column="45" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="45" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="LoginTest.java" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/test/java/com/betfair/aping/login/LoginTest.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.45397225" vertical-offset="0" max-vertical-offset="793">
+                  <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+                  <folding>
+                    <element signature="imports" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="LoginConstants.java" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginConstants.java">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="330">
+                  <caret line="12" column="40" selection-start-line="12" selection-start-column="40" selection-end-line="12" selection-end-column="40" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -480,7 +182,14 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/test/java/LoginTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/betfair/aping/HttpClientSSO.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginEnum.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/apingdemo.properties" />
+        <option value="$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginConstants.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/betfair/aping/login/HttpClientSSO.java" />
+        <option value="$PROJECT_DIR$/src/test/java/com/betfair/aping/login/LoginTest.java" />
       </list>
     </option>
   </component>
@@ -520,10 +229,10 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="20" />
-    <option name="y" value="29" />
-    <option name="width" value="1400" />
-    <option name="height" value="860" />
+    <option name="x" value="1" />
+    <option name="y" value="22" />
+    <option name="width" value="1917" />
+    <option name="height" value="1166" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -551,6 +260,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -583,7 +294,37 @@
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="login" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aping" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="API-NG" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -623,6 +364,36 @@
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aping" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="login" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aping" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="API-NG" />
+              <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="java" />
               <option name="myItemType" value="com.android.tools.idea.gradle.projectView.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -637,23 +408,36 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="GoToClass.includeLibraries" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
-    <property name="GoToClass.includeLibraries" value="false" />
     <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="dynamic.classpath" value="false" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Documents/java/betfair2.0" />
     <property name="recentsLimit" value="5" />
+    <property name="dynamic.classpath" value="false" />
+    <property name="options.lastSelected" value="editor.preferences.appearance" />
+    <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
+    <property name="LayoutCode.rearrangeEntriesJava" value="true" />
+    <property name="extract.method.default.visibility" value="private" />
   </component>
-  <component name="RunManager" selected="Application.HttpClientSSO">
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.betfair.aping.login" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.LoginTest.loginTest">
     <configuration default="false" name="HttpClientSSO" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.betfair.aping.HttpClientSSO" />
+      <option name="MAIN_CLASS_NAME" value="com.betfair.aping.login.HttpClientSSO" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -664,7 +448,69 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="aping" />
       <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="LoginTest.loginTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="aping" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.betfair.aping.login" />
+      <option name="MAIN_CLASS_NAME" value="com.betfair.aping.login.LoginTest" />
+      <option name="METHOD_NAME" value="loginTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="LoginTest.ewTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="aping" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.betfair.aping.login" />
+      <option name="MAIN_CLASS_NAME" value="com.betfair.aping.login.LoginTest" />
+      <option name="METHOD_NAME" value="ewTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -672,27 +518,6 @@
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
       <option name="PROGRAM_PARAMETERS" />
-      <method />
-    </configuration>
-    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
-      <module name="" />
-      <option name="TESTING_TYPE" value="0" />
-      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
-      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
-      <option name="PREFERRED_AVD" value="" />
-      <option name="USE_COMMAND_LINE" value="true" />
-      <option name="COMMAND_LINE" value="" />
-      <option name="WIPE_USER_DATA" value="false" />
-      <option name="DISABLE_BOOT_ANIMATION" value="false" />
-      <option name="NETWORK_SPEED" value="full" />
-      <option name="NETWORK_LATENCY" value="none" />
-      <option name="CLEAR_LOGCAT" value="false" />
-      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
       <method />
     </configuration>
     <configuration default="true" type="MavenRunConfiguration" factoryName="Maven">
@@ -717,12 +542,46 @@
       </MavenSettings>
       <method />
     </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
+      <option name="COMMAND_LINE" value="" />
+      <option name="WIPE_USER_DATA" value="false" />
+      <option name="DISABLE_BOOT_ANIMATION" value="false" />
+      <option name="NETWORK_SPEED" value="full" />
+      <option name="NETWORK_LATENCY" value="none" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <method />
+    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -750,19 +609,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -819,12 +665,16 @@
       <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
       <method />
     </configuration>
-    <list size="1">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Application.HttpClientSSO" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.LoginTest.loginTest" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.LoginTest.ewTest" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Application.HttpClientSSO" />
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="JUnit.LoginTest.loginTest" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.LoginTest.ewTest" />
+        <item index="2" class="java.lang.String" itemvalue="Application.HttpClientSSO" />
       </list>
     </recent_temporary>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
@@ -845,27 +695,32 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="20" y="29" width="1400" height="860" extended-state="0" />
-    <editor active="false" />
+    <frame x="1" y="22" width="1917" height="1166" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.3298969" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19366716" sideWeight="0.5" order="-1" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33072916" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32960895" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32960895" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.3298969" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14026667" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39944133" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23556797" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -885,17 +740,61 @@
     </option>
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/HttpClientSSO.java</url>
+          <line>56</line>
+          <properties />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="4" />
+    </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/LoginResponse.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginResponse.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
-          <caret line="25" column="46" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="465">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/ApiNGDemo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="1950">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/HttpClientSSO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="1140">
+          <caret line="42" column="94" selection-start-line="42" selection-start-column="94" selection-end-line="42" selection-end-column="94" />
+          <folding>
+            <element signature="e#3595#3610#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/ApiNGJsonRpcDemo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2865">
+          <caret line="39" column="45" selection-start-line="39" selection-start-column="45" selection-end-line="39" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginResponse.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="375" max-vertical-offset="465">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -903,16 +802,92 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/ApiNGDemo.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1830">
-          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <caret line="23" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/HttpClientSSO.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.11/junit-4.11.jar!/org/junit/runners/ParentRunner.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2777778" vertical-offset="135" max-vertical-offset="1140">
-          <caret line="42" column="94" selection-start-line="42" selection-start-column="94" selection-end-line="42" selection-end-column="94" />
+        <state vertical-scroll-proportion="0.3730887" vertical-offset="401" max-vertical-offset="1080">
+          <caret line="44" column="25" selection-start-line="44" selection-start-column="25" selection-end-line="44" selection-end-column="25" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.11/junit-4.11.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22488755" vertical-offset="0" max-vertical-offset="667">
+          <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.11/junit-4.11.jar!/org/junit/runners/BlockJUnit4ClassRunner.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19017433" vertical-offset="0" max-vertical-offset="1425">
+          <caret line="9" column="19" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_67.jdk/Contents/Home/src.zip!/java/lang/Object.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29147983" vertical-offset="0" max-vertical-offset="7965">
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.11/junit-4.11.jar!/org/junit/runners/model/FrameworkMethod.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/LoginConstants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="330">
+          <caret line="12" column="40" selection-start-line="12" selection-start-column="40" selection-end-line="12" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/apingdemo.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
+          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="482" max-vertical-offset="1350">
+          <caret line="67" column="20" selection-start-line="67" selection-start-column="20" selection-end-line="67" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/betfair/aping/login/HttpClientSSO.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.4266843" vertical-offset="0" max-vertical-offset="1620">
+          <caret line="96" column="0" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
+          <folding>
+            <element signature="e#3595#3610#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/com/betfair/aping/login/LoginTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.45397225" vertical-offset="0" max-vertical-offset="793">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

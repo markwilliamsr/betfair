@@ -1,4 +1,4 @@
-package com.betfair.aping;
+package com.betfair.aping.login;
 
 /**
  * Created by markwilliams on 8/17/14.
