@@ -36,6 +36,7 @@ public class HttpClientSSO {
     private Properties loginProperties = new Properties();
 
     public HttpClientSSO() {
+        this.loadProperties();
     }
 
     private static KeyManager[] getKeyManagers(String keyStoreType, InputStream keyStoreFile, String keyStorePassword) throws Exception {
@@ -64,7 +65,7 @@ public class HttpClientSSO {
         }
     }
 
-    public String login() throws Exception {
+    public LoginResponse login() throws Exception {
 
         String responseString = "";
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -89,7 +90,7 @@ public class HttpClientSSO {
                 System.out.println("sessionToken: " + loginResponse.getSessionToken());
             }
 
-            return loginResponse.getSessionToken();
+            return loginResponse;
 
         } finally {
             httpClient.getConnectionManager().shutdown();
