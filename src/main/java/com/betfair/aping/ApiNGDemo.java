@@ -1,5 +1,8 @@
 package com.betfair.aping;
 
+import com.betfair.aping.login.HttpClientSSO;
+import com.betfair.aping.login.LoginResponse;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +14,6 @@ import java.util.Properties;
  * When you execute the class will: <li>find a market (next horse race in the
  * UK)</li> <li>get prices and runners on this market</li> <li>place a bet on 1
  * runner</li> <li>handle the error</li>
- *
  */
 public class ApiNGDemo {
 
@@ -31,7 +33,7 @@ public class ApiNGDemo {
             debug = new Boolean(prop.getProperty("DEBUG"));
 
         } catch (IOException e) {
-            System.out.println("Error loading the properties file: "+e.toString());
+            System.out.println("Error loading the properties file: " + e.toString());
         }
     }
 
@@ -42,42 +44,18 @@ public class ApiNGDemo {
         BufferedReader inputStreamReader = null;
         //getting the AppKey and the session token
 
-        if(args.length >= 3){
-            applicationKey = args[0];
-            sessionToken = args[1];
-            jsonOrRescript = args[2];
-
-            if(jsonOrRescript.equalsIgnoreCase("json-rpc")){
-                jsonRpcRequest=true;
-            } else if(jsonOrRescript.equalsIgnoreCase("rescript")){
-                jsonRpcRequest=false;
-            }
-
-        } else {
-            while(applicationKey == null || applicationKey.isEmpty()){
-
-                System.out.println("Please insert a valid App Key: ");
-                System.out.print("> ");
-                inputStreamReader = new BufferedReader(new InputStreamReader(System.in));
-                try {
-                    applicationKey = inputStreamReader.readLine();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            while(sessionToken== null || sessionToken.isEmpty()){
-                System.out.println("Please insert a valid Session Token: ");
-                System.out.print("> ");
-                inputStreamReader = new BufferedReader(new InputStreamReader(System.in));
-                try {
-                    sessionToken = inputStreamReader.readLine();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        HttpClientSSO sso = new HttpClientSSO();
+        LoginResponse loginResponse=null;
+        try {
+            loginResponse = sso.login();
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(-1);
         }
+
+        applicationKey = loginResponse.getApplicationKey();
+        sessionToken = loginResponse.getSessionToken();
+        jsonOrRescript = "json-rpc";
 
         //Ask the user what protocol want to use for the test
         while (jsonRpcRequest == null) {
@@ -105,7 +83,7 @@ public class ApiNGDemo {
             }
         }
 
-        if(jsonRpcRequest) {
+        if (jsonRpcRequest) {
             ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
             jsonRpcDemo.start(applicationKey, sessionToken);
         } else {
@@ -118,7 +96,7 @@ public class ApiNGDemo {
         return prop;
     }
 
-    public static boolean isDebug(){
+    public static boolean isDebug() {
         return debug;
     }
 }

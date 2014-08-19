@@ -11,6 +11,8 @@ public class LoginConstants {
     public static String BETFAIR_USERNAME="BETFAIR_USERNAME";
     public static String BETFAIR_PASSWORD="BETFAIR_PASSWORD";
     public static String BETFAIR_SSO_URL="BETFAIR_SSO_URL";
+    public static String BETFAIR_PROD_APPLICATION_KEY="BETFAIR_PROD_APPLICATION_KEY";
+    public static String BETFAIR_DELAY_APPLICATION_KEY="BETFAIR_DELAY_APPLICATION_KEY";
     public static String LOGIN_PROPERTIES_FILE="LOGIN_PROPERTIES_FILE";
     public static String KEY_STORE_TYPE="KEY_STORE_TYPE";
 }

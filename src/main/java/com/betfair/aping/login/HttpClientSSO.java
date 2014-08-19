@@ -84,16 +84,28 @@ public class HttpClientSSO {
             Gson gson = new Gson();
             LoginResponse loginResponse = gson.fromJson(responseString, LoginResponse.class);
 
+            setApplicationKey(loginResponse);
+
             if (debug) {
                 System.out.println(response.getStatusLine());
-                System.out.println("responseString" + responseString);
-                System.out.println("sessionToken: " + loginResponse.getSessionToken());
+                System.out.println("loginResponse" + loginResponse.toString());
+                //System.out.println("sessionToken: " + loginResponse.getSessionToken());
             }
 
             return loginResponse;
 
         } finally {
             httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    private void setApplicationKey(LoginResponse loginResponse) {
+        if (loginProperties.getProperty(LoginConstants.APPLICATION_NAME).toUpperCase().contains("PROD")) {
+            loginResponse.setApplicationKey(loginProperties.getProperty(LoginConstants.BETFAIR_PROD_APPLICATION_KEY));
+            loginResponse.setProd(true);
+        } else {
+            loginResponse.setApplicationKey(loginProperties.getProperty(LoginConstants.BETFAIR_DELAY_APPLICATION_KEY));
+            loginResponse.setProd(false);
         }
     }
 
