@@ -5,6 +5,7 @@ import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
+import com.google.gson.Gson;
 
 import java.util.*;
 
@@ -13,13 +14,34 @@ import java.util.*;
  * When you execute the class will: <li>find a market (next horse race in the
  * UK)</li> <li>get prices and runners on this market</li> <li>place a bet on 1
  * runner</li> <li>handle the error</li>
- *
  */
 public class ApiNGJsonRpcDemo {
 
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
     private String applicationKey;
     private String sessionToken;
+
+    private static double getPrice() {
+        try {
+            return new Double((String) ApiNGDemo.getProp().get("BET_PRICE"));
+        } catch (NumberFormatException e) {
+            //returning the default value
+            return new Double(1000);
+        }
+    }
+
+    private static Properties getProps() {
+        return ApiNGDemo.getProp();
+    }
+
+    private static double getSize() {
+        try {
+            return new Double((String) ApiNGDemo.getProp().get("BET_SIZE"));
+        } catch (NumberFormatException e) {
+            //returning the default value
+            return new Double(0.01);
+        }
+    }
 
     public void start(String appKey, String ssoid) {
 
@@ -32,17 +54,36 @@ public class ApiNGJsonRpcDemo {
              * ListEventTypes: Search for the event types and then for the "Horse Racing" in the returned list to finally get
              * the listEventTypeId
              */
+
+            Gson gson = new Gson();
             MarketFilter marketFilter;
             marketFilter = new MarketFilter();
             Set<String> eventTypeIds = new HashSet<String>();
+            Set<String> competitionIds = new HashSet<String>();
+            Set<String> eventTypes = new HashSet<String>();
+            Set<String> competitions = new HashSet<String>();
+
+            eventTypes = gson.fromJson(getProps().getProperty("EVENT_TYPES"), eventTypes.getClass());
 
             System.out.println("1.(listEventTypes) Get all Event Types...\n");
             List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter, applicationKey, sessionToken);
-            System.out.println("2. Extract Event Type Id for Horse Racing...\n");
+            System.out.println("2. Extract Event Type Ids...\n");
             for (EventTypeResult eventTypeResult : r) {
-                if(eventTypeResult.getEventType().getName().equals("Horse Racing")){
-                    System.out.println("3. EventTypeId for \"Horse Racing\" is: " + eventTypeResult.getEventType().getId()+"\n");
+                if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
+                    System.out.println("3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
                     eventTypeIds.add(eventTypeResult.getEventType().getId().toString());
+                }
+            }
+
+            competitions = gson.fromJson(getProps().getProperty("COMPETITIONS"), competitions.getClass());
+
+            System.out.println("1.(listCompetitions) Get all Competitions...\n");
+            List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter, applicationKey, sessionToken);
+            System.out.println("2. Extract Competition Ids...\n");
+            for (CompetitionResult competitionResult : c) {
+                if (competitions.contains(competitionResult.getCompetition().getName())) {
+                    System.out.println("3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId() + "\n");
+                    competitionIds.add(competitionResult.getCompetition().getId().toString());
                 }
             }
 
@@ -61,7 +102,7 @@ public class ApiNGJsonRpcDemo {
             countries.add("GB");
 
             Set<String> typesCode = new HashSet<String>();
-            typesCode.add("WIN");
+            typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), eventTypes.getClass());
 
             marketFilter = new MarketFilter();
             marketFilter.setEventTypeIds(eventTypeIds);
@@ -116,11 +157,11 @@ public class ApiNGJsonRpcDemo {
              */
 
             long selectionId = 0;
-            if ( marketBookReturn.size() != 0 ) {
+            if (marketBookReturn.size() != 0) {
                 Runner runner = marketBookReturn.get(0).getRunners().get(0);
                 selectionId = runner.getSelectionId();
                 System.out.println("7. Place a bet below minimum stake to prevent the bet actually " +
-                        "being placed for marketId: "+marketIdChosen+" with selectionId: "+selectionId+"...\n\n");
+                        "being placed for marketId: " + marketIdChosen + " with selectionId: " + selectionId + "...\n\n");
                 List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
                 PlaceInstruction instruction = new PlaceInstruction();
                 instruction.setHandicap(0);
@@ -159,32 +200,12 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private static double getPrice() {
-
-        try {
-            return new Double((String) ApiNGDemo.getProp().get("BET_PRICE"));
-        } catch (NumberFormatException e) {
-            //returning the default value
-            return new Double(1000);
-        }
-
-    }
-
-    private static double getSize(){
-        try{
-            return new Double((String)ApiNGDemo.getProp().get("BET_SIZE"));
-        } catch (NumberFormatException e){
-            //returning the default value
-            return new Double(0.01);
-        }
-    }
-
-    private void printMarketCatalogue(MarketCatalogue mk){
-        System.out.println("Market Name: "+mk.getMarketName() + "; Id: "+mk.getMarketId()+"\n");
+    private void printMarketCatalogue(MarketCatalogue mk) {
+        System.out.println("Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
         List<RunnerCatalog> runners = mk.getRunners();
-        if(runners!=null){
-            for(RunnerCatalog rCat : runners){
-                System.out.println("Runner Name: "+rCat.getRunnerName()+"; Selection Id: "+rCat.getSelectionId()+"\n");
+        if (runners != null) {
+            for (RunnerCatalog rCat : runners) {
+                System.out.println("Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId() + "\n");
             }
         }
     }

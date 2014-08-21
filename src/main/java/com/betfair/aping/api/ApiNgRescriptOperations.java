@@ -40,6 +40,11 @@ public class ApiNgRescriptOperations extends ApiNgOperations {
 
     }
 
+    @Override
+    public List<CompetitionResult> listCompetitions(MarketFilter filter, String appKey, String ssoId) throws APINGException {
+        return null;
+    }
+
     public List<MarketBook> listMarketBook(List<String> marketIds, PriceProjection priceProjection, OrderProjection orderProjection,
                                            MatchProjection matchProjection, String currencyCode, String appKey, String ssoId) throws APINGException {
         Map<String, Object> params = new HashMap<String, Object>();
