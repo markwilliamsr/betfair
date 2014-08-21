@@ -38,6 +38,8 @@ public abstract class ApiNgOperations {
     public abstract List<MarketCatalogue> listMarketCatalogue(MarketFilter filter, Set<MarketProjection> marketProjection,
         MarketSort sort, String maxResult, String appKey, String ssoId) throws APINGException;
 
+    public abstract List<EventResult> listEvents(MarketFilter filter, String appKey, String ssoId) throws APINGException;
+
 	public abstract PlaceExecutionReport placeOrders(String marketId, List<PlaceInstruction> instructions, String customerRef , String appKey, String ssoId) throws APINGException;
 
     protected abstract String makeRequest(String operation, Map<String, Object> params, String appKey, String ssoToken) throws  APINGException;

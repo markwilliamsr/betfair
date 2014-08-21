@@ -17,6 +17,7 @@ import java.util.*;
  */
 public class ApiNGJsonRpcDemo {
 
+    Gson gson = new Gson();
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
     private String applicationKey;
     private String sessionToken;
@@ -55,68 +56,25 @@ public class ApiNGJsonRpcDemo {
              * the listEventTypeId
              */
 
-            Gson gson = new Gson();
             MarketFilter marketFilter;
             marketFilter = new MarketFilter();
             Set<String> eventTypeIds = new HashSet<String>();
             Set<String> competitionIds = new HashSet<String>();
             Set<String> eventTypes = new HashSet<String>();
             Set<String> competitions = new HashSet<String>();
-
-            eventTypes = gson.fromJson(getProps().getProperty("EVENT_TYPES"), eventTypes.getClass());
-
-            System.out.println("1.(listEventTypes) Get all Event Types...\n");
-            List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter, applicationKey, sessionToken);
-            System.out.println("2. Extract Event Type Ids...\n");
-            for (EventTypeResult eventTypeResult : r) {
-                if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
-                    System.out.println("3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
-                    eventTypeIds.add(eventTypeResult.getEventType().getId().toString());
-                }
-            }
-
-            competitions = gson.fromJson(getProps().getProperty("COMPETITIONS"), competitions.getClass());
-
-            System.out.println("1.(listCompetitions) Get all Competitions...\n");
-            List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter, applicationKey, sessionToken);
-            System.out.println("2. Extract Competition Ids...\n");
-            for (CompetitionResult competitionResult : c) {
-                if (competitions.contains(competitionResult.getCompetition().getName())) {
-                    System.out.println("3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId() + "\n");
-                    competitionIds.add(competitionResult.getCompetition().getId().toString());
-                }
-            }
-
-            /**
-             * ListMarketCatalogue: Get next available horse races, parameters:
-             * eventTypeIds : 7 - get all available horse races for event id 7 (horse racing)
-             * maxResults: 1 - specify number of results returned (narrowed to 1 to get first race)
-             * marketStartTime: specify date (must be in this format: yyyy-mm-ddTHH:MM:SSZ)
-             * sort: FIRST_TO_START - specify sort order to first to start race
-             */
-            System.out.println("4.(listMarketCataloque) Get next horse racing market in the UK...\n");
-            TimeRange time = new TimeRange();
-            time.setFrom(new Date());
-
-            Set<String> countries = new HashSet<String>();
-            countries.add("GB");
-
-            Set<String> typesCode = new HashSet<String>();
-            typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), eventTypes.getClass());
-
             marketFilter = new MarketFilter();
+
+            eventTypeIds = getEventTypeIds();
+
             marketFilter.setEventTypeIds(eventTypeIds);
-            marketFilter.setMarketStartTime(time);
-            marketFilter.setMarketCountries(countries);
-            marketFilter.setMarketTypeCodes(typesCode);
 
-            Set<MarketProjection> marketProjection = new HashSet<MarketProjection>();
-            marketProjection.add(MarketProjection.RUNNER_DESCRIPTION);
+            competitionIds = getCompetitionIds();
 
-            String maxResults = "1";
+            marketFilter.setCompetitionIds(competitionIds);
+            List<EventResult> events = getEvents(marketFilter);
+            printEvents(events);
+            List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
 
-            List<MarketCatalogue> marketCatalogueResult = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
-                    applicationKey, sessionToken);
 
             System.out.println("5. Print static marketId, name and runners....\n");
             printMarketCatalogue(marketCatalogueResult.get(0));
@@ -198,6 +156,97 @@ public class ApiNGJsonRpcDemo {
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
         }
+    }
+
+    private void printEvents(List<EventResult> events) {
+        System.out.println("Events, dear boy...");
+        for (EventResult e : events){
+            System.out.println(e.getEvent().toString());
+        }
+    }
+
+    private List<EventResult> getEvents(MarketFilter marketFilter) throws APINGException {
+        TimeRange time = new TimeRange();
+        time.setFrom(new Date());
+        Set<String> countries = new HashSet<String>();
+        Set<String> typesCode = new HashSet<String>();
+        typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), typesCode.getClass());
+
+        marketFilter.setMarketStartTime(time);
+        marketFilter.setMarketCountries(countries);
+        marketFilter.setMarketTypeCodes(typesCode);
+
+        System.out.println("4.1 (listMarketCataloque) Get all events for " + gson.toJson(typesCode) + "...");
+
+        String maxResults = getProps().getProperty("MAX_RESULTS");
+
+        return jsonOperations.listEvents(marketFilter, applicationKey, sessionToken);
+    }
+
+    private List<MarketCatalogue> getMarketCatalogues(MarketFilter marketFilter) throws APINGException {
+        /**
+         * ListMarketCatalogue: Get next available horse races, parameters:
+         * eventTypeIds : 7 - get all available horse races for event id 7 (horse racing)
+         * maxResults: 1 - specify number of results returned (narrowed to 1 to get first race)
+         * marketStartTime: specify date (must be in this format: yyyy-mm-ddTHH:MM:SSZ)
+         * sort: FIRST_TO_START - specify sort order to first to start race
+         */
+        TimeRange time = new TimeRange();
+        time.setFrom(new Date());
+        Set<String> countries = new HashSet<String>();
+        Set<String> typesCode = new HashSet<String>();
+        typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), typesCode.getClass());
+
+        marketFilter.setMarketStartTime(time);
+        marketFilter.setMarketCountries(countries);
+        marketFilter.setMarketTypeCodes(typesCode);
+
+        Set<MarketProjection> marketProjection = new HashSet<MarketProjection>();
+        marketProjection.add(MarketProjection.RUNNER_DESCRIPTION);
+
+        System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(typesCode) + "...");
+
+        String maxResults = getProps().getProperty("MAX_RESULTS");
+
+        return jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
+                applicationKey, sessionToken);
+    }
+
+    private Set<String> getCompetitionIds() throws APINGException {
+        MarketFilter marketFilter = new MarketFilter();
+        Set<String> competitionIds = new HashSet<String>();
+        Set<String> competitions = new HashSet<String>();
+        competitions = gson.fromJson(getProps().getProperty("COMPETITIONS"), competitions.getClass());
+
+        System.out.println("2.1.(listCompetitions) Get all Competitions...");
+        List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter, applicationKey, sessionToken);
+        System.out.println("2.2. Extract Competition Ids...");
+        for (CompetitionResult competitionResult : c) {
+            if (competitions.contains(competitionResult.getCompetition().getName())) {
+                System.out.println("2.3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId());
+                competitionIds.add(competitionResult.getCompetition().getId().toString());
+            }
+        }
+        return competitionIds;
+    }
+
+    private Set<String> getEventTypeIds() throws APINGException {
+        MarketFilter marketFilter = new MarketFilter();
+        Set<String> eventTypeIds = new HashSet<String>();
+        Set<String> eventTypes = new HashSet<String>();
+
+        eventTypes = gson.fromJson(getProps().getProperty("EVENT_TYPES"), eventTypes.getClass());
+
+        System.out.println("1.1.(listEventTypes) Get all Event Types...");
+        List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter, applicationKey, sessionToken);
+        System.out.println("1.2. Extract Event Type Ids...");
+        for (EventTypeResult eventTypeResult : r) {
+            if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
+                System.out.println("1.3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
+                eventTypeIds.add(eventTypeResult.getEventType().getId().toString());
+            }
+        }
+        return eventTypeIds;
     }
 
     private void printMarketCatalogue(MarketCatalogue mk) {

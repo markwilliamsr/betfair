@@ -102,6 +102,25 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
 
     }
 
+    @Override
+    public List<EventResult> listEvents(MarketFilter filter, String appKey, String ssoId) throws APINGException {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(LOCALE, locale);
+        params.put(FILTER, filter);
+
+        String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTS.getOperationName(), params, appKey, ssoId);
+        if(ApiNGDemo.isDebug())
+            System.out.println("\nResponse: "+result);
+
+        ListEventsContainer container = JsonConverter.convertFromJson(result, ListEventsContainer.class);
+
+        if(container.getError() != null)
+            throw container.getError().getData().getAPINGException();
+
+        return container.getResult();
+
+    }
+
     public PlaceExecutionReport placeOrders(String marketId, List<PlaceInstruction> instructions, String customerRef , String appKey, String ssoId) throws APINGException {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(LOCALE, locale);

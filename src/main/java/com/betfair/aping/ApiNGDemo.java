@@ -18,10 +18,8 @@ import java.util.Properties;
 public class ApiNGDemo {
 
     private static Properties prop = new Properties();
-    private static Boolean jsonRpcRequest;
     private static String applicationKey;
     private static String sessionToken;
-    private static String jsonOrRescript;
     private static boolean debug;
 
     static {
@@ -41,11 +39,8 @@ public class ApiNGDemo {
 
         System.out.println("Welcome to the Betfair API NG!");
 
-        BufferedReader inputStreamReader = null;
-        //getting the AppKey and the session token
-
         HttpClientSSO sso = new HttpClientSSO();
-        LoginResponse loginResponse=null;
+        LoginResponse loginResponse = null;
         try {
             loginResponse = sso.login();
         } catch (Exception e) {
@@ -55,41 +50,11 @@ public class ApiNGDemo {
 
         applicationKey = loginResponse.getApplicationKey();
         sessionToken = loginResponse.getSessionToken();
-        jsonOrRescript = "json-rpc";
 
-        //Ask the user what protocol want to use for the test
-        while (jsonRpcRequest == null) {
-            System.out.println("Please choose the protocol to run the test: ");
-            System.out.println("1 json-rpc");
-            System.out.println("2 Rescript");
-            System.out.print("> ");
+        ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
+        jsonRpcDemo.start(applicationKey, sessionToken);
 
-            inputStreamReader = new BufferedReader(new InputStreamReader(System.in));
-            try {
-                jsonOrRescript = inputStreamReader.readLine();
-                Integer input = new Integer(jsonOrRescript);
-
-                if (input == 1)
-                    jsonRpcRequest = true;
-                else if (input == 2)
-                    jsonRpcRequest = false;
-                else
-                    jsonRpcRequest = null;
-
-            } catch (IOException e) {
-                jsonRpcRequest = null;
-            } catch (NumberFormatException e) {
-                jsonRpcRequest = null;
-            }
-        }
-
-        if (jsonRpcRequest) {
-            ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
-            jsonRpcDemo.start(applicationKey, sessionToken);
-        } else {
-            ApiNGJRescriptDemo rescriptDemo = new ApiNGJRescriptDemo();
-            rescriptDemo.start(applicationKey, sessionToken);
-        }
+        System.out.println("Completed Successfully.");
     }
 
     public static Properties getProp() {
