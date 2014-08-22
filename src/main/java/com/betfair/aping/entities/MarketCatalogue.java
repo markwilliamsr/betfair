@@ -4,72 +4,81 @@ import java.util.List;
 
 public class MarketCatalogue {
 
-	private String marketId;
-	private String marketName;
-	private MarketDescription description;
-	private List<RunnerCatalog> runners = null;
-	private EventType eventType;
-	private Competition competition;
-	private Event event;
+    private String marketId;
+    private String marketName;
+    private MarketDescription description;
+    private List<RunnerCatalog> runners = null;
+    private EventType eventType;
+    private Competition competition;
+    private Event event;
+    private MarketBook marketBook;
 
-	public String getMarketId() {
-		return marketId;
-	}
+    public MarketBook getMarketBook() {
+        return marketBook;
+    }
 
-	public void setMarketId(String marketId) {
-		this.marketId = marketId;
-	}
+    public void setMarketBook(MarketBook marketBook) {
+        this.marketBook = marketBook;
+    }
 
-	public String getMarketName() {
-		return marketName;
-	}
+    public String getMarketId() {
+        return marketId;
+    }
 
-	public void setMarketName(String marketName) {
-		this.marketName = marketName;
-	}
+    public void setMarketId(String marketId) {
+        this.marketId = marketId;
+    }
 
-	public MarketDescription getDescription() {
-		return description;
-	}
+    public String getMarketName() {
+        return marketName;
+    }
 
-	public void setDescription(MarketDescription description) {
-		this.description = description;
-	}
+    public void setMarketName(String marketName) {
+        this.marketName = marketName;
+    }
 
-	public List<RunnerCatalog> getRunners() {
-		return runners;
-	}
+    public MarketDescription getDescription() {
+        return description;
+    }
 
-	public void setRunners(List<RunnerCatalog> runners) {
-		this.runners = runners;
-	}
+    public void setDescription(MarketDescription description) {
+        this.description = description;
+    }
 
-	public EventType getEventType() {
-		return eventType;
-	}
+    public List<RunnerCatalog> getRunners() {
+        return runners;
+    }
 
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
-	}
+    public void setRunners(List<RunnerCatalog> runners) {
+        this.runners = runners;
+    }
 
-	public Competition getCompetition() {
-		return competition;
-	}
+    public EventType getEventType() {
+        return eventType;
+    }
 
-	public void setCompetition(Competition competition) {
-		this.competition = competition;
-	}
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
 
-	public Event getEvent() {
-		return event;
-	}
+    public Competition getCompetition() {
+        return competition;
+    }
 
-	public void setEvent(Event event) {
-		this.event = event;
-	}
+    public void setCompetition(Competition competition) {
+        this.competition = competition;
+    }
 
-	public String toString() {
-		return getMarketName();
-	}
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public String toString() {
+        return getMarketName();
+    }
 
 }

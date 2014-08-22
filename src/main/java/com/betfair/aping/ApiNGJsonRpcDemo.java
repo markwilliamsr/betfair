@@ -75,36 +75,47 @@ public class ApiNGJsonRpcDemo {
 
             List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
 
-            System.out.println("5. Print static marketId, name and runners....\n");
-            printMarketCatalogue(marketCatalogueResult);
-            /**
-             * ListMarketBook: get list of runners in the market, parameters:
-             * marketId:  the market we want to list runners
-             *
-             */
-            System.out.println("6.(listMarketBook) Get volatile info for Market including best 3 exchange prices available...\n");
-            String marketIdChosen = marketCatalogueResult.get(0).getMarketId();
-
-            PriceProjection priceProjection = new PriceProjection();
-            Set<PriceData> priceData = new HashSet<PriceData>();
-            priceData.add(PriceData.EX_BEST_OFFERS);
-            priceProjection.setPriceData(priceData);
-
-            //In this case we don't need these objects so they are declared null
-            OrderProjection orderProjection = null;
-            MatchProjection matchProjection = null;
-            String currencyCode = null;
-
-            List<String> marketIds = new ArrayList<String>();
-            marketIds.add(marketIdChosen);
-
-            List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIds, priceProjection,
-                    orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
-
+            getMarketBooks(marketCatalogueResult);
+            printMarketBooks(marketCatalogueResult);
             //placeBets(marketIdChosen, marketBookReturn);
 
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
+        }
+    }
+
+    private void printMarketBooks(List<MarketCatalogue> mks) {
+        for (MarketCatalogue mk : mks) {
+            System.out.println(gson.toJson(mk.getMarketBook()));
+        }
+    }
+
+    private void getMarketBooks(List<MarketCatalogue> marketCatalogueResult) throws APINGException {
+        System.out.println("6.(listMarketBook) Get volatile info for Market including best 3 exchange prices available...\n");
+
+        PriceProjection priceProjection = new PriceProjection();
+        Set<PriceData> priceData = new HashSet<PriceData>();
+        priceData.add(PriceData.EX_BEST_OFFERS);
+        priceProjection.setPriceData(priceData);
+        OrderProjection orderProjection = null;
+        MatchProjection matchProjection = null;
+        String currencyCode = null;
+
+
+        List<String> marketIds = new ArrayList<String>();
+
+        for (MarketCatalogue mc : marketCatalogueResult) {
+            marketIds.add(mc.getMarketId());
+        }
+        List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIds, priceProjection,
+                orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
+
+        for (MarketCatalogue mc : marketCatalogueResult) {
+            for (MarketBook mb : marketBookReturn) {
+                if (mc.getMarketId().equals(mb.getMarketId())) {
+                    mc.setMarketBook(mb);
+                }
+            }
         }
     }
 
@@ -221,6 +232,9 @@ public class ApiNGJsonRpcDemo {
             List<EventResult> events = getEvents(mf);
             mk.setEvent(events.get(0).getEvent());
         }
+
+        System.out.println("4.2. Print Event, Market Info, name and runners...\n");
+        printMarketCatalogue(mks);
         return mks;
     }
 

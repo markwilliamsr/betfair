@@ -99,7 +99,6 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
             throw container.getError().getData().getAPINGException();
 
         return container.getResult();
-
     }
 
     @Override
