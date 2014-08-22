@@ -61,6 +61,7 @@ public class ApiNGJsonRpcDemo {
             Set<String> eventTypeIds = new HashSet<String>();
             Set<String> competitionIds = new HashSet<String>();
             Set<String> eventTypes = new HashSet<String>();
+            Set<String> eventIds = new HashSet<String>();
             Set<String> competitions = new HashSet<String>();
             marketFilter = new MarketFilter();
 
@@ -71,13 +72,11 @@ public class ApiNGJsonRpcDemo {
             competitionIds = getCompetitionIds();
 
             marketFilter.setCompetitionIds(competitionIds);
-            List<EventResult> events = getEvents(marketFilter);
-            printEvents(events);
+
             List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
 
-
             System.out.println("5. Print static marketId, name and runners....\n");
-            printMarketCatalogue(marketCatalogueResult.get(0));
+            printMarketCatalogue(marketCatalogueResult);
             /**
              * ListMarketBook: get list of runners in the market, parameters:
              * marketId:  the market we want to list runners
@@ -102,65 +101,68 @@ public class ApiNGJsonRpcDemo {
             List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIds, priceProjection,
                     orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
 
-            /**
-             * PlaceOrders: we try to place a bet, based on the previous request we provide the following:
-             * marketId: the market id
-             * selectionId: the runner selection id we want to place the bet on
-             * side: BACK - specify side, can be Back or Lay
-             * orderType: LIMIT - specify order type
-             * size: the size of the bet
-             * price: the price of the bet
-             * customerRef: 1 - unique reference for a transaction specified by user, must be different for each request
-             *
-             */
-
-            long selectionId = 0;
-            if (marketBookReturn.size() != 0) {
-                Runner runner = marketBookReturn.get(0).getRunners().get(0);
-                selectionId = runner.getSelectionId();
-                System.out.println("7. Place a bet below minimum stake to prevent the bet actually " +
-                        "being placed for marketId: " + marketIdChosen + " with selectionId: " + selectionId + "...\n\n");
-                List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
-                PlaceInstruction instruction = new PlaceInstruction();
-                instruction.setHandicap(0);
-                instruction.setSide(Side.BACK);
-                instruction.setOrderType(OrderType.LIMIT);
-
-                LimitOrder limitOrder = new LimitOrder();
-                limitOrder.setPersistenceType(PersistenceType.LAPSE);
-                //API-NG will return an error with the default size=0.01. This is an expected behaviour.
-                //You can adjust the size and price value in the "apingdemo.properties" file
-                limitOrder.setPrice(getPrice());
-                limitOrder.setSize(getSize());
-
-                instruction.setLimitOrder(limitOrder);
-                instruction.setSelectionId(selectionId);
-                instructions.add(instruction);
-
-                String customerRef = "1";
-
-                PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketIdChosen, instructions, customerRef, applicationKey, sessionToken);
-
-                // Handling the operation result
-                if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
-                    System.out.println("Your bet has been placed!!");
-                    System.out.println(placeBetResult.getInstructionReports());
-                } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
-                    System.out.println("Your bet has NOT been placed :*( ");
-                    System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
-                }
-            } else {
-                System.out.println("Sorry, no runners found\n\n");
-            }
+            //placeBets(marketIdChosen, marketBookReturn);
 
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
         }
     }
 
+    private void placeBets(String marketIdChosen, List<MarketBook> marketBookReturn) throws APINGException {
+        /**
+         * PlaceOrders: we try to place a bet, based on the previous request we provide the following:
+         * marketId: the market id
+         * selectionId: the runner selection id we want to place the bet on
+         * side: BACK - specify side, can be Back or Lay
+         * orderType: LIMIT - specify order type
+         * size: the size of the bet
+         * price: the price of the bet
+         * customerRef: 1 - unique reference for a transaction specified by user, must be different for each request
+         *
+         */
+
+        long selectionId = 0;
+        if (marketBookReturn.size() != 0) {
+            Runner runner = marketBookReturn.get(0).getRunners().get(0);
+            selectionId = runner.getSelectionId();
+            System.out.println("7. Place a bet below minimum stake to prevent the bet actually " +
+                    "being placed for marketId: " + marketIdChosen + " with selectionId: " + selectionId + "...\n\n");
+            List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
+            PlaceInstruction instruction = new PlaceInstruction();
+            instruction.setHandicap(0);
+            instruction.setSide(Side.BACK);
+            instruction.setOrderType(OrderType.LIMIT);
+
+            LimitOrder limitOrder = new LimitOrder();
+            limitOrder.setPersistenceType(PersistenceType.LAPSE);
+            //API-NG will return an error with the default size=0.01. This is an expected behaviour.
+            //You can adjust the size and price value in the "apingdemo.properties" file
+            limitOrder.setPrice(getPrice());
+            limitOrder.setSize(getSize());
+
+            instruction.setLimitOrder(limitOrder);
+            instruction.setSelectionId(selectionId);
+            instructions.add(instruction);
+
+            String customerRef = "1";
+
+            PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketIdChosen, instructions, customerRef, applicationKey, sessionToken);
+
+            // Handling the operation result
+            if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
+                System.out.println("Your bet has been placed!!");
+                System.out.println(placeBetResult.getInstructionReports());
+            } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
+                System.out.println("Your bet has NOT been placed :*( ");
+                System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
+            }
+        } else {
+            System.out.println("Sorry, no runners found\n\n");
+        }
+    }
+
     private void printEvents(List<EventResult> events) {
-        System.out.println("Events, dear boy...");
-        for (EventResult e : events){
+        for (EventResult e : events) {
             System.out.println(e.getEvent().toString());
         }
     }
@@ -176,21 +178,21 @@ public class ApiNGJsonRpcDemo {
         marketFilter.setMarketCountries(countries);
         marketFilter.setMarketTypeCodes(typesCode);
 
-        System.out.println("4.1 (listMarketCataloque) Get all events for " + gson.toJson(typesCode) + "...");
+        System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(typesCode) + "...");
 
-        String maxResults = getProps().getProperty("MAX_RESULTS");
+        List<EventResult> events = jsonOperations.listEvents(marketFilter, applicationKey, sessionToken);
 
-        return jsonOperations.listEvents(marketFilter, applicationKey, sessionToken);
+        if (ApiNGDemo.isDebug()) {
+            printEvents(events);
+        }
+
+        System.out.println("3.2 (listEvents) Events Returned: " + events.size() + "\n");
+
+        return events;
     }
 
     private List<MarketCatalogue> getMarketCatalogues(MarketFilter marketFilter) throws APINGException {
-        /**
-         * ListMarketCatalogue: Get next available horse races, parameters:
-         * eventTypeIds : 7 - get all available horse races for event id 7 (horse racing)
-         * maxResults: 1 - specify number of results returned (narrowed to 1 to get first race)
-         * marketStartTime: specify date (must be in this format: yyyy-mm-ddTHH:MM:SSZ)
-         * sort: FIRST_TO_START - specify sort order to first to start race
-         */
+        //marketStartTime: specify date (must be in this format: yyyy-mm-ddTHH:MM:SSZ)
         TimeRange time = new TimeRange();
         time.setFrom(new Date());
         Set<String> countries = new HashSet<String>();
@@ -208,8 +210,18 @@ public class ApiNGJsonRpcDemo {
 
         String maxResults = getProps().getProperty("MAX_RESULTS");
 
-        return jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
+        List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
                 applicationKey, sessionToken);
+
+        for (MarketCatalogue mk : mks) {
+            MarketFilter mf = new MarketFilter();
+            Set<String> marketIds = new HashSet<String>();
+            marketIds.add(mk.getMarketId());
+            mf.setMarketIds(marketIds);
+            List<EventResult> events = getEvents(mf);
+            mk.setEvent(events.get(0).getEvent());
+        }
+        return mks;
     }
 
     private Set<String> getCompetitionIds() throws APINGException {
@@ -227,6 +239,7 @@ public class ApiNGJsonRpcDemo {
                 competitionIds.add(competitionResult.getCompetition().getId().toString());
             }
         }
+        System.out.println();
         return competitionIds;
     }
 
@@ -249,12 +262,15 @@ public class ApiNGJsonRpcDemo {
         return eventTypeIds;
     }
 
-    private void printMarketCatalogue(MarketCatalogue mk) {
-        System.out.println("Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
-        List<RunnerCatalog> runners = mk.getRunners();
-        if (runners != null) {
-            for (RunnerCatalog rCat : runners) {
-                System.out.println("Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId() + "\n");
+    private void printMarketCatalogue(List<MarketCatalogue> mks) {
+        for (MarketCatalogue mk : mks) {
+            System.out.println("Event: " + mk.getEvent().getName() + ", Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
+            List<RunnerCatalog> runners = mk.getRunners();
+            if (runners != null) {
+                for (RunnerCatalog rCat : runners) {
+                    System.out.println("  Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId());
+                }
+                System.out.println();
             }
         }
     }
