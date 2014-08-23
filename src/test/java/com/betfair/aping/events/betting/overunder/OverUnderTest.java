@@ -41,8 +41,6 @@ public class OverUnderTest {
 
         PriceSize lay = getLay(r, 0);
         log(lay.toString());
-
-        //      System.out.println(gson.toJson(mb.getRunners().get(0).getEx().getAvailableToBack()));
     }
 
     public RunnerCatalog getRunnerByName(List<RunnerCatalog> runners, String runnerName) throws Exception {

@@ -91,6 +91,9 @@ public class ApiNGJsonRpcDemo {
                 System.out.println(gson.toJson(e));
             }
 
+            for (Event e : events) {
+                System.out.println(gson.toJson(e));
+            }
 
             //placeBets(marketIdChosen, marketBookReturn);
 
@@ -103,8 +106,8 @@ public class ApiNGJsonRpcDemo {
         System.out.println("Full MarketBook Listing Start");
         for (Event e : events) {
             System.out.println(e.getName());
-            for (MarketType mt : e.getMarket().keySet()){
-                System.out.println("  " + mt + ": " +  gson.toJson(e.getMarket().get(mt)));
+            for (MarketType mt : e.getMarket().keySet()) {
+                System.out.println("  " + mt + ": " + gson.toJson(e.getMarket().get(mt)));
             }
         }
         System.out.println("Full MarketBook Listing End");
@@ -252,7 +255,7 @@ public class ApiNGJsonRpcDemo {
         time.setFrom(cal.getTime());
 
         cal = Calendar.getInstance();
-        String timeBeforeStart =  getProps().getProperty("TIME_BEFORE_START");
+        String timeBeforeStart = getProps().getProperty("TIME_BEFORE_START");
         if (timeBeforeStart.length() > 0) {
             cal.add(Calendar.MINUTE, Integer.valueOf(timeBeforeStart));
             time.setTo(cal.getTime());
@@ -277,8 +280,7 @@ public class ApiNGJsonRpcDemo {
 
         System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
-        //String maxResults = getProps().getProperty("MAX_RESULTS");
-        String maxResults = "200";
+        String maxResults = getProps().getProperty("MAX_RESULTS");
 
         List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
                 applicationKey, sessionToken);
