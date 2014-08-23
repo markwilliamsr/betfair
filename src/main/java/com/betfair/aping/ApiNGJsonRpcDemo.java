@@ -63,18 +63,22 @@ public class ApiNGJsonRpcDemo {
             Set<String> eventTypes = new HashSet<String>();
             Set<String> eventIds = new HashSet<String>();
             Set<String> competitions = new HashSet<String>();
-            marketFilter = new MarketFilter();
+
+            marketFilter = getMarketFilter();
 
             eventTypeIds = getEventTypeIds();
-
             marketFilter.setEventTypeIds(eventTypeIds);
 
             competitionIds = getCompetitionIds();
-
             marketFilter.setCompetitionIds(competitionIds);
 
-            List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
             List<EventResult> eventResults = getEvents(marketFilter);
+            for (EventResult er : eventResults) {
+                eventIds.add(er.getEvent().getId());
+            }
+            marketFilter.setEventIds(eventIds);
+
+            List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
 
             List<Event> events = assignMarketsToEvents(eventResults, marketCatalogueResult);
 
@@ -90,9 +94,11 @@ public class ApiNGJsonRpcDemo {
     }
 
     private void printMarketBooks(List<MarketCatalogue> mks) {
+        System.out.println("Full MarketBook Listing Start");
         for (MarketCatalogue mk : mks) {
             System.out.println(gson.toJson(mk.getMarketBook()));
         }
+        System.out.println("Full MarketBook Listing End");
     }
 
     private void getMarketBooks(List<MarketCatalogue> marketCatalogueResult) throws APINGException {
@@ -215,25 +221,7 @@ public class ApiNGJsonRpcDemo {
     }
 
     private List<EventResult> getEvents(MarketFilter marketFilter) throws APINGException {
-        Calendar cal = null;
-        TimeRange time = new TimeRange();
-        Set<String> countries = new HashSet<String>();
-        Set<String> typesCode = new HashSet<String>();
-        typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), typesCode.getClass());
-
-        cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, -120);
-        time.setFrom(new Date());
-
-        cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, Integer.valueOf(getProps().getProperty("TIME_BEFORE_START")));
-        time.setTo(cal.getTime());
-
-        marketFilter.setMarketStartTime(time);
-        marketFilter.setMarketCountries(countries);
-        marketFilter.setMarketTypeCodes(typesCode);
-
-        System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(typesCode) + "...");
+        System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
         List<EventResult> events = jsonOperations.listEvents(marketFilter, applicationKey, sessionToken);
 
@@ -242,17 +230,34 @@ public class ApiNGJsonRpcDemo {
         return events;
     }
 
-    private List<MarketCatalogue> getMarketCatalogues(MarketFilter marketFilter) throws APINGException {
-        //marketStartTime: specify date (must be in this format: yyyy-mm-ddTHH:MM:SSZ)
+    private MarketFilter getMarketFilter() {
+        MarketFilter marketFilter = new MarketFilter();
+        Calendar cal = null;
         TimeRange time = new TimeRange();
-        time.setFrom(new Date());
         Set<String> countries = new HashSet<String>();
         Set<String> typesCode = new HashSet<String>();
         typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), typesCode.getClass());
 
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, -120);
+        time.setFrom(cal.getTime());
+
+        cal = Calendar.getInstance();
+        String timeBeforeStart =  getProps().getProperty("TIME_BEFORE_START");
+        if (timeBeforeStart.length() > 0) {
+            cal.add(Calendar.MINUTE, Integer.valueOf(timeBeforeStart));
+            time.setTo(cal.getTime());
+        }
+
         marketFilter.setMarketStartTime(time);
         marketFilter.setMarketCountries(countries);
         marketFilter.setMarketTypeCodes(typesCode);
+        marketFilter.setTurnInPlayEnabled(true);
+
+        return marketFilter;
+    }
+
+    private List<MarketCatalogue> getMarketCatalogues(MarketFilter marketFilter) throws APINGException {
 
         Set<MarketProjection> marketProjection = new HashSet<MarketProjection>();
         marketProjection.add(MarketProjection.COMPETITION);
@@ -261,7 +266,7 @@ public class ApiNGJsonRpcDemo {
         marketProjection.add(MarketProjection.RUNNER_DESCRIPTION);
         marketProjection.add(MarketProjection.MARKET_START_TIME);
 
-        System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(typesCode) + "...");
+        System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
         //String maxResults = getProps().getProperty("MAX_RESULTS");
         String maxResults = "200";
