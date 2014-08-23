@@ -2,6 +2,8 @@ package com.betfair.aping;
 
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
+import com.betfair.aping.com.betfair.aping.events.betting.CorrectScore;
+import com.betfair.aping.com.betfair.aping.events.betting.OverUnderCandidate;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
@@ -95,11 +97,36 @@ public class ApiNGJsonRpcDemo {
                 System.out.println(gson.toJson(e));
             }
 
+            for (Event event : events) {
+                System.out.println(event.getName() + ": " + CorrectScore.findCorrectScoreFromMarketOdds(event));
+                if (isCandidateMarket(event)){
+                    System.out.println("Candidate Mkt Found:" + gson.toJson(event));
+                }
+            }
+
             //placeBets(marketIdChosen, marketBookReturn);
 
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
         }
+    }
+
+    private boolean isCandidateMarket(Event event) {
+        OverUnderCandidate ouc = new OverUnderCandidate();
+        MarketCatalogue mk = event.getMarket().get(MarketType.OVER_UNDER_25);
+        MarketBook mb = event.getMarket().get(MarketType.OVER_UNDER_25).getMarketBook();
+
+        try {
+            RunnerCatalog rc = ouc.getRunnerByName(mk.getRunners(), ouc.under25Goals);
+            Runner r = ouc.getRunnerBySelectionId(mb.getRunners(), rc.getSelectionId());
+            if (ouc.getBack(r, 0).getPrice() >= Double.valueOf(getProps().getProperty("OVER_UNDER_25_BACK_LIMIT"))) {
+                System.out.println(ouc.getBack(r, 0).toString());
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void printMarketBooks(List<Event> events) {

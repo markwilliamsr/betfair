@@ -1,8 +1,6 @@
 package com.betfair.aping.com.betfair.aping.events.betting;
 
-import com.betfair.aping.entities.MarketCatalogue;
-import com.betfair.aping.entities.Runner;
-import com.betfair.aping.entities.RunnerCatalog;
+import com.betfair.aping.entities.*;
 
 import java.util.List;
 
@@ -10,6 +8,9 @@ import java.util.List;
  * Created by markwilliams on 23/08/2014.
  */
 public class CorrectScore {
+
+    private static final String ANY_UNQUOTED = "Any Unquoted";
+
     public static int getTotalGoals(RunnerCatalog r) {
         if (getHomeGoals(r) + getAwayGoals(r) >= 0) {
             return getHomeGoals(r) + getAwayGoals(r);
@@ -19,7 +20,7 @@ public class CorrectScore {
     }
 
     public static int getHomeGoals(RunnerCatalog r) {
-        if (!r.getRunnerName().trim().equals("Any Unquoted")) {
+        if (!r.getRunnerName().trim().equals(ANY_UNQUOTED)) {
             String[] score = r.getRunnerName().split("-");
             return parseGoalsFromScoreFragment(score[0]);
         }
@@ -27,7 +28,7 @@ public class CorrectScore {
     }
 
     public static int getAwayGoals(RunnerCatalog r) {
-        if (!r.getRunnerName().trim().equals("Any Unquoted")) {
+        if (!r.getRunnerName().trim().equals(ANY_UNQUOTED)) {
             String[] score = r.getRunnerName().split("-");
             return parseGoalsFromScoreFragment(score[1]);
         }
@@ -42,6 +43,11 @@ public class CorrectScore {
         } catch (ArrayIndexOutOfBoundsException e) {
             return Integer.MAX_VALUE;
         }
+    }
+
+    public static String findCorrectScoreFromMarketOdds(Event event) {
+        return findCorrectScoreFromMarketOdds(event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners(),
+                event.getMarket().get(MarketType.CORRECT_SCORE));
     }
 
     public static String findCorrectScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {
@@ -61,11 +67,11 @@ public class CorrectScore {
                 continue;
             }
 
-            if (r.getEx().getAvailableToLay().size() != 0 && !runner.getRunnerName().trim().equals("Any Unquoted")) {
+            if (r.getEx().getAvailableToLay().size() != 0 && !runner.getRunnerName().trim().equals(ANY_UNQUOTED)) {
                 if (minGoalsSoFar > CorrectScore.getTotalGoals(runner)) {
                     minGoalsSoFar = CorrectScore.getTotalGoals(runner);
                     correctScore = runner.getRunnerName();
-                    System.out.println("Found RunnerCatalog with possible odds " + runner.getRunnerName());
+                    //System.out.println("Found RunnerCatalog with possible odds " + runner.getRunnerName());
                 }
             }
         }
