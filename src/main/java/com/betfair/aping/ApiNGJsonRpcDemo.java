@@ -85,7 +85,13 @@ public class ApiNGJsonRpcDemo {
             printEvents(events);
 
             getMarketBooks(marketCatalogueResult);
-            printMarketBooks(marketCatalogueResult);
+            printMarketBooks(events);
+
+            for (Event e : events) {
+                System.out.println(gson.toJson(e));
+            }
+
+
             //placeBets(marketIdChosen, marketBookReturn);
 
         } catch (APINGException apiExc) {
@@ -93,10 +99,13 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private void printMarketBooks(List<MarketCatalogue> mks) {
+    private void printMarketBooks(List<Event> events) {
         System.out.println("Full MarketBook Listing Start");
-        for (MarketCatalogue mk : mks) {
-            System.out.println(gson.toJson(mk.getMarketBook()));
+        for (Event e : events) {
+            System.out.println(e.getName());
+            for (MarketType mt : e.getMarket().keySet()){
+                System.out.println("  " + mt + ": " +  gson.toJson(e.getMarket().get(mt)));
+            }
         }
         System.out.println("Full MarketBook Listing End");
     }
