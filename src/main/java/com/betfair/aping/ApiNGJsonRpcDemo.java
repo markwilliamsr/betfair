@@ -74,6 +74,11 @@ public class ApiNGJsonRpcDemo {
             marketFilter.setCompetitionIds(competitionIds);
 
             List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
+            List<EventResult> eventResults = getEvents(marketFilter);
+
+            List<Event> events = assignMarketsToEvents(eventResults, marketCatalogueResult);
+
+            printEvents(events);
 
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(marketCatalogueResult);
@@ -172,10 +177,28 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private void printEvents(List<EventResult> events) {
-        for (EventResult e : events) {
-            System.out.println(e.getEvent().toString());
+    private void printEvents(List<Event> events) {
+        System.out.println("Full Event Listing Start");
+        for (Event e : events) {
+            System.out.println(gson.toJson(e));
         }
+        System.out.println("Full Event Listing End");
+    }
+
+    private List<Event> assignMarketsToEvents(List<EventResult> eventResults, List<MarketCatalogue> mks) {
+        List<Event> events = new ArrayList<Event>();
+        for (MarketCatalogue mk : mks) {
+            for (EventResult er : eventResults) {
+                if (mk.getEvent().getId().equals(er.getEvent().getId())) {
+                    er.getEvent().getMarket().put(mk.getDescription().getMarketType(), mk);
+                    mk.getDescription().setRules("");
+                }
+            }
+        }
+        for (EventResult er : eventResults) {
+            events.add(er.getEvent());
+        }
+        return events;
     }
 
     private List<EventResult> getEvents(MarketFilter marketFilter) throws APINGException {
@@ -192,10 +215,6 @@ public class ApiNGJsonRpcDemo {
         System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(typesCode) + "...");
 
         List<EventResult> events = jsonOperations.listEvents(marketFilter, applicationKey, sessionToken);
-
-        if (ApiNGDemo.isDebug()) {
-            printEvents(events);
-        }
 
         System.out.println("3.2 (listEvents) Events Returned: " + events.size() + "\n");
 
@@ -215,23 +234,19 @@ public class ApiNGJsonRpcDemo {
         marketFilter.setMarketTypeCodes(typesCode);
 
         Set<MarketProjection> marketProjection = new HashSet<MarketProjection>();
+        marketProjection.add(MarketProjection.COMPETITION);
+        marketProjection.add(MarketProjection.EVENT);
+        marketProjection.add(MarketProjection.MARKET_DESCRIPTION);
         marketProjection.add(MarketProjection.RUNNER_DESCRIPTION);
+        marketProjection.add(MarketProjection.MARKET_START_TIME);
 
         System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(typesCode) + "...");
 
-        String maxResults = getProps().getProperty("MAX_RESULTS");
+        //String maxResults = getProps().getProperty("MAX_RESULTS");
+        String maxResults = "200";
 
         List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
                 applicationKey, sessionToken);
-
-        for (MarketCatalogue mk : mks) {
-            MarketFilter mf = new MarketFilter();
-            Set<String> marketIds = new HashSet<String>();
-            marketIds.add(mk.getMarketId());
-            mf.setMarketIds(marketIds);
-            List<EventResult> events = getEvents(mf);
-            mk.setEvent(events.get(0).getEvent());
-        }
 
         System.out.println("4.2. Print Event, Market Info, name and runners...\n");
         printMarketCatalogue(mks);

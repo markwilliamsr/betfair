@@ -21,7 +21,4 @@ public enum ApiNgOperation {
 	public String getOperationName() {
 		return operationName;
 	}
-
-	
-
 }

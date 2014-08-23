@@ -12,7 +12,7 @@ public class MarketDescription {
 	private Date settleTime;
 	private String bettingType;
 	private Boolean turnInPlayEnabled;
-	private String marketType;
+	private MarketType marketType;
 	private String regulator;
 	private Double marketBaseRate;
 	private Boolean discountAllowed;
@@ -77,11 +77,11 @@ public class MarketDescription {
 		this.turnInPlayEnabled = turnInPlayEnabled;
 	}
 
-	public String getMarketType() {
+	public MarketType getMarketType() {
 		return marketType;
 	}
 
-	public void setMarketType(String marketType) {
+	public void setMarketType(MarketType marketType) {
 		this.marketType = marketType;
 	}
 
