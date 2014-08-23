@@ -105,21 +105,34 @@ public class ApiNGJsonRpcDemo {
         OrderProjection orderProjection = null;
         MatchProjection matchProjection = null;
         String currencyCode = null;
-
+        int batchRequestCost = 0;
+        int totalRequests = 0;
+        final int DATA_LIMIT = 200;
+        final int QUERY_COST = 5;
 
         List<String> marketIds = new ArrayList<String>();
+        List<String> marketIdsBatch = new ArrayList<String>();
 
         for (MarketCatalogue mc : marketCatalogueResult) {
             marketIds.add(mc.getMarketId());
         }
-        List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIds, priceProjection,
-                orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
 
-        for (MarketCatalogue mc : marketCatalogueResult) {
-            for (MarketBook mb : marketBookReturn) {
-                if (mc.getMarketId().equals(mb.getMarketId())) {
-                    mc.setMarketBook(mb);
+        for (String id : marketIds) {
+            marketIdsBatch.add(id);
+            batchRequestCost += QUERY_COST;
+            totalRequests++;
+            if ((batchRequestCost + QUERY_COST >= DATA_LIMIT) || totalRequests == marketIds.size()) {
+                List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIdsBatch, priceProjection,
+                        orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
+                for (MarketCatalogue mc : marketCatalogueResult) {
+                    for (MarketBook mb : marketBookReturn) {
+                        if (mc.getMarketId().equals(mb.getMarketId())) {
+                            mc.setMarketBook(mb);
+                        }
+                    }
                 }
+                marketIdsBatch.clear();
+                batchRequestCost = 0;
             }
         }
     }
@@ -202,11 +215,19 @@ public class ApiNGJsonRpcDemo {
     }
 
     private List<EventResult> getEvents(MarketFilter marketFilter) throws APINGException {
+        Calendar cal = null;
         TimeRange time = new TimeRange();
-        time.setFrom(new Date());
         Set<String> countries = new HashSet<String>();
         Set<String> typesCode = new HashSet<String>();
         typesCode = gson.fromJson(getProps().getProperty("MARKET_TYPES"), typesCode.getClass());
+
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, -120);
+        time.setFrom(new Date());
+
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, Integer.valueOf(getProps().getProperty("TIME_BEFORE_START")));
+        time.setTo(cal.getTime());
 
         marketFilter.setMarketStartTime(time);
         marketFilter.setMarketCountries(countries);
