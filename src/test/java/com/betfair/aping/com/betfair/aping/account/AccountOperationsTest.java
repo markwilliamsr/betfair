@@ -3,8 +3,6 @@ package com.betfair.aping.com.betfair.aping.account;
 import com.betfair.aping.JsonRpcTestBase;
 import com.betfair.aping.entities.AccountFundsResponse;
 import com.betfair.aping.exceptions.APINGException;
-import com.betfair.aping.login.HttpClientSSO;
-import com.betfair.aping.login.LoginResponse;
 import org.junit.Assert;
 import org.junit.Test;
 

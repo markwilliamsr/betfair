@@ -76,6 +76,8 @@ public class ApiNGJsonRpcDemo {
             Set<String> eventTypes = new HashSet<String>();
             Set<String> eventIds = new HashSet<String>();
             Set<String> competitions = new HashSet<String>();
+            PriceSize cashOutPriceSize = new PriceSize();
+            PriceSize newBetPriceSize = new PriceSize();
 
             marketFilter = getMarketFilter();
 
@@ -106,13 +108,13 @@ public class ApiNGJsonRpcDemo {
 
             for (Event event : events) {
                 System.out.println(event.getName() + ": " + CorrectScore.findCorrectScoreFromMarketOdds(event));
-                if (isCandidateMarket(event)) {
+                if (isCandidateMarket(event, newBetPriceSize)) {
                     System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
-                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), true);
+                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), newBetPriceSize, Side.BACK);
                 }
-                if (isMarketCashOut(event)) {
+                if (isMarketCashOut(event, cashOutPriceSize)) {
                     System.out.println("CLOSE: Candidate Mkt Found:" + gson.toJson(event));
-                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), false);
+                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), cashOutPriceSize, Side.LAY);
                 }
             }
 
@@ -120,48 +122,61 @@ public class ApiNGJsonRpcDemo {
 
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private boolean isMarketCashOut(Event event) {
+    private boolean isMarketCashOut(Event event, PriceSize cashOutPriceSize) throws Exception {
         MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
 
-        Double amount = mc.getMarketBook().getRunners().get(0).getOrders().get(0).getSize();
-        Double backedPrice = mc.getMarketBook().getRunners().get(0).getOrders().get(0).getPrice();
-        Double bestLayPrice = mc.getMarketBook().getRunners().get(0).getEx().getAvailableToLay().get(0).getPrice();
+        OverUnderCandidate ouc = new OverUnderCandidate();
 
-        Double profit = (backedPrice - bestLayPrice) * amount;
-        Double percentageProfit = ((backedPrice - bestLayPrice) * amount * 100.0) / amount;
+        RunnerCatalog rc = ouc.getRunnerByName(mc.getRunners(), ouc.under25Goals);
+        Runner r = ouc.getRunnerBySelectionId(mc.getMarketBook().getRunners(), rc.getSelectionId());
+
+        Double amount = r.getOrders().get(0).getSize(); //assume only one order in the mkt.
+        Double backedPrice = r.getOrders().get(0).getPrice();
+        Double bestLayPrice = r.getEx().getAvailableToLay().get(0).getPrice();
+
+        Double profit = (backedPrice - bestLayPrice) * amount / 2;
+        Double percentageProfit = ((backedPrice - bestLayPrice) * amount * 100.0) / (amount * 2);
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println("Amt: " + amount + ", Backed @ " + backedPrice + ", bestLay: " + bestLayPrice);
         System.out.println("Profit: " + df.format(profit) + ", Percentage PnL: " + df.format(percentageProfit));
-        if (percentageProfit >= 10.0) {
+        Double cashOutBetSize = amount * backedPrice / bestLayPrice;
+        System.out.println("CloseOutSize: " + df.format(cashOutBetSize));
+
+        cashOutPriceSize.setPrice(bestLayPrice);
+        cashOutPriceSize.setSize(cashOutBetSize);
+
+        if (percentageProfit >= Double.valueOf(getProps().getProperty("CLOSE_OUT_PROFIT_PERCENTAGE"))) {
             return true;
         } else {
             return false;
         }
     }
 
-    private boolean isCandidateMarket(Event event) {
+    private boolean isCandidateMarket(Event event, PriceSize newBetPriceSize) throws Exception {
         OverUnderCandidate ouc = new OverUnderCandidate();
-        MarketCatalogue mk = event.getMarket().get(MarketType.OVER_UNDER_25);
-        MarketBook mb = event.getMarket().get(MarketType.OVER_UNDER_25).getMarketBook();
+        PriceSize priceSize = new PriceSize();
 
-        if (event.getMarket().get(MarketType.OVER_UNDER_25).getMarketBook().getRunners().get(0).getOrders().size() > 0) {
+        MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+
+        RunnerCatalog rc = ouc.getRunnerByName(mc.getRunners(), ouc.under25Goals);
+        Runner r = ouc.getRunnerBySelectionId(mc.getMarketBook().getRunners(), rc.getSelectionId());
+
+        if (r.getOrders().size() > 0) {
             return false;
         }
 
-        try {
-            RunnerCatalog rc = ouc.getRunnerByName(mk.getRunners(), ouc.under25Goals);
-            Runner r = ouc.getRunnerBySelectionId(mb.getRunners(), rc.getSelectionId());
-            if (ouc.getBack(r, 0).getPrice() >= Double.valueOf(getProps().getProperty("OVER_UNDER_25_BACK_LIMIT"))) {
-                if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL)) {
-                    System.out.println("Best Back Price: " + ouc.getBack(r, 0).toString());
-                    return true;
-                }
+        if (ouc.getBack(r, 0).getPrice() >= Double.valueOf(getProps().getProperty("OVER_UNDER_25_BACK_LIMIT"))) {
+            if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL)) {
+                System.out.println("Best Back Price: " + ouc.getBack(r, 0).toString());
+                newBetPriceSize.setPrice(ouc.getBack(r, 0).getPrice());
+                newBetPriceSize.setSize(getSize());
+                return true;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -219,7 +234,7 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private void placeBets(MarketCatalogue marketCatalogue, boolean isOpen) throws APINGException {
+    private void placeBets(MarketCatalogue marketCatalogue, PriceSize bet, Side side) throws APINGException {
         /**
          * PlaceOrders: we try to place a bet, based on the previous request we provide the following:
          * marketId: the market id
@@ -258,15 +273,11 @@ public class ApiNGJsonRpcDemo {
         limitOrder.setPersistenceType(PersistenceType.LAPSE);
         instruction.setOrderType(OrderType.LIMIT);
 
-        if (isOpen) {
-            instruction.setSide(Side.BACK);
-            limitOrder.setPrice(selectedRunner.getEx().getAvailableToBack().get(0).getPrice());
-        } else {
-            instruction.setSide(Side.LAY);
-            limitOrder.setPrice(selectedRunner.getEx().getAvailableToLay().get(0).getPrice());
-        }
+        instruction.setSide(side);
 
-        limitOrder.setSize(getSize());
+
+        limitOrder.setPrice(bet.getPrice());
+        limitOrder.setSize(bet.getSize());
 
         instruction.setLimitOrder(limitOrder);
         instruction.setSelectionId(selectedRunner.getSelectionId());
