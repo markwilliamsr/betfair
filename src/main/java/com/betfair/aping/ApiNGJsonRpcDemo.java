@@ -10,6 +10,8 @@ import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -44,6 +46,15 @@ public class ApiNGJsonRpcDemo {
         } catch (NumberFormatException e) {
             //returning the default value
             return new Double(0.01);
+        }
+    }
+
+    private boolean isSafetyOff() {
+        try {
+            return Boolean.valueOf(ApiNGDemo.getProp().getProperty("SAFETY_OFF"));
+        } catch (Exception e) {
+            //returning the default value
+            return true;
         }
     }
 
@@ -95,8 +106,13 @@ public class ApiNGJsonRpcDemo {
 
             for (Event event : events) {
                 System.out.println(event.getName() + ": " + CorrectScore.findCorrectScoreFromMarketOdds(event));
-                if (isCandidateMarket(event)){
-                    System.out.println("Candidate Mkt Found:" + gson.toJson(event));
+                if (isCandidateMarket(event)) {
+                    System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
+                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), true);
+                }
+                if (isMarketCashOut(event)) {
+                    System.out.println("CLOSE: Candidate Mkt Found:" + gson.toJson(event));
+                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), false);
                 }
             }
 
@@ -107,10 +123,33 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
+    private boolean isMarketCashOut(Event event) {
+        MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+
+        Double amount = mc.getMarketBook().getRunners().get(0).getOrders().get(0).getSize();
+        Double backedPrice = mc.getMarketBook().getRunners().get(0).getOrders().get(0).getPrice();
+        Double bestLayPrice = mc.getMarketBook().getRunners().get(0).getEx().getAvailableToLay().get(0).getPrice();
+
+        Double profit = (backedPrice - bestLayPrice) * amount;
+        Double percentageProfit = ((backedPrice - bestLayPrice) * amount * 100.0) / amount;
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.out.println("Amt: " + amount + ", Backed @ " + backedPrice + ", bestLay: " + bestLayPrice);
+        System.out.println("Profit: " + df.format(profit) + ", Percentage PnL: " + df.format(percentageProfit));
+        if (percentageProfit >= 10.0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private boolean isCandidateMarket(Event event) {
         OverUnderCandidate ouc = new OverUnderCandidate();
         MarketCatalogue mk = event.getMarket().get(MarketType.OVER_UNDER_25);
         MarketBook mb = event.getMarket().get(MarketType.OVER_UNDER_25).getMarketBook();
+
+        if (event.getMarket().get(MarketType.OVER_UNDER_25).getMarketBook().getRunners().get(0).getOrders().size() > 0) {
+            return false;
+        }
 
         try {
             RunnerCatalog rc = ouc.getRunnerByName(mk.getRunners(), ouc.under25Goals);
@@ -145,7 +184,7 @@ public class ApiNGJsonRpcDemo {
         Set<PriceData> priceData = new HashSet<PriceData>();
         priceData.add(PriceData.EX_BEST_OFFERS);
         priceProjection.setPriceData(priceData);
-        OrderProjection orderProjection = null;
+        OrderProjection orderProjection = OrderProjection.ALL;
         MatchProjection matchProjection = null;
         String currencyCode = null;
         int batchRequestCost = 0;
@@ -180,7 +219,7 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private void placeBets(String marketIdChosen, List<MarketBook> marketBookReturn) throws APINGException {
+    private void placeBets(MarketCatalogue marketCatalogue, boolean isOpen) throws APINGException {
         /**
          * PlaceOrders: we try to place a bet, based on the previous request we provide the following:
          * marketId: the market id
@@ -192,33 +231,54 @@ public class ApiNGJsonRpcDemo {
          * customerRef: 1 - unique reference for a transaction specified by user, must be different for each request
          *
          */
+        final String under25Goals = "Under 2.5 Goals";
+        final String over25Goals = "Over 2.5 Goals";
+        RunnerCatalog selectedRunnerCatalog = null;
+        Runner selectedRunner = null;
 
-        long selectionId = 0;
-        if (marketBookReturn.size() != 0) {
-            Runner runner = marketBookReturn.get(0).getRunners().get(0);
-            selectionId = runner.getSelectionId();
-            System.out.println("7. Place a bet below minimum stake to prevent the bet actually " +
-                    "being placed for marketId: " + marketIdChosen + " with selectionId: " + selectionId + "...\n\n");
-            List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
-            PlaceInstruction instruction = new PlaceInstruction();
-            instruction.setHandicap(0);
+        for (RunnerCatalog rc : marketCatalogue.getRunners()) {
+            if (rc.getRunnerName().equals(under25Goals)) {
+                selectedRunnerCatalog = rc;
+                break;
+            }
+        }
+
+        for (Runner r : marketCatalogue.getMarketBook().getRunners()) {
+            if (r.getSelectionId().equals(selectedRunnerCatalog.getSelectionId())) {
+                selectedRunner = r;
+                break;
+            }
+        }
+
+        List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
+        PlaceInstruction instruction = new PlaceInstruction();
+        instruction.setHandicap(0);
+
+        LimitOrder limitOrder = new LimitOrder();
+        limitOrder.setPersistenceType(PersistenceType.LAPSE);
+        instruction.setOrderType(OrderType.LIMIT);
+
+        if (isOpen) {
             instruction.setSide(Side.BACK);
-            instruction.setOrderType(OrderType.LIMIT);
+            limitOrder.setPrice(selectedRunner.getEx().getAvailableToBack().get(0).getPrice());
+        } else {
+            instruction.setSide(Side.LAY);
+            limitOrder.setPrice(selectedRunner.getEx().getAvailableToLay().get(0).getPrice());
+        }
 
-            LimitOrder limitOrder = new LimitOrder();
-            limitOrder.setPersistenceType(PersistenceType.LAPSE);
-            //API-NG will return an error with the default size=0.01. This is an expected behaviour.
-            //You can adjust the size and price value in the "apingdemo.properties" file
-            limitOrder.setPrice(getPrice());
-            limitOrder.setSize(getSize());
+        limitOrder.setSize(getSize());
 
-            instruction.setLimitOrder(limitOrder);
-            instruction.setSelectionId(selectionId);
-            instructions.add(instruction);
+        instruction.setLimitOrder(limitOrder);
+        instruction.setSelectionId(selectedRunner.getSelectionId());
+        instructions.add(instruction);
 
-            String customerRef = "1";
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
 
-            PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketIdChosen, instructions, customerRef, applicationKey, sessionToken);
+        String customerRef = "OU25:" + df.format(cal.getTime());
+
+        if (isSafetyOff()) {
+            PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketCatalogue.getMarketId(), instructions, customerRef, applicationKey, sessionToken);
 
             // Handling the operation result
             if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
@@ -228,8 +288,6 @@ public class ApiNGJsonRpcDemo {
                 System.out.println("Your bet has NOT been placed :*( ");
                 System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
             }
-        } else {
-            System.out.println("Sorry, no runners found\n\n");
         }
     }
 

@@ -1,9 +1,18 @@
 package com.betfair.aping.events.betting.overunder;
 
+import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.entities.*;
+import com.betfair.aping.enums.ExecutionReportStatus;
+import com.betfair.aping.enums.OrderType;
+import com.betfair.aping.enums.PersistenceType;
+import com.betfair.aping.enums.Side;
+import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -71,5 +80,19 @@ public class OverUnderTest {
 
     public void log(String s) {
         System.out.println(s);
+    }
+
+    @Test
+    public void calendarTest() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
+        System.out.println(df.format(cal.getTime()));
+    }
+
+    @Test
+    public void safetyTest() {
+        boolean safety = Boolean.valueOf("trues");
+
+        System.out.println(safety);
     }
 }
