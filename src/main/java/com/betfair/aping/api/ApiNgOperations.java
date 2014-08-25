@@ -1,10 +1,7 @@
 package com.betfair.aping.api;
 
 import com.betfair.aping.entities.*;
-import com.betfair.aping.enums.MarketProjection;
-import com.betfair.aping.enums.MarketSort;
-import com.betfair.aping.enums.MatchProjection;
-import com.betfair.aping.enums.OrderProjection;
+import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
 
 import java.util.List;
@@ -42,7 +39,9 @@ public abstract class ApiNgOperations {
 
 	public abstract PlaceExecutionReport placeOrders(String marketId, List<PlaceInstruction> instructions, String customerRef , String appKey, String ssoId) throws APINGException;
 
-    protected abstract String makeRequest(String operation, Map<String, Object> params, String appKey, String ssoToken) throws  APINGException;
+    protected abstract String makeRequest(ApiNgOperation operation, Map<String, Object> params, String appKey, String ssoToken) throws  APINGException;
+
+    public abstract AccountFundsResponse getAccountFunds(String appKey, String ssoId) throws APINGException;
 
 }
 

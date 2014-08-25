@@ -2,6 +2,7 @@ package com.betfair.aping.api;
 
 
 import com.betfair.aping.ApiNGDemo;
+import com.betfair.aping.enums.ApiNgOperation;
 import com.betfair.aping.exceptions.APINGException;
 import com.betfair.aping.util.JsonResponseHandler;
 import com.betfair.aping.util.RescriptResponseHandler;
@@ -73,10 +74,10 @@ public class HttpUtil {
 
     }
 
-    public String sendPostRequestJsonRpc(String param, String operation, String appKey, String ssoToken) {
-        String apiNgURL = ApiNGDemo.getProp().getProperty("APING_URL") + ApiNGDemo.getProp().getProperty("JSON_RPC_SUFFIX");
+    public String sendPostRequestJsonRpc(String param, ApiNgOperation operation, String appKey, String ssoToken) {
+        String apiNgURL = ApiNGDemo.getProp().getProperty("APING_URL") + operation.getUrlExtension() + "/" + ApiNGDemo.getProp().getProperty("JSON_RPC_SUFFIX");
 
-        return sendPostRequest(param, operation, appKey, ssoToken, apiNgURL, new JsonResponseHandler());
+        return sendPostRequest(param, operation.getOperationName(), appKey, ssoToken, apiNgURL, new JsonResponseHandler());
 
     }
 

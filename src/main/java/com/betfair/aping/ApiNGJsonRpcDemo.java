@@ -60,7 +60,6 @@ public class ApiNGJsonRpcDemo {
              */
 
             MarketFilter marketFilter;
-            marketFilter = new MarketFilter();
             Set<String> eventTypeIds = new HashSet<String>();
             Set<String> competitionIds = new HashSet<String>();
             Set<String> eventTypes = new HashSet<String>();
@@ -89,10 +88,6 @@ public class ApiNGJsonRpcDemo {
 
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(events);
-
-            for (Event e : events) {
-                System.out.println(gson.toJson(e));
-            }
 
             for (Event e : events) {
                 System.out.println(gson.toJson(e));

@@ -31,7 +31,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(FILTER, filter);
         params.put(LOCALE, locale);
-        String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTTYPES.getOperationName(), params, appKey, ssoId);
+        String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTTYPES, params, appKey, ssoId);
         if(ApiNGDemo.isDebug())
             System.out.println("\nResponse: "+result);
 
@@ -47,7 +47,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(FILTER, filter);
         params.put(LOCALE, locale);
-        String result = getInstance().makeRequest(ApiNgOperation.LISTCOMPETITIONS.getOperationName(), params, appKey, ssoId);
+        String result = getInstance().makeRequest(ApiNgOperation.LISTCOMPETITIONS, params, appKey, ssoId);
         if(ApiNGDemo.isDebug())
             System.out.println("\nResponse: "+result);
 
@@ -67,7 +67,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
         params.put(PRICE_PROJECTION, priceProjection);
         params.put(ORDER_PROJECTION, orderProjection);
         params.put(MATCH_PROJECTION, matchProjection);
-        String result = getInstance().makeRequest(ApiNgOperation.LISTMARKETBOOK.getOperationName(), params, appKey, ssoId);
+        String result = getInstance().makeRequest(ApiNgOperation.LISTMARKETBOOK, params, appKey, ssoId);
         if(ApiNGDemo.isDebug())
             System.out.println("\nResponse: "+result);
 
@@ -89,7 +89,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
         params.put(SORT, sort);
         params.put(MAX_RESULT, maxResult);
         params.put(MARKET_PROJECTION, marketProjection);
-        String result = getInstance().makeRequest(ApiNgOperation.LISTMARKETCATALOGUE.getOperationName(), params, appKey, ssoId);
+        String result = getInstance().makeRequest(ApiNgOperation.LISTMARKETCATALOGUE, params, appKey, ssoId);
         if(ApiNGDemo.isDebug())
             System.out.println("\nResponse: "+result);
 
@@ -107,7 +107,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
         params.put(LOCALE, locale);
         params.put(FILTER, filter);
 
-        String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTS.getOperationName(), params, appKey, ssoId);
+        String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTS, params, appKey, ssoId);
         if(ApiNGDemo.isDebug())
             System.out.println("\nResponse: "+result);
 
@@ -126,7 +126,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
         params.put(MARKET_ID, marketId);
         params.put(INSTRUCTIONS, instructions);
         params.put(CUSTOMER_REF, customerRef);
-        String result = getInstance().makeRequest(ApiNgOperation.PLACORDERS.getOperationName(), params, appKey, ssoId);
+        String result = getInstance().makeRequest(ApiNgOperation.PLACEORDERS, params, appKey, ssoId);
         if(ApiNGDemo.isDebug())
             System.out.println("\nResponse: "+result);
 
@@ -139,12 +139,12 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
 
     }
 
-    protected String makeRequest(String operation, Map<String, Object> params, String appKey, String ssoToken) {
+    protected String makeRequest(ApiNgOperation operation, Map<String, Object> params, String appKey, String ssoToken) {
         String requestString;
         //Handling the JSON-RPC request
         JsonrpcRequest request = new JsonrpcRequest();
         request.setId("1");
-        request.setMethod(ApiNGDemo.getProp().getProperty("SPORTS_APING_V1_0") + operation);
+        request.setMethod(ApiNGDemo.getProp().getProperty(operation.getApiType()) + operation.getOperationName());
         request.setParams(params);
 
         requestString =  JsonConverter.convertToJson(request);
@@ -157,5 +157,19 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations{
 
        }
 
+    @Override
+    public AccountFundsResponse getAccountFunds(String appKey, String ssoId) throws APINGException {
+        Map<String, Object> params = new HashMap<String, Object>();
+        String result = getInstance().makeRequest(ApiNgOperation.ACCOUNTFUNDS, params, appKey, ssoId);
+        if(ApiNGDemo.isDebug())
+            System.out.println("\nResponse: "+result);
+
+        AccountFundsContainer container = JsonConverter.convertFromJson(result, AccountFundsContainer.class);
+
+        if(container.getError() != null)
+            throw container.getError().getData().getAPINGException();
+
+        return container.getResult();
+    }
 }
 
