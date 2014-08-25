@@ -4,6 +4,7 @@ import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.com.betfair.aping.events.betting.CorrectScore;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderCandidate;
+import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
@@ -120,8 +121,10 @@ public class ApiNGJsonRpcDemo {
             RunnerCatalog rc = ouc.getRunnerByName(mk.getRunners(), ouc.under25Goals);
             Runner r = ouc.getRunnerBySelectionId(mb.getRunners(), rc.getSelectionId());
             if (ouc.getBack(r, 0).getPrice() >= Double.valueOf(getProps().getProperty("OVER_UNDER_25_BACK_LIMIT"))) {
-                System.out.println(ouc.getBack(r, 0).toString());
-                return true;
+                if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL)) {
+                    System.out.println("Best Back Price: " + ouc.getBack(r, 0).toString());
+                    return true;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

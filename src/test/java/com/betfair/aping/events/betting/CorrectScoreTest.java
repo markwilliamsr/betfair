@@ -1,6 +1,7 @@
 package com.betfair.aping.events.betting;
 
 import com.betfair.aping.com.betfair.aping.events.betting.CorrectScore;
+import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.google.gson.Gson;
 import org.junit.Test;
@@ -43,9 +44,9 @@ public class CorrectScoreTest {
 
         Event e = makeEvent(jsonEvent);
         MarketBook mb = makeMarketCatalogue(jsonMarketCatalogue);
-        String score = CorrectScore.findCorrectScoreFromMarketOdds(mb.getRunners(), e.getMarket().get(MarketType.CORRECT_SCORE));
+        ScoreEnum score = CorrectScore.findCorrectScoreFromMarketOdds(mb.getRunners(), e.getMarket().get(MarketType.CORRECT_SCORE));
         System.out.println("Correct Score is: " + score);
-        assertEquals("0 - 0", score);
+        assertEquals(ScoreEnum.NIL_NIL, score);
     }
 
     @Test
@@ -83,8 +84,8 @@ public class CorrectScoreTest {
 
         Event e = makeEvent(jsonEvent);
         MarketBook mb = makeMarketCatalogue(jsonMarketCatalogue);
-        String score = CorrectScore.findCorrectScoreFromMarketOdds(mb.getRunners(), e.getMarket().get(MarketType.CORRECT_SCORE));
+        ScoreEnum score = CorrectScore.findCorrectScoreFromMarketOdds(mb.getRunners(), e.getMarket().get(MarketType.CORRECT_SCORE));
         System.out.println("Correct Score is: " + score);
-        assertEquals("1 - 0", score);
+        assertEquals(ScoreEnum.ONE_NIL, score);
     }
 }
