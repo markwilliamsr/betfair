@@ -1,5 +1,7 @@
 package com.betfair.aping.entities;
 
+import com.betfair.aping.enums.Side;
+
 import java.util.Date;
 
 public class Order {
@@ -8,7 +10,7 @@ public class Order {
 	private String orderType;
 	private String status;
 	private String persistenceType;
-	private String side;
+	private Side side;
 	private Double price;
 	private Double size;
 	private Double bspLiability;
@@ -52,11 +54,11 @@ public class Order {
 		this.persistenceType = persistenceType;
 	}
 
-	public String getSide() {
+	public Side getSide() {
 		return side;
 	}
 
-	public void setSide(String side) {
+	public void setSide(Side side) {
 		this.side = side;
 	}
 
