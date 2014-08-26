@@ -1,6 +1,6 @@
 package com.betfair.aping.events.betting.overunder;
 
-import com.betfair.aping.com.betfair.aping.events.betting.OverUnderCandidate;
+import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.Side;
 import com.google.gson.Gson;
@@ -17,14 +17,13 @@ public class ExposureTest {
 
     @Test
     public void exposureTest() throws Exception {
-        OverUnderCandidate ouc = new OverUnderCandidate();
         Event event = gson.fromJson(jsonEvent, Event.class);
+        OverUnderMarket ouc = new OverUnderMarket(event.getMarket().get(MarketType.OVER_UNDER_25));
 
         MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
         MarketBook mb = mc.getMarketBook();
 
-        RunnerCatalog rc = ouc.getRunnerByName(mc.getRunners(), ouc.under25Goals);
-        Runner r = ouc.getRunnerBySelectionId(mb.getRunners(), rc.getSelectionId());
+        Runner r = ouc.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
         List<Order> orders = r.getOrders();
         List<PriceSize> availableToBack = r.getEx().getAvailableToBack();
@@ -35,16 +34,20 @@ public class ExposureTest {
         Double totalExposure = 0.0;
         Double price = 0.0;
         Double cashOutBet = 0.0;
+        Double stake = 0.0;
         Side side = null;
 
         for (Order order : orders) {
-            System.out.println(order.getSide() + " " + Side.BACK);
             if (order.getSide().equals(Side.BACK)) {
                 backExposure += (order.getPrice() * order.getSizeMatched());
             } else {
-                //layExposure += (order.getPrice() * order.getSizeMatched());
+                layExposure += (order.getPrice() * order.getSizeMatched());
             }
+            stake += order.getSizeMatched();
         }
+
+        System.out.println("Profit: " + ((backExposure + layExposure) / 2 - stake));
+
         totalExposure = backExposure - layExposure;
         System.out.println("Best Back: " + ouc.getBack(r, 0).getPrice()  + " Best Lay: " + ouc.getLay(r, 0).getPrice());
         System.out.println("Back Exposure: " + backExposure + " Lay Exposure: " + layExposure + " Total Exposure: " + totalExposure);

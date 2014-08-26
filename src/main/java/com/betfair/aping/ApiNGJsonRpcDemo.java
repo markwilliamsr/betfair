@@ -3,7 +3,8 @@ package com.betfair.aping;
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.com.betfair.aping.events.betting.CorrectScore;
-import com.betfair.aping.com.betfair.aping.events.betting.OverUnderCandidate;
+import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
+import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
@@ -26,6 +27,7 @@ public class ApiNGJsonRpcDemo {
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
     private String applicationKey;
     private String sessionToken;
+    DecimalFormat df = new DecimalFormat("0.00");
 
     private static double getPrice() {
         try {
@@ -108,17 +110,24 @@ public class ApiNGJsonRpcDemo {
 
             for (Event event : events) {
                 System.out.println(event.getName() + ": " + CorrectScore.findCorrectScoreFromMarketOdds(event));
+                MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+                if (mc == null) {
+                    continue;
+                }
+                Exposure exposure = new Exposure(mc);
+                OverUnderMarket ouc = new OverUnderMarket(mc);
+                Runner runner = ouc.getRunnerByName(OverUnderMarket.UNDER_2_5);
+
                 if (isCandidateMarket(event, newBetPriceSize)) {
                     System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
                     placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), newBetPriceSize, Side.BACK);
                 }
-                if (isMarketCashOut(event, cashOutPriceSize)) {
+                if (isMarketCashOut(exposure, runner)) {
+                    CashOutBet cashOutBet = exposure.calcCashOutBet();
                     System.out.println("CLOSE: Candidate Mkt Found:" + gson.toJson(event));
-                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), cashOutPriceSize, Side.LAY);
+                    placeBets(mc, cashOutBet.getPriceSize(), cashOutBet.getSide());
                 }
             }
-
-            //placeBets(marketIdChosen, marketBookReturn);
 
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
@@ -127,58 +136,48 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private boolean isMarketCashOut(Event event, PriceSize cashOutPriceSize) throws Exception {
-        MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+    private boolean isMarketCashOut(Exposure exposure, Runner runner) throws Exception {
+        Double profit = exposure.calcUnrealisedPnL(runner);
+        Double percentageProfit = exposure.calcPercentagePnL(runner);
 
-        OverUnderCandidate ouc = new OverUnderCandidate();
-
-        RunnerCatalog rc = ouc.getRunnerByName(mc.getRunners(), ouc.under25Goals);
-        Runner r = ouc.getRunnerBySelectionId(mc.getMarketBook().getRunners(), rc.getSelectionId());
-
-        Double amount = r.getOrders().get(0).getSize(); //assume only one order in the mkt.
-        Double backedPrice = r.getOrders().get(0).getPrice();
-        Double bestLayPrice = r.getEx().getAvailableToLay().get(0).getPrice();
-
-        Double profit = (backedPrice - bestLayPrice) * amount / 2;
-        Double percentageProfit = ((backedPrice - bestLayPrice) * amount * 100.0) / (amount * 2);
-        DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println("Amt: " + amount + ", Backed @ " + backedPrice + ", bestLay: " + bestLayPrice);
         System.out.println("Profit: " + df.format(profit) + ", Percentage PnL: " + df.format(percentageProfit));
-        Double cashOutBetSize = amount * backedPrice / bestLayPrice;
-        System.out.println("CloseOutSize: " + df.format(cashOutBetSize));
 
-        cashOutPriceSize.setPrice(bestLayPrice);
-        cashOutPriceSize.setSize(cashOutBetSize);
-
-        if (percentageProfit >= Double.valueOf(getProps().getProperty("CLOSE_OUT_PROFIT_PERCENTAGE"))) {
+        if (percentageProfit >= getCashOutProfitPercentage()) {
             return true;
         } else {
             return false;
         }
     }
 
+    private Double getCashOutProfitPercentage() {
+        return Double.valueOf(getProps().getProperty("CLOSE_OUT_PROFIT_PERCENTAGE"));
+    }
+
     private boolean isCandidateMarket(Event event, PriceSize newBetPriceSize) throws Exception {
-        OverUnderCandidate ouc = new OverUnderCandidate();
-        PriceSize priceSize = new PriceSize();
 
-        MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+        MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.OVER_UNDER_25);
+        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
+        Exposure exposure = new Exposure(marketCatalogue);
+        Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
-        RunnerCatalog rc = ouc.getRunnerByName(mc.getRunners(), ouc.under25Goals);
-        Runner r = ouc.getRunnerBySelectionId(mc.getMarketBook().getRunners(), rc.getSelectionId());
-
-        if (r.getOrders().size() > 0) {
+        if (exposure.calcExposureForSide(runner, Side.BACK) > 0) {
+            //already bet on this market
             return false;
         }
 
-        if (ouc.getBack(r, 0).getPrice() >= Double.valueOf(getProps().getProperty("OVER_UNDER_25_BACK_LIMIT"))) {
+        if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
             if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL)) {
-                System.out.println("Best Back Price: " + ouc.getBack(r, 0).toString());
-                newBetPriceSize.setPrice(ouc.getBack(r, 0).getPrice());
+                System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
+                newBetPriceSize.setPrice(oum.getBack(runner, 0).getPrice());
                 newBetPriceSize.setSize(getSize());
                 return true;
             }
         }
         return false;
+    }
+
+    private Double getOverUnderBackLimit() {
+        return Double.valueOf(getProps().getProperty("OVER_UNDER_BACK_LIMIT"));
     }
 
     private void printMarketBooks(List<Event> events) {
