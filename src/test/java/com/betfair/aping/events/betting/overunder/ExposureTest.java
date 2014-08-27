@@ -1,5 +1,6 @@
 package com.betfair.aping.events.betting.overunder;
 
+import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.Side;
@@ -25,44 +26,49 @@ public class ExposureTest {
 
         Runner r = ouc.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
-        List<Order> orders = r.getOrders();
-        List<PriceSize> availableToBack = r.getEx().getAvailableToBack();
-        List<PriceSize> availableToLay = r.getEx().getAvailableToLay();
+        Exposure exposure = new Exposure(mc);
 
-        Double backExposure = 0.0;
-        Double layExposure = 0.0;
-        Double totalExposure = 0.0;
-        Double price = 0.0;
-        Double cashOutBet = 0.0;
-        Double stake = 0.0;
-        Side side = null;
+        PriceSize priceSize = new PriceSize();
+        priceSize.setPrice(4.1d);
+        priceSize.setSize(2d);
 
-        for (Order order : orders) {
-            if (order.getSide().equals(Side.BACK)) {
-                backExposure += (order.getPrice() * order.getSizeMatched());
-            } else {
-                layExposure += (order.getPrice() * order.getSizeMatched());
-            }
-            stake += order.getSizeMatched();
-        }
+        CashOutBet cob = exposure.calcCashOutBet(priceSize, Side.BACK, 10d);
 
-        System.out.println("Profit: " + ((backExposure + layExposure) / 2 - stake));
+    }
 
-        totalExposure = backExposure - layExposure;
-        System.out.println("Best Back: " + ouc.getBack(r, 0).getPrice()  + " Best Lay: " + ouc.getLay(r, 0).getPrice());
-        System.out.println("Back Exposure: " + backExposure + " Lay Exposure: " + layExposure + " Total Exposure: " + totalExposure);
-        if (Math.abs(totalExposure) > 0) {
-            if (totalExposure < 0) {
-                //too much on the lay side
-                price = availableToBack.get(0).getPrice();
-                side = Side.BACK;
-            } else {
-                //too much on the back side
-                price = availableToLay.get(0).getPrice();
-                side = Side.LAY;
-            }
-            cashOutBet = Math.abs(totalExposure) / price;
-        }
-        System.out.println("Total Exposure: " + totalExposure + ", Side: " + side + ", cashOutBet: " + cashOutBet + ", Price: " + price);
+    @Test
+    public void roundingTest() {
+        Double val = 1.9090909090d;
+        val = 21.4823;
+
+        System.out.println(roundDownToNearestFraction(val, 0.01));
+        System.out.println(roundDownToNearestFraction(val, 0.02));
+        System.out.println(roundDownToNearestFraction(val, 0.05));
+        System.out.println(roundDownToNearestFraction(val, 0.1));
+        System.out.println(roundDownToNearestFraction(val, 0.2));
+        System.out.println(roundDownToNearestFraction(val, 0.5));
+        System.out.println(roundDownToNearestFraction(val, 1.0));
+        System.out.println(roundDownToNearestFraction(val, 2.0));
+
+        System.out.println();
+
+        System.out.println(roundUpToNearestFraction(val, 0.01));
+        System.out.println(roundUpToNearestFraction(val, 0.02));
+        System.out.println(roundUpToNearestFraction(val, 0.05));
+        System.out.println(roundUpToNearestFraction(val, 0.1));
+        System.out.println(roundUpToNearestFraction(val, 0.2));
+        System.out.println(roundUpToNearestFraction(val, 0.5));
+        System.out.println(roundUpToNearestFraction(val, 1.0));
+        System.out.println(roundUpToNearestFraction(val, 2.0));
+    }
+
+    private Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {
+        Double factor = 1 / fractionAsDecimal;
+        return Math.round((number - (fractionAsDecimal / 2)) * factor) / factor;
+    }
+
+    private Double roundUpToNearestFraction(Double number, Double fractionAsDecimal) {
+        Double factor = 1 / fractionAsDecimal;
+        return Math.round((number + (fractionAsDecimal / 2)) * factor) / factor;
     }
 }

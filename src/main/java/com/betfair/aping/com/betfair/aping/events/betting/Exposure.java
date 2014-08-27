@@ -116,43 +116,68 @@ public class Exposure {
         return totalExposure;
     }
 
-    public CashOutBet calcCashOutBet() throws Exception {
-        PriceSize priceSize = new PriceSize();
+    public CashOutBet calcCashOutBet(PriceSize priceSize, Side sideIn, Double profitPercentage) throws Exception {
         CashOutBet cashOutBet = new CashOutBet();
         Double price = 0.0;
         Double cashOutSize = 0.0;
-        Side side = null;
+        Side sideOut = null;
 
-        Double totalExposure = calcNetExposure();
+        Double profit = priceSize.getSize() * (profitPercentage / 100.0);
+        Double totalExposure = 0.0;
+
+        if (sideIn.equals(Side.BACK)) {
+            totalExposure = priceSize.getPrice() * priceSize.getSize();
+        } else {
+            totalExposure = -1.0 * priceSize.getPrice() * priceSize.getSize();
+        }
 
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner r = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
-        List<PriceSize> availableToBack = r.getEx().getAvailableToBack();
-        List<PriceSize> availableToLay = r.getEx().getAvailableToLay();
-
         if (Math.abs(totalExposure) > 0) {
             if (totalExposure < 0) {
                 //too much on the lay side
-                price = availableToBack.get(0).getPrice();
-                side = Side.BACK;
+                cashOutSize = (priceSize.getSize() - profit);
+                sideOut = Side.BACK;
             } else {
                 //too much on the back side
-                price = availableToLay.get(0).getPrice();
-                side = Side.LAY;
+                cashOutSize = (priceSize.getSize() + profit);
+                sideOut = Side.LAY;
             }
-            cashOutSize = Math.abs(totalExposure) / price;
+            price = calcPriceWithCorrectIncrement(totalExposure, cashOutSize, sideOut);
+        } else {
+            return null;
         }
 
         priceSize.setPrice(price);
         priceSize.setSize(cashOutSize);
 
         cashOutBet.setPriceSize(priceSize);
-        cashOutBet.setSide(side);
+        cashOutBet.setSide(sideOut);
         cashOutBet.setSelectionId(r.getSelectionId());
         cashOutBet.setMarketId(marketCatalogue.getMarketId());
 
-        System.out.println("Total Exposure: " + totalExposure + ", Side: " + side + ", cashOutBet: " + priceSize + ", Price: " + price);
+        System.out.println("Total Exposure: " + totalExposure + ", Side: " + sideOut + ", cashOutBet: " + priceSize + ", Price: " + price);
         return cashOutBet;
+    }
+
+    private Double calcPriceWithCorrectIncrement(Double totalExposure, Double cashOutSize, Side side) {
+        Double price = Math.abs(totalExposure) / cashOutSize;
+
+        if (side.equals(Side.BACK)) {
+            return roundUpToNearestFraction(price, PriceIncrement.getIncrement(price));
+        } else {
+            return roundDownToNearestFraction(price, PriceIncrement.getIncrement(price));
+        }
+    }
+
+    private Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {
+        Double factor = 1 / fractionAsDecimal;
+        return Math.round((number - (fractionAsDecimal / 2)) * factor) / factor;
+    }
+
+    private Double roundUpToNearestFraction(Double number, Double fractionAsDecimal) {
+        Double factor = 1 / fractionAsDecimal;
+        return Math.round((number + (fractionAsDecimal / 2)) * factor) / factor;
     }
 }

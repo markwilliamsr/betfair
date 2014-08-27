@@ -24,10 +24,10 @@ import java.util.*;
 public class ApiNGJsonRpcDemo {
 
     Gson gson = new Gson();
+    DecimalFormat df = new DecimalFormat("0.00");
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
     private String applicationKey;
     private String sessionToken;
-    DecimalFormat df = new DecimalFormat("0.00");
 
     private static double getPrice() {
         try {
@@ -121,12 +121,14 @@ public class ApiNGJsonRpcDemo {
                 if (isCandidateMarket(event, newBetPriceSize)) {
                     System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
                     placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), newBetPriceSize, Side.BACK);
-                }
-                if (isMarketCashOut(exposure, runner)) {
-                    CashOutBet cashOutBet = exposure.calcCashOutBet();
-                    System.out.println("CLOSE: Candidate Mkt Found:" + gson.toJson(event));
+                    CashOutBet cashOutBet = exposure.calcCashOutBet(newBetPriceSize, Side.BACK, getCashOutProfitPercentage());
                     placeBets(mc, cashOutBet.getPriceSize(), cashOutBet.getSide());
                 }
+                //if (isMarketCashOut(exposure, runner)) {
+
+                //  System.out.println("CLOSE: Candidate Mkt Found:" + gson.toJson(event));
+
+                //}
             }
 
         } catch (APINGException apiExc) {
@@ -165,13 +167,20 @@ public class ApiNGJsonRpcDemo {
             return false;
         }
 
-        if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
-            if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL)) {
-                System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
-                newBetPriceSize.setPrice(oum.getBack(runner, 0).getPrice());
-                newBetPriceSize.setSize(getSize());
-                return true;
+        try {
+            if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
+                if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL) ||
+                        CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.ONE_NIL) ||
+                        CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_ONE)) {
+                    System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
+                    newBetPriceSize.setPrice(oum.getBack(runner, 0).getPrice());
+                    newBetPriceSize.setSize(getSize());
+                    return true;
+                }
             }
+        } catch (RuntimeException ex) {
+            System.out.println(ex);
+            return false;
         }
         return false;
     }
