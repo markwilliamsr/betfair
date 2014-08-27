@@ -7,7 +7,7 @@ import com.betfair.aping.enums.Side;
 import com.google.gson.Gson;
 import org.junit.Test;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by markwilliams on 25/08/2014.
@@ -32,8 +32,18 @@ public class ExposureTest {
         priceSize.setPrice(4.1d);
         priceSize.setSize(2d);
 
-        CashOutBet cob = exposure.calcCashOutBet(priceSize, Side.BACK, 10d);
+        Bet placedBet = new Bet();
+        placedBet.setPriceSize(priceSize);
+        placedBet.setSide(Side.BACK);
+        placedBet.setMarketId(mb.getMarketId());
+        placedBet.setSelectionId(r.getSelectionId());
 
+        Bet cob = exposure.calcCashOutBet(placedBet, 10d);
+        assertEquals(3.7d,cob.getPriceSize().getPrice(), 0);
+        assertEquals(2.2d,cob.getPriceSize().getSize(), 0);
+        assertEquals(Side.LAY, cob.getSide());
+        assertEquals(mc.getMarketId(), cob.getMarketId());
+        assertEquals(r.getSelectionId(), cob.getSelectionId());
     }
 
     @Test

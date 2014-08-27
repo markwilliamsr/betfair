@@ -5,7 +5,7 @@ import com.betfair.aping.enums.Side;
 /**
  * Created by markwilliams on 26/08/2014.
  */
-public class CashOutBet {
+public class Bet {
     PriceSize priceSize;
     Side side;
     String marketId;
@@ -43,4 +43,10 @@ public class CashOutBet {
         this.side = side;
     }
 
+    public String toString() {
+        return "{" + "" + "priceSize=" + getPriceSize() + ","
+                + "side=" + getSide() + ","
+                + "marketId=" + getMarketId() + ","
+                + "selectionId=" + getSelectionId() + "}";
+    }
 }
