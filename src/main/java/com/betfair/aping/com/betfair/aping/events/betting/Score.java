@@ -7,11 +7,15 @@ import java.util.List;
 /**
  * Created by markwilliams on 23/08/2014.
  */
-public class CorrectScore {
+public class Score {
 
-    private static final String ANY_UNQUOTED = "Any Unquoted";
+    Event event;
 
-    public static int getTotalGoals(RunnerCatalog r) {
+    public Score(Event event) {
+        this.event = event;
+    }
+
+    public int getTotalGoals(RunnerCatalog r) {
         if (getHomeGoals(r) + getAwayGoals(r) >= 0) {
             return getHomeGoals(r) + getAwayGoals(r);
         } else {
@@ -19,23 +23,23 @@ public class CorrectScore {
         }
     }
 
-    public static int getHomeGoals(RunnerCatalog r) {
-        if (!r.getRunnerName().trim().equals(ANY_UNQUOTED)) {
+    private int getHomeGoals(RunnerCatalog r) {
+        if (!r.getRunnerName().trim().equals(ScoreEnum.ANY_UNQUOTED)) {
             String[] score = r.getRunnerName().split("-");
             return parseGoalsFromScoreFragment(score[0]);
         }
         return 0;
     }
 
-    public static int getAwayGoals(RunnerCatalog r) {
-        if (!r.getRunnerName().trim().equals(ANY_UNQUOTED)) {
+    private int getAwayGoals(RunnerCatalog r) {
+        if (!r.getRunnerName().trim().equals(ScoreEnum.ANY_UNQUOTED)) {
             String[] score = r.getRunnerName().split("-");
             return parseGoalsFromScoreFragment(score[1]);
         }
         return 0;
     }
 
-    private static int parseGoalsFromScoreFragment(String s) {
+    private int parseGoalsFromScoreFragment(String s) {
         try {
             return Integer.valueOf(s.trim());
         } catch (NumberFormatException e) {
@@ -45,12 +49,12 @@ public class CorrectScore {
         }
     }
 
-    public static ScoreEnum findCorrectScoreFromMarketOdds(Event event) {
+    public ScoreEnum findScoreFromMarketOdds() {
         return findCorrectScoreFromMarketOdds(event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners(),
                 event.getMarket().get(MarketType.CORRECT_SCORE));
     }
 
-    public static ScoreEnum findCorrectScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {
+    private ScoreEnum findCorrectScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {
         ScoreEnum correctScore = null;
         int minGoalsSoFar = Integer.MAX_VALUE;
         for (Runner r : runners) {
@@ -67,9 +71,9 @@ public class CorrectScore {
                 continue;
             }
 
-            if (r.getEx().getAvailableToLay().size() != 0 && !runner.getRunnerName().trim().equals(ANY_UNQUOTED)) {
-                if (minGoalsSoFar > CorrectScore.getTotalGoals(runner)) {
-                    minGoalsSoFar = CorrectScore.getTotalGoals(runner);
+            if (r.getEx().getAvailableToLay().size() != 0 && !runner.getRunnerName().trim().equals(ScoreEnum.ANY_UNQUOTED)) {
+                if (minGoalsSoFar > getTotalGoals(runner)) {
+                    minGoalsSoFar = getTotalGoals(runner);
                     correctScore = ScoreEnum.fromString(runner.getRunnerName());
                     //System.out.println("Found RunnerCatalog with possible odds " + runner.getRunnerName());
                 }
@@ -78,13 +82,8 @@ public class CorrectScore {
         return correctScore;
     }
 
-    public static int getTotalGoalsInMarket(List<Runner> runners, MarketCatalogue market) {
-        String[] score = findCorrectScoreFromMarketOdds(runners, market).toString().split("-");
-        int goals = 0;
-
-        goals += parseGoalsFromScoreFragment(score[0]);
-        goals += parseGoalsFromScoreFragment(score[1]);
-
-        return goals;
+    public int getTotalGoals() {
+        ScoreEnum score = findScoreFromMarketOdds();
+        return score.getTotalGoals();
     }
 }

@@ -2,9 +2,9 @@ package com.betfair.aping;
 
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
-import com.betfair.aping.com.betfair.aping.events.betting.CorrectScore;
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
+import com.betfair.aping.com.betfair.aping.events.betting.Score;
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
@@ -66,28 +66,10 @@ public class ApiNGJsonRpcDemo {
         this.sessionToken = ssoid;
 
         try {
-
-            /**
-             * ListEventTypes: Search for the event types and then for the "Horse Racing" in the returned list to finally get
-             * the listEventTypeId
-             */
-
             MarketFilter marketFilter;
-            Set<String> eventTypeIds = new HashSet<String>();
-            Set<String> competitionIds = new HashSet<String>();
-            Set<String> eventTypes = new HashSet<String>();
             Set<String> eventIds = new HashSet<String>();
-            Set<String> competitions = new HashSet<String>();
-            PriceSize cashOutPriceSize = new PriceSize();
-            PriceSize newBetPriceSize = new PriceSize();
 
             marketFilter = getMarketFilter();
-
-            eventTypeIds = getEventTypeIds();
-            marketFilter.setEventTypeIds(eventTypeIds);
-
-            competitionIds = getCompetitionIds();
-            marketFilter.setCompetitionIds(competitionIds);
 
             List<EventResult> eventResults = getEvents(marketFilter);
             for (EventResult er : eventResults) {
@@ -104,13 +86,11 @@ public class ApiNGJsonRpcDemo {
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(events);
 
-            for (Event e : events) {
-                System.out.println(gson.toJson(e));
-            }
-
             for (Event event : events) {
-                System.out.println(event.getName() + ": " + CorrectScore.findCorrectScoreFromMarketOdds(event));
+                Score score = new Score(event);
+                System.out.println(event.getName() + ": " + score.findScoreFromMarketOdds());
                 MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+
                 if (mc == null) {
                     continue;
                 }
@@ -122,13 +102,13 @@ public class ApiNGJsonRpcDemo {
                     Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
                     Bet initialBet = getBet(mc, runner, Side.BACK);
-                    placeBets(mc, initialBet);
-
                     Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
-                    placeBets(mc, cashOutBet);
+                    List<Bet> bets = new ArrayList<Bet>();
+                    bets.add(initialBet);
+                    bets.add(cashOutBet);
+                    placeBets(bets);
                 }
             }
-
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
         } catch (Exception e) {
@@ -158,7 +138,8 @@ public class ApiNGJsonRpcDemo {
     }
 
     private boolean isCandidateMarket(Event event) throws Exception {
-        MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.OVER_UNDER_25);
+        MarketType marketType = MarketType.OVER_UNDER_25;
+        MarketCatalogue marketCatalogue = event.getMarket().get(marketType);
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Exposure exposure = new Exposure(marketCatalogue);
         Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
@@ -170,9 +151,9 @@ public class ApiNGJsonRpcDemo {
 
         try {
             if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
-                if (CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_NIL) ||
-                        CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.ONE_NIL) ||
-                        CorrectScore.findCorrectScoreFromMarketOdds(event).equals(ScoreEnum.NIL_ONE)) {
+                Score score = new Score(event);
+                ScoreEnum correctScore = score.findScoreFromMarketOdds();
+                if (correctScore.getTotalGoals() <= (marketType.getTotalGoals() - getSafetyGoalMargin())) {
                     System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
                     return true;
                 }
@@ -182,6 +163,10 @@ public class ApiNGJsonRpcDemo {
             return false;
         }
         return false;
+    }
+
+    private Integer getSafetyGoalMargin() {
+        return Integer.valueOf(getProps().getProperty("SAFETY_GOAL_MARGIN", "2"));
     }
 
     private Double getOverUnderBackLimit() {
@@ -241,29 +226,36 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private void placeBets(MarketCatalogue marketCatalogue, Bet bet) throws APINGException {
+    private void placeBets(List<Bet> bets) throws APINGException {
         List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
-        PlaceInstruction instruction = new PlaceInstruction();
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
+        String marketId = "";
 
-        LimitOrder limitOrder = new LimitOrder();
-        limitOrder.setPersistenceType(PersistenceType.LAPSE);
-        limitOrder.setPrice(bet.getPriceSize().getPrice());
-        limitOrder.setSize(bet.getPriceSize().getSize());
+        for (Bet bet : bets) {
+            if (marketId.equals("")) {
+                marketId = bet.getMarketId();
+            } else if (!marketId.equals(bet.getMarketId())) {
+                throw new IllegalArgumentException("Cannot mix markets in Bet submission list: MarketId1: " + marketId + ", MarketId2:" + bet.getMarketId());
+            }
 
-        instruction.setHandicap(0);
-        instruction.setOrderType(OrderType.LIMIT);
-        instruction.setSide(bet.getSide());
-        instruction.setLimitOrder(limitOrder);
-        instruction.setSelectionId(bet.getSelectionId());
-        instructions.add(instruction);
+            LimitOrder limitOrder = new LimitOrder();
+            limitOrder.setPersistenceType(PersistenceType.LAPSE);
+            limitOrder.setPrice(bet.getPriceSize().getPrice());
+            limitOrder.setSize(bet.getPriceSize().getSize());
 
+            PlaceInstruction instruction = new PlaceInstruction();
+            instruction.setHandicap(0);
+            instruction.setOrderType(OrderType.LIMIT);
+            instruction.setSide(bet.getSide());
+            instruction.setLimitOrder(limitOrder);
+            instruction.setSelectionId(bet.getSelectionId());
+            instructions.add(instruction);
+        }
         String customerRef = "OU25:" + df.format(cal.getTime());
 
         if (isSafetyOff()) {
-            PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketCatalogue.getMarketId(), instructions, customerRef, applicationKey, sessionToken);
-
+            PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketId, instructions, customerRef, applicationKey, sessionToken);
             // Handling the operation result
             if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
                 System.out.println("Your bet has been placed!!");
@@ -309,7 +301,7 @@ public class ApiNGJsonRpcDemo {
         return events;
     }
 
-    private MarketFilter getMarketFilter() {
+    private MarketFilter getMarketFilter() throws APINGException {
         MarketFilter marketFilter = new MarketFilter();
         Calendar cal = null;
         TimeRange time = new TimeRange();
@@ -332,6 +324,8 @@ public class ApiNGJsonRpcDemo {
         marketFilter.setMarketCountries(countries);
         marketFilter.setMarketTypeCodes(typesCode);
         marketFilter.setTurnInPlayEnabled(true);
+        marketFilter.setEventTypeIds(getEventTypeIds());
+        marketFilter.setCompetitionIds(getCompetitionIds());
 
         return marketFilter;
     }
