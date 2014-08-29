@@ -4,6 +4,7 @@ import com.betfair.aping.entities.MarketCatalogue;
 import com.betfair.aping.entities.PriceSize;
 import com.betfair.aping.entities.Runner;
 import com.betfair.aping.entities.RunnerCatalog;
+import com.betfair.aping.enums.Side;
 
 import java.util.List;
 
@@ -64,5 +65,13 @@ public class OverUnderMarket {
             throw new RuntimeException("Not Enough Depth for Position: " + position);
         }
         return runner.getEx().getAvailableToLay().get(position);
+    }
+
+    public PriceSize getPrice(Runner runner, int position, Side side) {
+        if (side.equals(Side.BACK)) {
+            return getBack(runner, position);
+        } else {
+            return getLay(runner, position);
+        }
     }
 }

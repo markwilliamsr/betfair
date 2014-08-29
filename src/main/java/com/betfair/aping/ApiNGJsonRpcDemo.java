@@ -121,17 +121,12 @@ public class ApiNGJsonRpcDemo {
                     OverUnderMarket oum = new OverUnderMarket(mc);
                     Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
-                    Bet bet = getBet(mc, runner);
+                    Bet initialBet = getBet(mc, runner, Side.BACK);
+                    placeBets(mc, initialBet);
 
-                    placeBets(event.getMarket().get(MarketType.OVER_UNDER_25), newBetPriceSize, Side.BACK);
-                    Bet cashOutBet = exposure.calcCashOutBet(bet, getCashOutProfitPercentage());
-                    placeBets(mc, cashOutBet.getPriceSize(), cashOutBet.getSide());
+                    Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
+                    placeBets(mc, cashOutBet);
                 }
-                //if (isMarketCashOut(exposure, runner)) {
-
-                //  System.out.println("CLOSE: Candidate Mkt Found:" + gson.toJson(event));
-
-                //}
             }
 
         } catch (APINGException apiExc) {
@@ -141,13 +136,14 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private Bet getBet(MarketCatalogue marketCatalogue, Runner runner) {
+    private Bet getBet(MarketCatalogue marketCatalogue, Runner runner, Side side) {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Bet bet = new Bet();
         PriceSize priceSize = new PriceSize();
 
         priceSize.setSize(getSize());
-        priceSize.setPrice(oum.getLay(runner, 0).getPrice());
+
+        priceSize.setPrice(oum.getPrice(runner, 0, side).getPrice());
 
         bet.setMarketId(marketCatalogue.getMarketId());
         bet.setPriceSize(priceSize);
@@ -245,57 +241,23 @@ public class ApiNGJsonRpcDemo {
         }
     }
 
-    private void placeBets(MarketCatalogue marketCatalogue, PriceSize bet, Side side) throws APINGException {
-        /**
-         * PlaceOrders: we try to place a bet, based on the previous request we provide the following:
-         * marketId: the market id
-         * selectionId: the runner selection id we want to place the bet on
-         * side: BACK - specify side, can be Back or Lay
-         * orderType: LIMIT - specify order type
-         * size: the size of the bet
-         * price: the price of the bet
-         * customerRef: 1 - unique reference for a transaction specified by user, must be different for each request
-         *
-         */
-        final String under25Goals = "Under 2.5 Goals";
-        final String over25Goals = "Over 2.5 Goals";
-        RunnerCatalog selectedRunnerCatalog = null;
-        Runner selectedRunner = null;
-
-        for (RunnerCatalog rc : marketCatalogue.getRunners()) {
-            if (rc.getRunnerName().equals(under25Goals)) {
-                selectedRunnerCatalog = rc;
-                break;
-            }
-        }
-
-        for (Runner r : marketCatalogue.getMarketBook().getRunners()) {
-            if (r.getSelectionId().equals(selectedRunnerCatalog.getSelectionId())) {
-                selectedRunner = r;
-                break;
-            }
-        }
-
+    private void placeBets(MarketCatalogue marketCatalogue, Bet bet) throws APINGException {
         List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
         PlaceInstruction instruction = new PlaceInstruction();
-        instruction.setHandicap(0);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
 
         LimitOrder limitOrder = new LimitOrder();
         limitOrder.setPersistenceType(PersistenceType.LAPSE);
+        limitOrder.setPrice(bet.getPriceSize().getPrice());
+        limitOrder.setSize(bet.getPriceSize().getSize());
+
+        instruction.setHandicap(0);
         instruction.setOrderType(OrderType.LIMIT);
-
-        instruction.setSide(side);
-
-
-        limitOrder.setPrice(bet.getPrice());
-        limitOrder.setSize(bet.getSize());
-
+        instruction.setSide(bet.getSide());
         instruction.setLimitOrder(limitOrder);
-        instruction.setSelectionId(selectedRunner.getSelectionId());
+        instruction.setSelectionId(bet.getSelectionId());
         instructions.add(instruction);
-
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
 
         String customerRef = "OU25:" + df.format(cal.getTime());
 
