@@ -1,9 +1,6 @@
 package com.betfair.aping.com.betfair.aping.events.betting;
 
-import com.betfair.aping.entities.MarketCatalogue;
-import com.betfair.aping.entities.PriceSize;
-import com.betfair.aping.entities.Runner;
-import com.betfair.aping.entities.RunnerCatalog;
+import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.Side;
 
 import java.util.List;
@@ -16,6 +13,7 @@ public class OverUnderMarket {
     public static final String OVER_2_5 = "Over 2.5 Goals";
 
     MarketCatalogue marketCatalogue;
+    MarketType marketType;
 
     public OverUnderMarket(MarketCatalogue marketCatalogue) {
         this.marketCatalogue = marketCatalogue;
@@ -73,5 +71,10 @@ public class OverUnderMarket {
         } else {
             return getLay(runner, position);
         }
+    }
+
+    public String getUnderRunnerName() {
+                      String name = "";
+        return name;
     }
 }
