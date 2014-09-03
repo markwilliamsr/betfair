@@ -123,6 +123,7 @@ public class Exposure {
 
         Double profit = placedBet.getPriceSize().getSize() * (profitPercentage / 100.0);
         Double totalExposure = 0.0;
+        Double size = 0.0;
 
         if (placedBet.getSide().equals(Side.BACK)) {
             totalExposure = placedBet.getPriceSize().getPrice() * placedBet.getPriceSize().getSize();
@@ -133,14 +134,15 @@ public class Exposure {
         if (Math.abs(totalExposure) > 0) {
             if (totalExposure < 0) {
                 //too much on the lay side
-                priceSize.setSize(placedBet.getPriceSize().getSize() - profit);
+                size = placedBet.getPriceSize().getSize() - profit;
                 bet.setSide(Side.BACK);
             } else {
                 //too much on the back side
-                priceSize.setSize(placedBet.getPriceSize().getSize() + profit);
+                size = placedBet.getPriceSize().getSize() - profit;
                 bet.setSide(Side.LAY);
             }
-            price = calcPriceWithCorrectIncrement(totalExposure, priceSize.getSize(), bet.getSide());
+            priceSize.setSize(roundUpToNearestFraction(size, 0.01));
+            price = calcPriceWithCorrectIncrement(totalExposure, size, bet.getSide());
         } else {
             return null;
         }

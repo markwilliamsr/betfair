@@ -259,7 +259,7 @@ public class ApiNGJsonRpcDemo {
             // Handling the operation result
             if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
                 System.out.println("Your bet has been placed!!");
-                System.out.println(placeBetResult.getInstructionReports());
+                System.out.println(gson.toJson(placeBetResult.getInstructionReports()));
             } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
                 System.out.println("Your bet has NOT been placed :*( ");
                 System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
