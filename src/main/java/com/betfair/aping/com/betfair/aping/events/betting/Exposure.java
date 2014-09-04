@@ -94,12 +94,28 @@ public class Exposure {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner r = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
-        Double backExposure = calcExposureForSide(r, Side.BACK);
-        Double layExposure = calcExposureForSide(r, Side.LAY);
-        Double totalExposure = backExposure - layExposure;
+        Double backUnderExposure = calcExposureForSide(r, Side.BACK);
+        Double layUnderExposure = calcExposureForSide(r, Side.LAY);
+        Double totalUnderExposure = backUnderExposure - layUnderExposure;
 
-        System.out.println("Best Back: " + oum.getBack(r, 0).getPrice() + " Best Lay: " + oum.getLay(r, 0).getPrice());
-        System.out.println("Back Exposure: " + backExposure + " Lay Exposure: " + layExposure + " Total Exposure: " + totalExposure);
+        System.out.println("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
+        System.out.println("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
+
+        r = oum.getRunnerByName(OverUnderMarket.OVER_2_5);
+
+        Double backOverExposure = calcExposureForSide(r, Side.BACK);
+        Double layOverExposure = calcExposureForSide(r, Side.LAY);
+        Double totalOverExposure = backOverExposure - layOverExposure;
+
+        System.out.println("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
+        System.out.println("Back Over Exposure: " + backOverExposure + " Lay Over Exposure: " + layOverExposure + " Total Over Exposure: " + totalUnderExposure);
+
+        Double totalExposure = Math.abs(totalOverExposure - totalUnderExposure);
+        //round to nearest penny
+        totalExposure =  totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
+
+        System.out.println("Total Exposure: " + totalExposure);
+
         return totalExposure;
     }
 
@@ -138,7 +154,7 @@ public class Exposure {
                 bet.setSide(Side.BACK);
             } else {
                 //too much on the back side
-                size = placedBet.getPriceSize().getSize() - profit;
+                size = placedBet.getPriceSize().getSize() + profit;
                 bet.setSide(Side.LAY);
             }
             priceSize.setSize(roundUpToNearestFraction(size, 0.01));

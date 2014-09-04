@@ -144,7 +144,7 @@ public class ApiNGJsonRpcDemo {
         Exposure exposure = new Exposure(marketCatalogue);
         Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
 
-        if (exposure.calcExposureForSide(runner, Side.BACK) > 0) {
+        if (exposure.calcNetExposure() > 0.1) {
             //already bet on this market
             return false;
         }
