@@ -2,10 +2,6 @@ package com.betfair.aping;
 
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
-import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
-import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
-import com.betfair.aping.com.betfair.aping.events.betting.Score;
-import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
@@ -22,54 +18,21 @@ import java.util.*;
  * runner</li> <li>handle the error</li>
  */
 public class ApiNGJsonRpcDemo {
-
     Gson gson = new Gson();
     DecimalFormat df = new DecimalFormat("0.00");
-    private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
-    private String applicationKey;
-    private String sessionToken;
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss");
-
-    private static double getPrice() {
-        try {
-            return new Double((String) ApiNGDemo.getProp().get("BET_PRICE"));
-        } catch (NumberFormatException e) {
-            //returning the default value
-            return new Double(1000);
-        }
-    }
+    private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
 
     private static Properties getProps() {
         return ApiNGDemo.getProp();
     }
 
-    private static double getSize() {
-        try {
-            return new Double((String) ApiNGDemo.getProp().get("BET_SIZE"));
-        } catch (NumberFormatException e) {
-            //returning the default value
-            return new Double(0.01);
-        }
-    }
-
-    private boolean isSafetyOff() {
-        try {
-            return Boolean.valueOf(ApiNGDemo.getProp().getProperty("SAFETY_OFF"));
-        } catch (Exception e) {
-            //returning the default value
-            return true;
-        }
-    }
-
-    public void start(String appKey, String ssoid) {
-
-        this.applicationKey = appKey;
-        this.sessionToken = ssoid;
-
+    public void start() {
         try {
             MarketFilter marketFilter;
             Set<String> eventIds = new HashSet<String>();
+            BackUnderMarketAlgo backUnderMarketAlgo = new BackUnderMarketAlgo();
 
             marketFilter = getMarketFilter();
 
@@ -87,37 +50,10 @@ public class ApiNGJsonRpcDemo {
 
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(events);
-
             for (int i = 0; i < 100; i++) {
                 System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " Start--------------------");
                 for (Event event : events) {
-                    Score score = new Score(event);
-                    ScoreEnum previousScore = event.getScore();
-                    event.setScore(score.findScoreFromMarketOdds());
-                    System.out.println(event.getName() + ": Current Score: " + event.getScore() + ", Previous Score: " + previousScore);
-                    MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
-
-                    if (i > 0 && !event.getScore().equals(previousScore)){
-                        System.out.println(event.getName() + ": GOOOOOOOAOAOAOAAAAAAALLLLL!!!!! Get the bets on!");
-                    }
-
-                    if (mc == null) {
-                        continue;
-                    }
-
-                    if (isCandidateMarket(event)) {
-                        System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
-                        Exposure exposure = new Exposure(mc);
-                        OverUnderMarket oum = new OverUnderMarket(mc);
-                        Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
-
-                        Bet initialBet = getBet(mc, runner, Side.BACK);
-                        Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
-                        List<Bet> bets = new ArrayList<Bet>();
-                        bets.add(initialBet);
-                        bets.add(cashOutBet);
-                        placeBets(bets);
-                    }
+                    backUnderMarketAlgo.process(event);
                 }
                 System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " End--------------------");
                 Thread.sleep(5000);
@@ -128,63 +64,6 @@ public class ApiNGJsonRpcDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private Bet getBet(MarketCatalogue marketCatalogue, Runner runner, Side side) {
-        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Bet bet = new Bet();
-        PriceSize priceSize = new PriceSize();
-
-        priceSize.setSize(getSize());
-
-        priceSize.setPrice(oum.getPrice(runner, 0, side).getPrice());
-
-        bet.setMarketId(marketCatalogue.getMarketId());
-        bet.setPriceSize(priceSize);
-        bet.setSide(Side.BACK);
-        bet.setSelectionId(runner.getSelectionId());
-
-        return bet;
-    }
-
-    private Double getCashOutProfitPercentage() {
-        return Double.valueOf(getProps().getProperty("CLOSE_OUT_PROFIT_PERCENTAGE"));
-    }
-
-    private boolean isCandidateMarket(Event event) throws Exception {
-        MarketType marketType = MarketType.OVER_UNDER_25;
-        MarketCatalogue marketCatalogue = event.getMarket().get(marketType);
-        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Exposure exposure = new Exposure(marketCatalogue);
-        Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
-
-        if (exposure.calcNetExposure() > 0.1) {
-            //already bet on this market
-            return false;
-        }
-
-        try {
-            if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
-                Score score = new Score(event);
-                ScoreEnum correctScore = score.findScoreFromMarketOdds();
-                if (correctScore.getTotalGoals() <= (marketType.getTotalGoals() - getSafetyGoalMargin())) {
-                    System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
-                    return true;
-                }
-            }
-        } catch (RuntimeException ex) {
-            System.out.println(ex);
-            return false;
-        }
-        return false;
-    }
-
-    private Integer getSafetyGoalMargin() {
-        return Integer.valueOf(getProps().getProperty("SAFETY_GOAL_MARGIN", "2"));
-    }
-
-    private Double getOverUnderBackLimit() {
-        return Double.valueOf(getProps().getProperty("OVER_UNDER_BACK_LIMIT"));
     }
 
     private void printMarketBooks(List<Event> events) {
@@ -224,7 +103,7 @@ public class ApiNGJsonRpcDemo {
             totalRequests++;
             if ((batchRequestCost + QUERY_COST >= DATA_LIMIT) || totalRequests == marketIds.size()) {
                 List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIdsBatch, priceProjection,
-                        orderProjection, matchProjection, currencyCode, applicationKey, sessionToken);
+                        orderProjection, matchProjection, currencyCode);
                 for (MarketCatalogue mc : marketCatalogueResult) {
                     for (MarketBook mb : marketBookReturn) {
                         if (mc.getMarketId().equals(mb.getMarketId())) {
@@ -234,45 +113,6 @@ public class ApiNGJsonRpcDemo {
                 }
                 marketIdsBatch.clear();
                 batchRequestCost = 0;
-            }
-        }
-    }
-
-    private void placeBets(List<Bet> bets) throws APINGException {
-        List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
-        String marketId = "";
-
-        for (Bet bet : bets) {
-            if (marketId.equals("")) {
-                marketId = bet.getMarketId();
-            } else if (!marketId.equals(bet.getMarketId())) {
-                throw new IllegalArgumentException("Cannot mix markets in Bet submission list: MarketId1: " + marketId + ", MarketId2:" + bet.getMarketId());
-            }
-
-            LimitOrder limitOrder = new LimitOrder();
-            limitOrder.setPersistenceType(PersistenceType.LAPSE);
-            limitOrder.setPrice(bet.getPriceSize().getPrice());
-            limitOrder.setSize(bet.getPriceSize().getSize());
-
-            PlaceInstruction instruction = new PlaceInstruction();
-            instruction.setHandicap(0);
-            instruction.setOrderType(OrderType.LIMIT);
-            instruction.setSide(bet.getSide());
-            instruction.setLimitOrder(limitOrder);
-            instruction.setSelectionId(bet.getSelectionId());
-            instructions.add(instruction);
-        }
-        String customerRef = "OU25:" + dtf.format(cal.getTime());
-
-        if (isSafetyOff()) {
-            PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketId, instructions, customerRef, applicationKey, sessionToken);
-            // Handling the operation result
-            if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
-                System.out.println("Your bet has been placed!!");
-                System.out.println(gson.toJson(placeBetResult.getInstructionReports()));
-            } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
-                System.out.println("Your bet has NOT been placed :*( ");
-                System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
             }
         }
     }
@@ -304,7 +144,7 @@ public class ApiNGJsonRpcDemo {
     private List<EventResult> getEvents(MarketFilter marketFilter) throws APINGException {
         System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
-        List<EventResult> events = jsonOperations.listEvents(marketFilter, applicationKey, sessionToken);
+        List<EventResult> events = jsonOperations.listEvents(marketFilter);
 
         System.out.println("3.2 (listEvents) Events Returned: " + events.size() + "\n");
 
@@ -353,8 +193,7 @@ public class ApiNGJsonRpcDemo {
 
         String maxResults = getProps().getProperty("MAX_RESULTS");
 
-        List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults,
-                applicationKey, sessionToken);
+        List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults);
 
         System.out.println("4.2. Print Event, Market Info, name and runners...\n");
         printMarketCatalogue(mks);
@@ -368,7 +207,7 @@ public class ApiNGJsonRpcDemo {
         competitions = gson.fromJson(getProps().getProperty("COMPETITIONS"), competitions.getClass());
 
         System.out.println("2.1.(listCompetitions) Get all Competitions...");
-        List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter, applicationKey, sessionToken);
+        List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter);
         System.out.println("2.2. Extract Competition Ids...");
         for (CompetitionResult competitionResult : c) {
             if (competitions.contains(competitionResult.getCompetition().getName())) {
@@ -388,7 +227,7 @@ public class ApiNGJsonRpcDemo {
         eventTypes = gson.fromJson(getProps().getProperty("EVENT_TYPES"), eventTypes.getClass());
 
         System.out.println("1.1.(listEventTypes) Get all Event Types...");
-        List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter, applicationKey, sessionToken);
+        List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter);
         System.out.println("1.2. Extract Event Type Ids...");
         for (EventTypeResult eventTypeResult : r) {
             if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
@@ -410,5 +249,9 @@ public class ApiNGJsonRpcDemo {
                 System.out.println();
             }
         }
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }

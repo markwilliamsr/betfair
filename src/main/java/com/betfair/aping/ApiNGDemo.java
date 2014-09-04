@@ -1,12 +1,11 @@
 package com.betfair.aping;
 
+import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.login.HttpClientSSO;
 import com.betfair.aping.login.LoginResponse;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
@@ -18,8 +17,6 @@ import java.util.Properties;
 public class ApiNGDemo {
 
     private static Properties prop = new Properties();
-    private static String applicationKey;
-    private static String sessionToken;
     private static boolean debug;
 
     static {
@@ -48,11 +45,11 @@ public class ApiNGDemo {
             System.exit(-1);
         }
 
-        applicationKey = loginResponse.getApplicationKey();
-        sessionToken = loginResponse.getSessionToken();
+        ApiNgJsonRpcOperations.getInstance().setAppKey(loginResponse.getApplicationKey());
+        ApiNgJsonRpcOperations.getInstance().setSessionToken(loginResponse.getSessionToken());
 
         ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
-        jsonRpcDemo.start(applicationKey, sessionToken);
+        jsonRpcDemo.start();
 
         System.out.println("Completed Successfully.");
     }

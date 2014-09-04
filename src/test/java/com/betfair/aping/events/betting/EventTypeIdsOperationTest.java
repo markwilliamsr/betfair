@@ -33,7 +33,7 @@ public class EventTypeIdsOperationTest extends JsonRpcTestBase {
 
         eventTypes = gson.fromJson(api.getProp().getProperty("EVENT_TYPES"), eventTypes.getClass());
 
-        List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter, applicationKey, sessionToken);
+        List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter);
         for (EventTypeResult eventTypeResult : r) {
             if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
                 System.out.println("EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");

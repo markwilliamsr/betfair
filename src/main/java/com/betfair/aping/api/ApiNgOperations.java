@@ -25,21 +25,21 @@ public abstract class ApiNgOperations {
     protected final String ORDER_PROJECTION = "orderProjection";
     protected final String locale = Locale.getDefault().toString();
 
-	public abstract List<EventTypeResult> listEventTypes(MarketFilter filter, String appKey, String ssoId) throws APINGException;
+	public abstract List<EventTypeResult> listEventTypes(MarketFilter filter) throws APINGException;
 
-    public abstract List<CompetitionResult> listCompetitions(MarketFilter filter, String appKey, String ssoId) throws APINGException;
+    public abstract List<CompetitionResult> listCompetitions(MarketFilter filter) throws APINGException;
 
 	public abstract List<MarketBook> listMarketBook(List<String> marketIds, PriceProjection priceProjection, OrderProjection orderProjection,
-						MatchProjection matchProjection, String currencyCode, String appKey, String ssoId) throws APINGException;
+						MatchProjection matchProjection, String currencyCode) throws APINGException;
 
     public abstract List<MarketCatalogue> listMarketCatalogue(MarketFilter filter, Set<MarketProjection> marketProjection,
-        MarketSort sort, String maxResult, String appKey, String ssoId) throws APINGException;
+        MarketSort sort, String maxResult) throws APINGException;
 
-    public abstract List<EventResult> listEvents(MarketFilter filter, String appKey, String ssoId) throws APINGException;
+    public abstract List<EventResult> listEvents(MarketFilter filter) throws APINGException;
 
-	public abstract PlaceExecutionReport placeOrders(String marketId, List<PlaceInstruction> instructions, String customerRef , String appKey, String ssoId) throws APINGException;
+	public abstract PlaceExecutionReport placeOrders(String marketId, List<PlaceInstruction> instructions, String customerRef) throws APINGException;
 
-    protected abstract String makeRequest(ApiNgOperation operation, Map<String, Object> params, String appKey, String ssoToken) throws  APINGException;
+    protected abstract String makeRequest(ApiNgOperation operation, Map<String, Object> params) throws  APINGException;
 
     public abstract AccountFundsResponse getAccountFunds(String appKey, String ssoId) throws APINGException;
 
