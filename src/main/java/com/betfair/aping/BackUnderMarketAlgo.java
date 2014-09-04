@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BackUnderMarketAlgo {
+public class BackUnderMarketAlgo implements MarketAlgo {
     Gson gson = new Gson();
 
     private static double getSize() {
@@ -24,6 +24,7 @@ public class BackUnderMarketAlgo {
         }
     }
 
+    @Override
     public void process(Event event) throws Exception, APINGException {
         BetPlacer betPlacer = new BetPlacer();
         Score score = new Score(event);

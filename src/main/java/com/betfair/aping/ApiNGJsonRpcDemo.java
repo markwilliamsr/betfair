@@ -32,7 +32,7 @@ public class ApiNGJsonRpcDemo {
         try {
             MarketFilter marketFilter;
             Set<String> eventIds = new HashSet<String>();
-            BackUnderMarketAlgo backUnderMarketAlgo = new BackUnderMarketAlgo();
+            MarketAlgo marketAlgo = new BackUnderMarketAlgo();
 
             marketFilter = getMarketFilter();
 
@@ -53,7 +53,7 @@ public class ApiNGJsonRpcDemo {
             for (int i = 0; i < 100; i++) {
                 System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " Start--------------------");
                 for (Event event : events) {
-                    backUnderMarketAlgo.process(event);
+                    marketAlgo.process(event);
                 }
                 System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " End--------------------");
                 Thread.sleep(5000);
