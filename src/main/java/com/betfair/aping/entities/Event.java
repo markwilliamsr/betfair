@@ -1,5 +1,7 @@
 package com.betfair.aping.entities;
 
+import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,16 @@ public class Event {
     private String timezone;
     private String venue;
     private Date openDate;
+    private ScoreEnum score = ScoreEnum.NIL_NIL;
     private Map<MarketType, MarketCatalogue> market = new HashMap<MarketType, MarketCatalogue>();
+
+    public ScoreEnum getScore() {
+        return score;
+    }
+
+    public void setScore(ScoreEnum score) {
+        this.score = score;
+    }
 
     public Map<MarketType, MarketCatalogue> getMarket() {
         return market;

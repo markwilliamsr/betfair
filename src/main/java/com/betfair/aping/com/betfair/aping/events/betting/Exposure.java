@@ -98,8 +98,8 @@ public class Exposure {
         Double layUnderExposure = calcExposureForSide(r, Side.LAY);
         Double totalUnderExposure = backUnderExposure - layUnderExposure;
 
-        System.out.println("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
-        System.out.println("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
+        //System.out.println("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
+        //System.out.println("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
 
         r = oum.getRunnerByName(OverUnderMarket.OVER_2_5);
 
@@ -107,8 +107,8 @@ public class Exposure {
         Double layOverExposure = calcExposureForSide(r, Side.LAY);
         Double totalOverExposure = backOverExposure - layOverExposure;
 
-        System.out.println("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
-        System.out.println("Back Over Exposure: " + backOverExposure + " Lay Over Exposure: " + layOverExposure + " Total Over Exposure: " + totalUnderExposure);
+        //System.out.println("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
+        //System.out.println("Back Over Exposure: " + backOverExposure + " Lay Over Exposure: " + layOverExposure + " Total Over Exposure: " + totalUnderExposure);
 
         Double totalExposure = Math.abs(totalOverExposure - totalUnderExposure);
         //round to nearest penny

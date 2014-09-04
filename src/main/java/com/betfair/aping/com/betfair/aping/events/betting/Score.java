@@ -55,7 +55,7 @@ public class Score {
     }
 
     private ScoreEnum findCorrectScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {
-        ScoreEnum correctScore = null;
+        ScoreEnum correctScore = ScoreEnum.ANY_UNQUOTED;
         int minGoalsSoFar = Integer.MAX_VALUE;
         for (Runner r : runners) {
             RunnerCatalog runner = null;

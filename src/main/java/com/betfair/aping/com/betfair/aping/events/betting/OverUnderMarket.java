@@ -52,14 +52,14 @@ public class OverUnderMarket {
     }
 
     public PriceSize getBack(Runner runner, int position) {
-        if (runner.getEx().getAvailableToBack().size() < position) {
+        if (runner.getEx().getAvailableToBack().size() <= position) {
             throw new RuntimeException("Not Enough Depth for Position: " + position);
         }
         return runner.getEx().getAvailableToBack().get(position);
     }
 
     public PriceSize getLay(Runner runner, int position) {
-        if (runner.getEx().getAvailableToLay().size() < position) {
+        if (runner.getEx().getAvailableToLay().size() <= position) {
             throw new RuntimeException("Not Enough Depth for Position: " + position);
         }
         return runner.getEx().getAvailableToLay().get(position);

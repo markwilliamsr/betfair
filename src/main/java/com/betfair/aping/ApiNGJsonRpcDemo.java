@@ -28,6 +28,8 @@ public class ApiNGJsonRpcDemo {
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
     private String applicationKey;
     private String sessionToken;
+    Calendar cal = Calendar.getInstance();
+    SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss");
 
     private static double getPrice() {
         try {
@@ -86,28 +88,40 @@ public class ApiNGJsonRpcDemo {
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(events);
 
-            for (Event event : events) {
-                Score score = new Score(event);
-                System.out.println(event.getName() + ": " + score.findScoreFromMarketOdds());
-                MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
+            for (int i = 0; i < 100; i++) {
+                System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " Start--------------------");
+                for (Event event : events) {
+                    Score score = new Score(event);
+                    ScoreEnum previousScore = event.getScore();
+                    event.setScore(score.findScoreFromMarketOdds());
+                    System.out.println(event.getName() + ": Current Score: " + event.getScore() + ", Previous Score: " + previousScore);
+                    MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
 
-                if (mc == null) {
-                    continue;
+                    if (i > 0 && !event.getScore().equals(previousScore)){
+                        System.out.println(event.getName() + ": GOOOOOOOAOAOAOAAAAAAALLLLL!!!!! Get the bets on!");
+                    }
+
+                    if (mc == null) {
+                        continue;
+                    }
+
+                    if (isCandidateMarket(event)) {
+                        System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
+                        Exposure exposure = new Exposure(mc);
+                        OverUnderMarket oum = new OverUnderMarket(mc);
+                        Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
+
+                        Bet initialBet = getBet(mc, runner, Side.BACK);
+                        Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
+                        List<Bet> bets = new ArrayList<Bet>();
+                        bets.add(initialBet);
+                        bets.add(cashOutBet);
+                        placeBets(bets);
+                    }
                 }
-
-                if (isCandidateMarket(event)) {
-                    System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
-                    Exposure exposure = new Exposure(mc);
-                    OverUnderMarket oum = new OverUnderMarket(mc);
-                    Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
-
-                    Bet initialBet = getBet(mc, runner, Side.BACK);
-                    Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
-                    List<Bet> bets = new ArrayList<Bet>();
-                    bets.add(initialBet);
-                    bets.add(cashOutBet);
-                    placeBets(bets);
-                }
+                System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " End--------------------");
+                Thread.sleep(5000);
+                getMarketBooks(marketCatalogueResult);
             }
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
@@ -185,8 +199,6 @@ public class ApiNGJsonRpcDemo {
     }
 
     private void getMarketBooks(List<MarketCatalogue> marketCatalogueResult) throws APINGException {
-        System.out.println("6.(listMarketBook) Get volatile info for Market including best 3 exchange prices available...\n");
-
         PriceProjection priceProjection = new PriceProjection();
         Set<PriceData> priceData = new HashSet<PriceData>();
         priceData.add(PriceData.EX_BEST_OFFERS);
@@ -228,8 +240,6 @@ public class ApiNGJsonRpcDemo {
 
     private void placeBets(List<Bet> bets) throws APINGException {
         List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
         String marketId = "";
 
         for (Bet bet : bets) {
@@ -252,7 +262,7 @@ public class ApiNGJsonRpcDemo {
             instruction.setSelectionId(bet.getSelectionId());
             instructions.add(instruction);
         }
-        String customerRef = "OU25:" + df.format(cal.getTime());
+        String customerRef = "OU25:" + dtf.format(cal.getTime());
 
         if (isSafetyOff()) {
             PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketId, instructions, customerRef, applicationKey, sessionToken);
