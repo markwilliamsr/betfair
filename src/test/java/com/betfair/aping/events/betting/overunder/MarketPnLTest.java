@@ -5,8 +5,6 @@ import com.betfair.aping.entities.MarketCatalogue;
 import com.betfair.aping.entities.MarketType;
 import com.google.gson.Gson;
 import org.junit.Test;
-import sun.plugin.com.AmbientProperty;
-
 import java.text.DecimalFormat;
 
 /**
