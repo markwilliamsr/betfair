@@ -15,7 +15,7 @@ public class Score {
         this.event = event;
     }
 
-    public int getTotalGoals(RunnerCatalog r) {
+    private int getTotalGoals(RunnerCatalog r) {
         if (getHomeGoals(r) + getAwayGoals(r) >= 0) {
             return getHomeGoals(r) + getAwayGoals(r);
         } else {
