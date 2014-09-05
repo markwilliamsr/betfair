@@ -21,7 +21,6 @@ public class LoginTest {
         HttpClientSSO httpClientSSO = new HttpClientSSO();
         LoginResponse r = httpClientSSO.login();
         assertEquals("SUCCESS", r.getLoginStatus());
-        assertEquals(false, r.isProd());
     }
 
     @Test

@@ -169,7 +169,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
     }
 
     @Override
-    public AccountFundsResponse getAccountFunds(String appKey, String sessionToken) throws APINGException {
+    public AccountFundsResponse getAccountFunds() throws APINGException {
         Map<String, Object> params = new HashMap<String, Object>();
         String result = getInstance().makeRequest(ApiNgOperation.ACCOUNTFUNDS, params);
         if (ApiNGDemo.isDebug())

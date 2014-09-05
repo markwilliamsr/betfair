@@ -18,7 +18,7 @@ public class AccountOperationsTest extends JsonRpcTestBase {
     }
 
     private AccountFundsResponse getAvailableToBetBalance() throws APINGException {
-        AccountFundsResponse accountFundsResponse = jsonOperations.getAccountFunds(applicationKey, sessionToken);
+        AccountFundsResponse accountFundsResponse = jsonOperations.getAccountFunds();
         return accountFundsResponse;
     }
 }

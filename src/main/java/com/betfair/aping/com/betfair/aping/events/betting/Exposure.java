@@ -92,7 +92,7 @@ public class Exposure {
 
     public Double calcNetExposure() throws Exception {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Runner r = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
+        Runner r = oum.getUnderRunner();
 
         Double backUnderExposure = calcExposureForSide(r, Side.BACK);
         Double layUnderExposure = calcExposureForSide(r, Side.LAY);
@@ -101,7 +101,7 @@ public class Exposure {
         //System.out.println("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
         //System.out.println("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
 
-        r = oum.getRunnerByName(OverUnderMarket.OVER_2_5);
+        r = oum.getOverRunner();
 
         Double backOverExposure = calcExposureForSide(r, Side.BACK);
         Double layOverExposure = calcExposureForSide(r, Side.LAY);
@@ -121,7 +121,7 @@ public class Exposure {
 
     public Double calcGrossExposure() throws Exception {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Runner r = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
+        Runner r = oum.getUnderRunner();
 
         Double backExposure = calcExposureForSide(r, Side.BACK);
         Double layExposure = calcExposureForSide(r, Side.LAY);

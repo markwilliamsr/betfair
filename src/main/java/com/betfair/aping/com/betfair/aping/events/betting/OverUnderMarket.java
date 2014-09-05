@@ -9,14 +9,15 @@ import java.util.List;
  * Created by markwilliams on 23/08/2014.
  */
 public class OverUnderMarket {
-    public static final String UNDER_2_5 = "Under 2.5 Goals";
-    public static final String OVER_2_5 = "Over 2.5 Goals";
+    //public static final String UNDER_2_5 = "Under 2.5 Goals";
+    //public static final String OVER_2_5 = "Over 2.5 Goals";
 
     MarketCatalogue marketCatalogue;
     MarketType marketType;
 
     public OverUnderMarket(MarketCatalogue marketCatalogue) {
         this.marketCatalogue = marketCatalogue;
+        this.marketType = MarketType.fromMarketName(marketCatalogue.getMarketName());
     }
 
     public List<RunnerCatalog> getRunnerCatalogs() {
@@ -30,6 +31,14 @@ public class OverUnderMarket {
             }
         }
         throw new Exception("Runner not found: " + runnerName);
+    }
+
+    public Runner getUnderRunner() throws Exception {
+        return getRunnerByName(this.getUnderRunnerName());
+    }
+
+    public Runner getOverRunner() throws Exception {
+        return getRunnerByName(this.getOverRunnerName());
     }
 
     public Runner getRunnerByName(String runnerName) throws Exception {
@@ -74,7 +83,11 @@ public class OverUnderMarket {
     }
 
     public String getUnderRunnerName() {
-                      String name = "";
-        return name;
+        return "Under " + marketType.getTotalGoals() + ".5 Goals";
     }
+
+    public String getOverRunnerName() {
+        return "Over " + marketType.getTotalGoals() + ".5 Goals";
+    }
+
 }

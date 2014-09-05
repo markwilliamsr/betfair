@@ -41,7 +41,7 @@ public abstract class ApiNgOperations {
 
     protected abstract String makeRequest(ApiNgOperation operation, Map<String, Object> params) throws  APINGException;
 
-    public abstract AccountFundsResponse getAccountFunds(String appKey, String ssoId) throws APINGException;
+    public abstract AccountFundsResponse getAccountFunds() throws APINGException;
 
 }
 

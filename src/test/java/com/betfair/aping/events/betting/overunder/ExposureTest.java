@@ -24,7 +24,7 @@ public class ExposureTest {
         MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
         MarketBook mb = mc.getMarketBook();
 
-        Runner r = ouc.getRunnerByName(OverUnderMarket.UNDER_2_5);
+        Runner r = ouc.getUnderRunner();
 
         Exposure exposure = new Exposure(mc);
 
@@ -39,8 +39,8 @@ public class ExposureTest {
         placedBet.setSelectionId(r.getSelectionId());
 
         Bet cob = exposure.calcCashOutBet(placedBet, 10d);
-        assertEquals(3.7d,cob.getPriceSize().getPrice(), 0);
-        assertEquals(2.2d,cob.getPriceSize().getSize(), 0);
+        assertEquals(3.7d, cob.getPriceSize().getPrice(), 0);
+        assertEquals(2.21d, cob.getPriceSize().getSize(), 0);
         assertEquals(Side.LAY, cob.getSide());
         assertEquals(mc.getMarketId(), cob.getMarketId());
         assertEquals(r.getSelectionId(), cob.getSelectionId());

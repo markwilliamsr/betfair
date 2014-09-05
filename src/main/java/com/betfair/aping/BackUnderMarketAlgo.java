@@ -42,7 +42,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
                 System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
                 Exposure exposure = new Exposure(mc);
                 OverUnderMarket oum = new OverUnderMarket(mc);
-                Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
+                Runner runner = oum.getUnderRunner();
 
                 Bet initialBet = getBet(mc, runner, Side.BACK);
                 Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
@@ -76,7 +76,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         MarketCatalogue marketCatalogue = event.getMarket().get(marketType);
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Exposure exposure = new Exposure(marketCatalogue);
-        Runner runner = oum.getRunnerByName(OverUnderMarket.UNDER_2_5);
+        Runner runner = oum.getUnderRunner();
 
         if (exposure.calcNetExposure() > 0.1) {
             //already bet on this market

@@ -14,16 +14,13 @@ public class JsonRpcTestBase {
     protected Gson gson = new Gson();
     protected ApiNGDemo api = new ApiNGDemo();
     protected ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
-    protected String applicationKey;
-    protected String sessionToken;
-
     @Before
     public void setupSession() throws Exception {
         HttpClientSSO sso = new HttpClientSSO();
         LoginResponse loginResponse;
 
         loginResponse = sso.login();
-        applicationKey = loginResponse.getApplicationKey();
-        sessionToken = loginResponse.getSessionToken();
+        ApiNgJsonRpcOperations.getInstance().setAppKey(loginResponse.getApplicationKey());
+        ApiNgJsonRpcOperations.getInstance().setSessionToken(loginResponse.getSessionToken());
     }
 }
