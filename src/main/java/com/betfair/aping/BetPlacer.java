@@ -35,7 +35,7 @@ public class BetPlacer {
             }
 
             LimitOrder limitOrder = new LimitOrder();
-            limitOrder.setPersistenceType(PersistenceType.LAPSE);
+            limitOrder.setPersistenceType(PersistenceType.PERSIST);
             limitOrder.setPrice(bet.getPriceSize().getPrice());
             limitOrder.setSize(bet.getPriceSize().getSize());
 
