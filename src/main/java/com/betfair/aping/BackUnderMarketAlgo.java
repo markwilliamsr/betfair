@@ -3,13 +3,13 @@ package com.betfair.aping;
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.com.betfair.aping.events.betting.Score;
-import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.Side;
 import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class BackUnderMarketAlgo implements MarketAlgo {
@@ -27,15 +27,9 @@ public class BackUnderMarketAlgo implements MarketAlgo {
     @Override
     public void process(Event event) throws Exception, APINGException {
         BetPlacer betPlacer = new BetPlacer();
-        Score score = new Score(event);
-        ScoreEnum previousScore = event.getScore();
-        event.setScore(score.findScoreFromMarketOdds());
-        System.out.println(event.getName() + ": Current Score: " + event.getScore() + ", Previous Score: " + previousScore);
-        MarketCatalogue mc = event.getMarket().get(MarketType.OVER_UNDER_25);
-//
-//        if (i > 0 && !event.getScore().equals(previousScore)) {
-//            System.out.println(event.getName() + ": GOOOOOOOAOAOAOAAAAAAALLLLL!!!!! Get the bets on!");
-//        }
+        updateEventScore(event);
+        System.out.println(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + "TODO!");
+        MarketCatalogue mc = getMarketCatalogueForTotalGoals(event);
 
         if (mc != null) {
             if (isCandidateMarket(event)) {
@@ -52,6 +46,11 @@ public class BackUnderMarketAlgo implements MarketAlgo {
                 betPlacer.placeBets(bets);
             }
         }
+    }
+
+    private void updateEventScore(Event event) {
+        Score score = new Score(event);
+        event.setScore(score.findScoreFromMarketOdds());
     }
 
     private Bet getBet(MarketCatalogue marketCatalogue, Runner runner, Side side) {
@@ -72,25 +71,28 @@ public class BackUnderMarketAlgo implements MarketAlgo {
     }
 
     private boolean isCandidateMarket(Event event) throws Exception {
-        MarketType marketType = MarketType.OVER_UNDER_25;
-        MarketCatalogue marketCatalogue = event.getMarket().get(marketType);
+        MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event);
+
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Exposure exposure = new Exposure(marketCatalogue);
         Runner runner = oum.getUnderRunner();
 
-        if (exposure.calcNetExposure() > 0.1) {
-            //already bet on this market
+        if (!isMarketStartingSoon(event)) {
+            return false;
+        }
+
+        if (isBetAlreadyOpen(marketCatalogue)) {
+            return false;
+        }
+
+        if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
+            //don't bet on some goalfest
             return false;
         }
 
         try {
             if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
-                Score score = new Score(event);
-                ScoreEnum correctScore = score.findScoreFromMarketOdds();
-                if (correctScore.getTotalGoals() <= (marketType.getTotalGoals() - getSafetyGoalMargin())) {
-                    System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
-                    return true;
-                }
+                System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
+                return true;
             }
         } catch (RuntimeException ex) {
             System.out.println(ex);
@@ -99,8 +101,38 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         return false;
     }
 
+    private MarketCatalogue getMarketCatalogueForTotalGoals(Event event) {
+        Integer totalGoalsForMarket = event.getScore().getTotalGoals() + getSafetyGoalMargin();
+        MarketType marketType = MarketType.fromTotalGoals(totalGoalsForMarket);
+
+        return event.getMarket().get(marketType);
+    }
+
+    private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue) throws Exception {
+        Exposure exposure = new Exposure(marketCatalogue);
+        if (exposure.calcNetExposure() > 0.1) {
+            //already bet on this market
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isMarketStartingSoon(Event event) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 5);
+        if (isMarketStartTimeLimitOn() && event.getOpenDate().before(calendar.getTime())) {
+            //don't bet on something that won't start for a while
+            return true;
+        }
+        return false;
+    }
+
     private Double getOverUnderBackLimit() {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("OVER_UNDER_BACK_LIMIT"));
+    }
+
+    private Integer getTotalGoalLimit() {
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty("TOTAL_GOAL_LIMIT"));
     }
 
     private Double getCashOutProfitPercentage() {
@@ -109,5 +141,9 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
     private Integer getSafetyGoalMargin() {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty("SAFETY_GOAL_MARGIN", "2"));
+    }
+
+    private Boolean isMarketStartTimeLimitOn() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("MARKET_START_TIME_LIMIT_ON", "2"));
     }
 }
