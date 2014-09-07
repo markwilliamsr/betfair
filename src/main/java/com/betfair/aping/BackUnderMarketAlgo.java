@@ -2,6 +2,7 @@ package com.betfair.aping;
 
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
+import com.betfair.aping.com.betfair.aping.events.betting.PriceIncrement;
 import com.betfair.aping.com.betfair.aping.events.betting.Score;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
@@ -77,7 +78,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner runner = oum.getUnderRunner();
 
-        if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)){
+        if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
             return false;
         }
 
@@ -95,13 +96,40 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         }
 
         try {
-            if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
-                System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
-                return true;
+            if (!isBestBackPriceWithinBounds(oum, runner)) {
+                return false;
             }
         } catch (RuntimeException ex) {
             System.out.println(ex);
             return false;
+        }
+
+        if (!isBackLaySpreadWithinBounds(oum, runner)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isBackLaySpreadWithinBounds(OverUnderMarket oum, Runner runner) {
+       Double back = oum.getBack(runner, 0).getPrice();
+        Double lay = oum.getLay(runner, 0).getPrice();
+
+        if (back != null && lay != null) {
+            Double increment = PriceIncrement.getIncrement(back);
+            Long spread = Math.round((lay - back) / increment);
+            if (spread > getMaxBackLaySpread()) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isBestBackPriceWithinBounds(OverUnderMarket oum, Runner runner) {
+        if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
+            System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
+            return true;
         }
         return false;
     }
@@ -148,7 +176,11 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty("SAFETY_GOAL_MARGIN", "2"));
     }
 
+    private Integer getMaxBackLaySpread() {
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty("MAX_BACK_LAY_SPREAD_INCREMENT"));
+    }
+
     private Boolean isMarketStartTimeLimitOn() {
-        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("MARKET_START_TIME_LIMIT_ON", "2"));
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("MARKET_START_TIME_LIMIT_ON", "true"));
     }
 }
