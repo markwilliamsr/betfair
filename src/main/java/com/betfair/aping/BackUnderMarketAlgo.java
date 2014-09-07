@@ -104,7 +104,12 @@ public class BackUnderMarketAlgo implements MarketAlgo {
             return false;
         }
 
-        if (!isBackLaySpreadWithinBounds(oum, runner)) {
+        try {
+            if (!isBackLaySpreadWithinBounds(oum, runner)) {
+                return false;
+            }
+        } catch (RuntimeException ex) {
+            System.out.println(ex);
             return false;
         }
 
@@ -112,17 +117,16 @@ public class BackUnderMarketAlgo implements MarketAlgo {
     }
 
     private boolean isBackLaySpreadWithinBounds(OverUnderMarket oum, Runner runner) {
-       Double back = oum.getBack(runner, 0).getPrice();
+        Double back = oum.getBack(runner, 0).getPrice();
         Double lay = oum.getLay(runner, 0).getPrice();
 
         if (back != null && lay != null) {
             Double increment = PriceIncrement.getIncrement(back);
             Long spread = Math.round((lay - back) / increment);
-            if (spread > getMaxBackLaySpread()) {
-                return false;
+            if (spread <= getMaxBackLaySpread()) {
+                return true;
             }
         }
-
         return false;
     }
 
