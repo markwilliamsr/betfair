@@ -4,6 +4,7 @@ import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.com.betfair.aping.events.betting.Score;
 import com.betfair.aping.entities.*;
+import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
 import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
@@ -75,6 +76,10 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner runner = oum.getUnderRunner();
+
+        if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)){
+            return false;
+        }
 
         if (!isMarketStartingSoon(event)) {
             return false;

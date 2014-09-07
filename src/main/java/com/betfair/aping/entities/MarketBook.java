@@ -1,12 +1,14 @@
 package com.betfair.aping.entities;
 
+import com.betfair.aping.enums.MarketStatus;
+
 import java.util.Date;
 import java.util.List;
 
 public class MarketBook {
 	private String marketId;
 	private Boolean isMarketDataDelayed;
-	private String status;
+	private MarketStatus status;
 	private int betDelay;
 	private Boolean bspReconciled;
 	private Boolean complete;
@@ -46,11 +48,11 @@ public class MarketBook {
 		this.isMarketDataDelayed = isMarketDataDelayed;
 	}
 
-	public String getStatus() {
+	public MarketStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(MarketStatus status) {
 		this.status = status;
 	}
 
