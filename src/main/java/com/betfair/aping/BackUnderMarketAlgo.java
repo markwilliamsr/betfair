@@ -157,8 +157,11 @@ public class BackUnderMarketAlgo implements MarketAlgo {
     private boolean isMarketStartingSoon(Event event) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, 5);
-        if (isMarketStartTimeLimitOn() && event.getOpenDate().before(calendar.getTime())) {
-            //don't bet on something that won't start for a while
+        if (!isMarketStartTimeLimitOn()) {
+            return true;
+        }
+        if (event.getOpenDate().before(calendar.getTime())) {
+            //bet on something that is starting in the next few mins
             return true;
         }
         return false;

@@ -59,6 +59,8 @@ public class BetPlacer {
                 System.out.println("Your bet has NOT been placed :*( ");
                 System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
             }
+        } else {
+            System.out.println("Safety is on, did NOT place any bets.");
         }
     }
 

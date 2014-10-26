@@ -169,7 +169,6 @@ public class Exposure {
         bet.setSelectionId(placedBet.getSelectionId());
         bet.setMarketId(placedBet.getMarketId());
 
-        System.out.println(bet);
         return bet;
     }
 
