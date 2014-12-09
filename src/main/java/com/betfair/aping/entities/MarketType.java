@@ -21,7 +21,7 @@ public enum MarketType {
         this.totalGoals = totalGoals;
     }
 
-    public static MarketType fromTotalGoals(int totalGoals) {
+    public static MarketType fromTotalGoals(int totalGoals) throws IllegalArgumentException {
         for (MarketType s : MarketType.values()) {
             if (totalGoals == s.getTotalGoals()) {
                 return s;

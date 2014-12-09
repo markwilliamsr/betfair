@@ -1,9 +1,6 @@
 package com.betfair.aping;
 
-import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
-import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
-import com.betfair.aping.com.betfair.aping.events.betting.PriceIncrement;
-import com.betfair.aping.com.betfair.aping.events.betting.Score;
+import com.betfair.aping.com.betfair.aping.events.betting.*;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
@@ -29,30 +26,41 @@ public class BackUnderMarketAlgo implements MarketAlgo {
     @Override
     public void process(Event event) throws Exception, APINGException {
         BetPlacer betPlacer = new BetPlacer();
+        MarketCatalogue mc = new MarketCatalogue();
+
         updateEventScore(event);
         System.out.println(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + "TODO!");
-        MarketCatalogue mc = getMarketCatalogueForTotalGoals(event);
 
-        if (mc != null) {
-            if (isCandidateMarket(event)) {
-                System.out.println("OPEN: Candidate Mkt Found:" + gson.toJson(event));
-                Exposure exposure = new Exposure(mc);
-                OverUnderMarket oum = new OverUnderMarket(mc);
-                Runner runner = oum.getUnderRunner();
+        try {
+            mc = getMarketCatalogueForTotalGoals(event);
 
-                Bet initialBet = getBet(mc, runner, Side.BACK);
-                Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
-                List<Bet> bets = new ArrayList<Bet>();
-                bets.add(initialBet);
-                bets.add(cashOutBet);
-                betPlacer.placeBets(bets);
+            if (mc != null) {
+                if (isCandidateMarket(event)) {
+                    System.out.println("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
+                    Exposure exposure = new Exposure(mc);
+                    OverUnderMarket oum = new OverUnderMarket(mc);
+                    Runner runner = oum.getUnderRunner();
+
+                    Bet initialBet = getBet(mc, runner, Side.BACK);
+                    Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
+                    List<Bet> bets = new ArrayList<Bet>();
+                    bets.add(initialBet);
+                    bets.add(cashOutBet);
+                    betPlacer.placeBets(bets);
+                }
             }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Could not determine the MarketType. Exception: " + e.toString());
         }
     }
 
     private void updateEventScore(Event event) {
-        Score score = new Score(event);
-        event.setScore(score.findScoreFromMarketOdds());
+        try {
+            Score score = new Score(event);
+            event.setScore(score.findScoreFromMarketOdds());
+        } catch (NullPointerException e) {
+            event.setScore(ScoreEnum.ANY_UNQUOTED);
+        }
     }
 
     private Bet getBet(MarketCatalogue marketCatalogue, Runner runner, Side side) {
