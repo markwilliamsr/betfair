@@ -87,24 +87,29 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         Runner runner = oum.getUnderRunner();
 
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
+            System.out.println("Market is not OPEN");
             return false;
         }
 
         if (!isMarketStartingSoon(event)) {
+            System.out.println("Market is not starting soon enough");
             return false;
         }
 
         if (isBetAlreadyOpen(marketCatalogue)) {
+            System.out.println("Bet already open in the Market");
             return false;
         }
 
         if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
             //don't bet on some goalfest
+            System.out.println("Too many goals already scored: " + event.getScore().getTotalGoals());
             return false;
         }
 
         try {
             if (!isBestBackPriceWithinBounds(oum, runner)) {
+                System.out.println("Back Price not within Bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -114,6 +119,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
         try {
             if (!isBackLaySpreadWithinBounds(oum, runner)) {
+                System.out.println("Back Lay Spread not within bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -140,9 +146,10 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
     private boolean isBestBackPriceWithinBounds(OverUnderMarket oum, Runner runner) {
         if (oum.getBack(runner, 0).getPrice() >= getOverUnderBackLimit()) {
-            System.out.println("Best Back Price: " + oum.getBack(runner, 0).toString());
+            System.out.println("Best Back Price: " + oum.getUnderRunnerName() + " : " + oum.getBack(runner, 0).toString());
             return true;
         }
+        System.out.println("Best Back Price: " + oum.getUnderRunnerName() + " : " + oum.getBack(runner, 0).toString());
         return false;
     }
 
