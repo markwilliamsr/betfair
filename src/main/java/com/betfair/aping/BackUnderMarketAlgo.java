@@ -12,7 +12,8 @@ import java.util.Calendar;
 import java.util.List;
 
 public class BackUnderMarketAlgo implements MarketAlgo {
-    Gson gson = new Gson();
+    private Gson gson = new Gson();
+    private int MAX_PREV_SCORES = 3;
 
     private static double getSize() {
         try {
@@ -29,24 +30,26 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         MarketCatalogue mc = new MarketCatalogue();
 
         updateEventScore(event);
-        System.out.println(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + "TODO!");
+        System.out.println(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
 
         try {
-            mc = getMarketCatalogueForTotalGoals(event);
+            if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
+                mc = getMarketCatalogueForTotalGoals(event);
 
-            if (mc != null) {
-                if (isCandidateMarket(event)) {
-                    System.out.println("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
-                    Exposure exposure = new Exposure(mc);
-                    OverUnderMarket oum = new OverUnderMarket(mc);
-                    Runner runner = oum.getUnderRunner();
+                if (mc != null) {
+                    if (isCandidateMarket(event)) {
+                        System.out.println("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
+                        Exposure exposure = new Exposure(mc);
+                        OverUnderMarket oum = new OverUnderMarket(mc);
+                        Runner runner = oum.getUnderRunner();
 
-                    Bet initialBet = getBet(mc, runner, Side.BACK);
-                    Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
-                    List<Bet> bets = new ArrayList<Bet>();
-                    bets.add(initialBet);
-                    bets.add(cashOutBet);
-                    betPlacer.placeBets(bets);
+                        Bet initialBet = getBet(mc, runner, Side.BACK);
+                        Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
+                        List<Bet> bets = new ArrayList<Bet>();
+                        bets.add(initialBet);
+                        bets.add(cashOutBet);
+                        betPlacer.placeBets(bets);
+                    }
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -55,9 +58,45 @@ public class BackUnderMarketAlgo implements MarketAlgo {
     }
 
     private void updateEventScore(Event event) {
+        boolean updateScore = false;
+        boolean processUnquoted = false;
         try {
             Score score = new Score(event);
-            event.setScore(score.findScoreFromMarketOdds());
+            ScoreEnum currentScore = score.findScoreFromMarketOdds();
+
+            if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
+                for (int i = 0; i < MAX_PREV_SCORES - 1; i++) {
+                    //shuffle them down one
+                    event.getPreviousScores().set(i, event.getPreviousScores().get(i + 1));
+                }
+
+                if (currentScore.equals(ScoreEnum.ANY_UNQUOTED)) {
+                    int goalsFromPrevScore = event.getPreviousScores().get(MAX_PREV_SCORES - 1).getTotalGoals();
+                    if ((goalsFromPrevScore + 1) == ScoreEnum.ANY_UNQUOTED.getTotalGoals()) {
+                        processUnquoted = true;
+                    }
+                } else {
+                    event.getPreviousScores().remove(MAX_PREV_SCORES - 1);
+                }
+            }
+
+            if (!currentScore.equals(ScoreEnum.ANY_UNQUOTED) || processUnquoted) {
+                event.getPreviousScores().add(currentScore);
+            }
+
+            if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
+                ScoreEnum firstScore = event.getPreviousScores().get(0);
+                for (int i = 1; i < MAX_PREV_SCORES; i++) {
+                    ScoreEnum loopScore = event.getPreviousScores().get(i);
+                    if (!loopScore.equals(firstScore)) {
+                        continue;
+                    }
+                    updateScore = true;
+                }
+                if (updateScore) {
+                    event.setScore(firstScore);
+                }
+            }
         } catch (NullPointerException e) {
             event.setScore(ScoreEnum.ANY_UNQUOTED);
         }

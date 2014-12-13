@@ -2,9 +2,7 @@ package com.betfair.aping.entities;
 
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Event {
 
@@ -15,7 +13,16 @@ public class Event {
     private String venue;
     private Date openDate;
     private ScoreEnum score = ScoreEnum.NIL_NIL;
+    private List<ScoreEnum> previousScores = new ArrayList<ScoreEnum>();
     private Map<MarketType, MarketCatalogue> market = new TreeMap<MarketType, MarketCatalogue>();
+
+    public List<ScoreEnum> getPreviousScores() {
+        return previousScores;
+    }
+
+    public void setPreviousScores(List<ScoreEnum> previousScores) {
+        this.previousScores = previousScores;
+    }
 
     public ScoreEnum getScore() {
         return score;
