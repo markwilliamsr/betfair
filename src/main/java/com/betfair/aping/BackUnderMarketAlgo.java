@@ -210,7 +210,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
     private boolean isMarketStartingSoon(Event event) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 5);
+        calendar.add(Calendar.MINUTE, getMinutesBeforeMarketStartTimeToBet());
         if (!isMarketStartTimeLimitOn()) {
             return true;
         }
@@ -223,6 +223,10 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
     private Double getOverUnderBackLimit() {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("OVER_UNDER_BACK_LIMIT"));
+    }
+
+    private Integer getMinutesBeforeMarketStartTimeToBet() {
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty("MINUTES_BEFORE_MARKET_START"));
     }
 
     private Integer getTotalGoalLimit() {

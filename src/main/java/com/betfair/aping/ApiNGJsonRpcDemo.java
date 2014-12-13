@@ -51,11 +51,11 @@ public class ApiNGJsonRpcDemo {
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(events);
             for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")) ; i++) {
-                System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " Start--------------------");
+                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Iteration " + i + " Start--------------------");
                 for (Event event : events) {
                     marketAlgo.process(event);
                 }
-                System.out.println(dtf.format(cal.getTime()) + " --------------------Iteration " + i + " End--------------------");
+                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Iteration " + i + " End--------------------");
                 Thread.sleep(5000);
                 getMarketBooks(marketCatalogueResult);
             }
