@@ -13,7 +13,7 @@ import java.util.List;
 
 public class BackUnderMarketAlgo implements MarketAlgo {
     private Gson gson = new Gson();
-    private int MAX_PREV_SCORES = 3;
+    private int MAX_PREV_SCORES = 6;
 
     private static double getSize() {
         try {
@@ -113,7 +113,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
 
         bet.setMarketId(marketCatalogue.getMarketId());
         bet.setPriceSize(priceSize);
-        bet.setSide(Side.BACK);
+        bet.setSide(side);
         bet.setSelectionId(runner.getSelectionId());
 
         return bet;

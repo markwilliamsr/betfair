@@ -5,6 +5,7 @@ import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
+import com.betfair.aping.util.LayAndCoverAlgo;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
@@ -32,7 +33,8 @@ public class ApiNGJsonRpcDemo {
         try {
             MarketFilter marketFilter;
             Set<String> eventIds = new HashSet<String>();
-            MarketAlgo marketAlgo = new BackUnderMarketAlgo();
+            MarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
+            MarketAlgo marketAlgo2 = new LayAndCoverAlgo();
 
             marketFilter = getMarketFilter();
 
@@ -50,12 +52,21 @@ public class ApiNGJsonRpcDemo {
 
             getMarketBooks(marketCatalogueResult);
             printMarketBooks(events);
-            for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")) ; i++) {
-                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Iteration " + i + " Start--------------------");
-                for (Event event : events) {
-                    marketAlgo.process(event);
+            for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
+                if (isBackUnderEnabled()) {
+                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Back Under Mkt Iteration " + i + " Start--------------------");
+                    for (Event event : events) {
+                        marketAlgo1.process(event);
+                    }
+                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Back Under Mkt Iteration " + i + " End--------------------");
                 }
-                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Iteration " + i + " End--------------------");
+                if (isLayAndCoverEnabled()) {
+                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Lay and Cover Iteration " + i + " Start--------------------");
+                    for (Event event : events) {
+                        marketAlgo2.process(event);
+                    }
+                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Lay and Cover Iteration " + i + " End--------------------");
+                }
                 Thread.sleep(5000);
                 getMarketBooks(marketCatalogueResult);
             }
@@ -64,6 +75,14 @@ public class ApiNGJsonRpcDemo {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Boolean isLayAndCoverEnabled() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LNC_ENABLED", "false"));
+    }
+
+    private Boolean isBackUnderEnabled() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("BU_ENABLED", "false"));
     }
 
     private void printMarketBooks(List<Event> events) {

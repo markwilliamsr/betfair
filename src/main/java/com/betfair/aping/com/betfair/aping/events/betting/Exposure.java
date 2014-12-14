@@ -15,7 +15,7 @@ public class Exposure {
         this.marketCatalogue = marketCatalogue;
     }
 
-    public Double calcExposureForSide(Runner runner, Side side) throws Exception {
+    public Double calcExposureForSide(Runner runner, Side side, boolean includeUnMatched) throws Exception {
         Double exposure = 0.0;
         List<Order> orders = runner.getOrders();
 
@@ -26,6 +26,9 @@ public class Exposure {
         for (Order order : orders) {
             if (order.getSide().equals(side)) {
                 exposure += (order.getPrice() * order.getSizeMatched());
+                if (includeUnMatched) {
+                    exposure += (order.getPrice() * order.getSizeRemaining());
+                }
             }
         }
         return exposure;
@@ -66,10 +69,6 @@ public class Exposure {
         }
     }
 
-    public Double calcPnL(Runner runner) throws Exception {
-        return (calcGrossExposure() / 2) - calcTotalStake(runner);
-    }
-
     public Double calcTotalStake(Runner runner) throws Exception {
         return calcStakeForSide(runner, Side.BACK) + calcStakeForSide(runner, Side.LAY);
     }
@@ -90,12 +89,12 @@ public class Exposure {
         return stake;
     }
 
-    public Double calcNetExposure() throws Exception {
+    public Double calcNetExposure(boolean includeUnMatched) throws Exception {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner r = oum.getUnderRunner();
 
-        Double backUnderExposure = calcExposureForSide(r, Side.BACK);
-        Double layUnderExposure = calcExposureForSide(r, Side.LAY);
+        Double backUnderExposure = calcExposureForSide(r, Side.BACK, includeUnMatched);
+        Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalUnderExposure = backUnderExposure - layUnderExposure;
 
         //System.out.println("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
@@ -103,8 +102,8 @@ public class Exposure {
 
         r = oum.getOverRunner();
 
-        Double backOverExposure = calcExposureForSide(r, Side.BACK);
-        Double layOverExposure = calcExposureForSide(r, Side.LAY);
+        Double backOverExposure = calcExposureForSide(r, Side.BACK, includeUnMatched);
+        Double layOverExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalOverExposure = backOverExposure - layOverExposure;
 
         //System.out.println("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
@@ -119,27 +118,15 @@ public class Exposure {
         return totalExposure;
     }
 
-    public Double calcGrossExposure() throws Exception {
-        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Runner r = oum.getUnderRunner();
-
-        Double backExposure = calcExposureForSide(r, Side.BACK);
-        Double layExposure = calcExposureForSide(r, Side.LAY);
-        Double totalExposure = backExposure + layExposure;
-
-        System.out.println("Best Back: " + oum.getBack(r, 0).getPrice() + " Best Lay: " + oum.getLay(r, 0).getPrice());
-        System.out.println("Back Exposure: " + backExposure + " Lay Exposure: " + layExposure + " Total Exposure: " + totalExposure);
-        return totalExposure;
+    public Double calcNetExposure() throws Exception {
+        return calcNetExposure(false);
     }
 
     public Bet calcCashOutBet(Bet placedBet, Double profitPercentage) throws Exception {
         Bet bet = new Bet();
-        Double price = 0.0;
-        PriceSize priceSize = new PriceSize();
 
         Double profit = placedBet.getPriceSize().getSize() * (profitPercentage / 100.0);
-        Double totalExposure = 0.0;
-        Double size = 0.0;
+        Double totalExposure;
 
         if (placedBet.getSide().equals(Side.BACK)) {
             totalExposure = placedBet.getPriceSize().getPrice() * placedBet.getPriceSize().getSize();
@@ -147,18 +134,30 @@ public class Exposure {
             totalExposure = -1d * placedBet.getPriceSize().getPrice() * placedBet.getPriceSize().getSize();
         }
 
+        calcCashOutPriceSize(bet, placedBet.getPriceSize().getSize(), profit, totalExposure);
+
+        bet.setSelectionId(placedBet.getSelectionId());
+        bet.setMarketId(placedBet.getMarketId());
+
+        return bet;
+    }
+
+    private Bet calcCashOutPriceSize(Bet bet, Double placedSize, Double profit, Double totalExposure) {
+        PriceSize priceSize = new PriceSize();
+        Double returnedSize;
+        Double price;
         if (Math.abs(totalExposure) > 0) {
             if (totalExposure < 0) {
                 //too much on the lay side
-                size = placedBet.getPriceSize().getSize() - profit;
+                returnedSize = placedSize - profit;
                 bet.setSide(Side.BACK);
             } else {
                 //too much on the back side
-                size = placedBet.getPriceSize().getSize() + profit;
+                returnedSize = placedSize + profit;
                 bet.setSide(Side.LAY);
             }
-            priceSize.setSize(roundUpToNearestFraction(size, 0.01));
-            price = calcPriceWithCorrectIncrement(totalExposure, size, bet.getSide());
+            priceSize.setSize(roundUpToNearestFraction(returnedSize, 0.01));
+            price = calcPriceWithCorrectIncrement(totalExposure, returnedSize, bet.getSide());
         } else {
             return null;
         }
@@ -166,8 +165,6 @@ public class Exposure {
         priceSize.setPrice(price);
 
         bet.setPriceSize(priceSize);
-        bet.setSelectionId(placedBet.getSelectionId());
-        bet.setMarketId(placedBet.getMarketId());
 
         return bet;
     }
