@@ -50,8 +50,8 @@ public class Score {
     }
 
     public ScoreEnum findScoreFromMarketOdds() {
-        return findCorrectScoreFromMarketOdds(event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners(),
-                event.getMarket().get(MarketType.CORRECT_SCORE));
+        return findCorrectScoreFromMarketOdds(event.getMarket().get(MarketType.CORRECT_SCORE_NEW).getMarketBook().getRunners(),
+                event.getMarket().get(MarketType.CORRECT_SCORE_NEW));
     }
 
     private ScoreEnum findCorrectScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {

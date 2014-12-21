@@ -4,6 +4,7 @@ package com.betfair.aping.entities;
  * Created by markwilliams on 23/08/2014.
  */
 public enum MarketType {
+    CORRECT_SCORE_NEW("Correct Score New", -1),
     CORRECT_SCORE("Correct Score", -1),
     OVER_UNDER_05("Over/Under 0.5 Goals", 0),
     OVER_UNDER_15("Over/Under 1.5 Goals", 1),
