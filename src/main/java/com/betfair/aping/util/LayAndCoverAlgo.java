@@ -172,9 +172,9 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
-        if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
+        if (event.getScore().getTotalGoals() > getTotalGoalLimit()) {
             //don't bet on some goalfest
-            System.out.println("Too many goals already scored: " + event.getScore().getTotalGoals());
+            System.out.println("Too many goals already scored: " + event.getScore().getTotalGoals() + ". Limit is " + getTotalGoalLimit());
             return false;
         }
 
@@ -349,7 +349,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
     }
 
     private Integer getTotalGoalLimit() {
-        return Integer.valueOf(ApiNGDemo.getProp().getProperty("TOTAL_GOAL_LIMIT"));
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty("LNC_TOTAL_GOAL_LIMIT"));
     }
 
     private Double getCashOutProfitPercentage() {
