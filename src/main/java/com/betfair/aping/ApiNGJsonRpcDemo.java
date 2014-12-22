@@ -32,25 +32,16 @@ public class ApiNGJsonRpcDemo {
     public void start() {
         try {
             MarketFilter marketFilter;
-            Set<String> eventIds = new HashSet<String>();
+
             MarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
             MarketAlgo marketAlgo2 = new LayAndCoverAlgo();
 
-            marketFilter = getMarketFilter();
 
-            List<EventResult> eventResults = getEvents(marketFilter);
-            for (EventResult er : eventResults) {
-                eventIds.add(er.getEvent().getId());
-            }
-            marketFilter.setEventIds(eventIds);
-
-            List<MarketCatalogue> marketCatalogueResult = getMarketCatalogues(marketFilter);
-
-            List<Event> events = assignMarketsToEvents(eventResults, marketCatalogueResult);
+            List<Event> events = getCurrentEventsWithCatalogues();
 
             printEvents(events);
 
-            getMarketBooks(marketCatalogueResult);
+            refreshOdds(events);
             printMarketBooks(events);
             for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
                 if (isBackUnderEnabled()) {
@@ -68,13 +59,48 @@ public class ApiNGJsonRpcDemo {
                     System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Lay and Cover Iteration " + i + " End--------------------");
                 }
                 Thread.sleep(5000);
-                getMarketBooks(marketCatalogueResult);
+                if (i > 0 && i % 10 == 0) {
+                    events = refreshEvents(events);
+                }
+                refreshOdds(events);
             }
         } catch (APINGException apiExc) {
             System.out.println(apiExc.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private List<Event> refreshEvents(List<Event> currentEvents) throws APINGException {
+        System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Refreshing Event List. Start");
+        List<Event> newEvents = getCurrentEventsWithCatalogues();
+        boolean found = false;
+        for (Event currentEvent : currentEvents) {
+            for (Event newEvent : newEvents) {
+                if (currentEvent.getId().equals(newEvent.getId())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                currentEvents.remove(currentEvent);
+                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Event Removed " + currentEvent.getName());
+            }
+        }
+
+        for (Event newEvent : newEvents) {
+            for (Event currentEvent : currentEvents) {
+                if (currentEvent.getId().equals(newEvent.getId())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                currentEvents.add(newEvent);
+                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Event Added " + newEvent.getName());
+            }
+        }
+
+        System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Refreshing Event List. Complete");
+        return currentEvents;
     }
 
     private Boolean isLayAndCoverEnabled() {
@@ -96,7 +122,7 @@ public class ApiNGJsonRpcDemo {
         System.out.println("Full MarketBook Listing End");
     }
 
-    private void getMarketBooks(List<MarketCatalogue> marketCatalogueResult) throws APINGException {
+    private void refreshOdds(List<Event> events) throws APINGException {
         PriceProjection priceProjection = new PriceProjection();
         Set<PriceData> priceData = new HashSet<PriceData>();
         priceData.add(PriceData.EX_BEST_OFFERS);
@@ -112,8 +138,10 @@ public class ApiNGJsonRpcDemo {
         List<String> marketIds = new ArrayList<String>();
         List<String> marketIdsBatch = new ArrayList<String>();
 
-        for (MarketCatalogue mc : marketCatalogueResult) {
-            marketIds.add(mc.getMarketId());
+        for (Event event : events) {
+            for (MarketCatalogue mc : event.getMarket().values()) {
+                marketIds.add(mc.getMarketId());
+            }
         }
 
         for (String id : marketIds) {
@@ -123,10 +151,12 @@ public class ApiNGJsonRpcDemo {
             if ((batchRequestCost + QUERY_COST >= DATA_LIMIT) || totalRequests == marketIds.size()) {
                 List<MarketBook> marketBookReturn = jsonOperations.listMarketBook(marketIdsBatch, priceProjection,
                         orderProjection, matchProjection, currencyCode);
-                for (MarketCatalogue mc : marketCatalogueResult) {
-                    for (MarketBook mb : marketBookReturn) {
-                        if (mc.getMarketId().equals(mb.getMarketId())) {
-                            mc.setMarketBook(mb);
+                for (Event event : events) {
+                    for (MarketCatalogue mc : event.getMarket().values()) {
+                        for (MarketBook mb : marketBookReturn) {
+                            if (mc.getMarketId().equals(mb.getMarketId())) {
+                                mc.setMarketBook(mb);
+                            }
                         }
                     }
                 }
@@ -144,13 +174,15 @@ public class ApiNGJsonRpcDemo {
         System.out.println("Full Event Listing End");
     }
 
-    private List<Event> assignMarketsToEvents(List<EventResult> eventResults, List<MarketCatalogue> mks) {
+    private List<Event> getCurrentEventsWithCatalogues() throws APINGException {
+        List<EventResult> eventResults = getEvents();
+        List<MarketCatalogue> marketCatalogues = getMarketCatalogues();
         List<Event> events = new ArrayList<Event>();
-        for (MarketCatalogue mk : mks) {
+        for (MarketCatalogue mc : marketCatalogues) {
             for (EventResult er : eventResults) {
-                if (mk.getEvent().getId().equals(er.getEvent().getId())) {
-                    er.getEvent().getMarket().put(mk.getDescription().getMarketType(), mk);
-                    mk.getDescription().setRules("");
+                if (mc.getEvent().getId().equals(er.getEvent().getId())) {
+                    er.getEvent().getMarket().put(mc.getDescription().getMarketType(), mc);
+                    mc.getDescription().setRules("");
                 }
             }
         }
@@ -160,10 +192,10 @@ public class ApiNGJsonRpcDemo {
         return events;
     }
 
-    private List<EventResult> getEvents(MarketFilter marketFilter) throws APINGException {
-        System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
+    private List<EventResult> getEvents() throws APINGException {
+        System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(getMarketFilter().getMarketTypeCodes()) + "...");
 
-        List<EventResult> events = jsonOperations.listEvents(marketFilter);
+        List<EventResult> events = jsonOperations.listEvents(getMarketFilter());
 
         System.out.println("3.2 (listEvents) Events Returned: " + events.size() + "\n");
 
@@ -199,14 +231,23 @@ public class ApiNGJsonRpcDemo {
         return marketFilter;
     }
 
-    private List<MarketCatalogue> getMarketCatalogues(MarketFilter marketFilter) throws APINGException {
+    private List<MarketCatalogue> getMarketCatalogues() throws APINGException {
 
         Set<MarketProjection> marketProjection = new HashSet<MarketProjection>();
+        Set<String> eventIds = new HashSet<String>();
         marketProjection.add(MarketProjection.COMPETITION);
         marketProjection.add(MarketProjection.EVENT);
         marketProjection.add(MarketProjection.MARKET_DESCRIPTION);
         marketProjection.add(MarketProjection.RUNNER_DESCRIPTION);
         marketProjection.add(MarketProjection.MARKET_START_TIME);
+
+        List<EventResult> eventResults = getEvents();
+        for (EventResult er : eventResults) {
+            eventIds.add(er.getEvent().getId());
+        }
+
+        MarketFilter marketFilter = getMarketFilter();
+        marketFilter.setEventIds(eventIds);
 
         System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
@@ -215,7 +256,7 @@ public class ApiNGJsonRpcDemo {
         List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults);
 
         System.out.println("4.2. Print Event, Market Info, name and runners...\n");
-        printMarketCatalogue(mks);
+        //printMarketCatalogue(mks);
         return mks;
     }
 
