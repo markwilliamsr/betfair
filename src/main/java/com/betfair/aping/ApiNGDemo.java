@@ -3,6 +3,8 @@ package com.betfair.aping;
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.login.HttpClientSSO;
 import com.betfair.aping.login.LoginResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,9 @@ public class ApiNGDemo {
 
     private static Properties prop = new Properties();
     private static boolean debug;
+    //private static Logger logger = Logger.getLogger(ApiNGDemo.class);
+    static Logger logger = LoggerFactory.getLogger(ApiNGDemo.class);
+
 
     static {
         try {
@@ -50,6 +55,7 @@ public class ApiNGDemo {
 
         ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
         jsonRpcDemo.start();
+        logger.warn("Start Logging??");
 
         System.out.println("Completed Successfully.");
     }
