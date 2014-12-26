@@ -2,6 +2,8 @@ package com.betfair.aping.com.betfair.aping.events.betting;
 
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.Side;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -9,7 +11,8 @@ import java.util.List;
  * Created by markwilliams on 26/08/2014.
  */
 public class Exposure {
-    MarketCatalogue marketCatalogue;
+    private MarketCatalogue marketCatalogue;
+    private Logger logger = LoggerFactory.getLogger(Exposure.class);
 
     public Exposure(MarketCatalogue marketCatalogue) {
         this.marketCatalogue = marketCatalogue;
@@ -97,8 +100,8 @@ public class Exposure {
         Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalUnderExposure = backUnderExposure - layUnderExposure;
 
-        //System.out.println("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
-        //System.out.println("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
+        //logger.info("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
+        //logger.info("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
 
         r = oum.getOverRunner();
 
@@ -106,14 +109,14 @@ public class Exposure {
         Double layOverExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalOverExposure = backOverExposure - layOverExposure;
 
-        //System.out.println("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
-        //System.out.println("Back Over Exposure: " + backOverExposure + " Lay Over Exposure: " + layOverExposure + " Total Over Exposure: " + totalUnderExposure);
+        //logger.info("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
+        //logger.info("Back Over Exposure: " + backOverExposure + " Lay Over Exposure: " + layOverExposure + " Total Over Exposure: " + totalUnderExposure);
 
         Double totalExposure = Math.abs(totalOverExposure - totalUnderExposure);
         //round to nearest penny
-        totalExposure =  totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
+        totalExposure = totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
 
-        System.out.println("Total Exposure: " + totalExposure);
+        logger.info("Total Exposure: " + totalExposure);
 
         return totalExposure;
     }

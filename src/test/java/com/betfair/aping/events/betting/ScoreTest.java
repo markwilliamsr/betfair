@@ -2,9 +2,14 @@ package com.betfair.aping.events.betting;
 
 import com.betfair.aping.com.betfair.aping.events.betting.Score;
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
-import com.betfair.aping.entities.*;
+import com.betfair.aping.entities.Event;
+import com.betfair.aping.entities.MarketBook;
+import com.betfair.aping.entities.MarketCatalogue;
+import com.betfair.aping.entities.MarketType;
 import com.google.gson.Gson;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +21,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ScoreTest {
     Gson gson = new Gson();
+    private Logger logger = LoggerFactory.getLogger(ScoreTest.class);
 
     @Test
     public void getTotalGoalsTest() {
@@ -47,7 +53,7 @@ public class ScoreTest {
         Event e = makeEvent(jsonEvent);
         Score score = new Score(e);
         ScoreEnum correctScore = score.findScoreFromMarketOdds();
-        System.out.println("Correct Score is: " + correctScore);
+        logger.info("Correct Score is: " + correctScore);
         assertEquals(ScoreEnum.NIL_NIL, correctScore);
     }
 
@@ -63,7 +69,7 @@ public class ScoreTest {
         Score score = new Score(e);
         int goals = score.getTotalGoals();
 
-        System.out.println("Number of Goals: " + goals);
+        logger.info("Number of Goals: " + goals);
         assertEquals(0, goals);
     }
 
@@ -79,7 +85,7 @@ public class ScoreTest {
         Score score = new Score(e);
         int goals = score.getTotalGoals();
 
-        System.out.println("Number of Goals: " + goals);
+        logger.info("Number of Goals: " + goals);
         assertEquals(1, goals);
     }
 
@@ -93,7 +99,7 @@ public class ScoreTest {
         e.getMarket().get(MarketType.CORRECT_SCORE).setMarketBook(mb);
         Score score = new Score(e);
         ScoreEnum correctScore = score.findScoreFromMarketOdds();
-        System.out.println("Correct Score is: " + correctScore);
+        logger.info("Correct Score is: " + correctScore);
         assertEquals(ScoreEnum.ONE_NIL, correctScore);
     }
 }

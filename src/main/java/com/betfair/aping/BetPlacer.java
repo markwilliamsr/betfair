@@ -11,6 +11,8 @@ import com.betfair.aping.enums.OrderType;
 import com.betfair.aping.enums.PersistenceType;
 import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,7 +20,8 @@ import java.util.Calendar;
 import java.util.List;
 
 public class BetPlacer {
-    Gson gson = new Gson();
+    private Logger logger = LoggerFactory.getLogger(BetPlacer.class);
+            Gson gson = new Gson();
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss");
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
@@ -53,14 +56,14 @@ public class BetPlacer {
             PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketId, instructions, customerRef);
             // Handling the operation result
             if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
-                System.out.println("Your bet has been placed!!");
-                System.out.println(gson.toJson(placeBetResult.getInstructionReports()));
+                logger.info("Your bet has been placed!!");
+                logger.info(gson.toJson(placeBetResult.getInstructionReports()));
             } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
-                System.out.println("Your bet has NOT been placed :*( ");
-                System.out.println("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
+                logger.info("Your bet has NOT been placed :*( ");
+                logger.info("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
             }
         } else {
-            System.out.println("Safety is on, did NOT place any bets.");
+            logger.info("Safety is on, did NOT place any bets.");
         }
     }
 

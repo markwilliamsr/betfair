@@ -75,7 +75,7 @@ public class Score {
                 if (minGoalsSoFar > getTotalGoals(runner)) {
                     minGoalsSoFar = getTotalGoals(runner);
                     correctScore = ScoreEnum.fromString(runner.getRunnerName());
-                    //System.out.println("Found RunnerCatalog with possible odds " + runner.getRunnerName());
+                    //logger.info("Found RunnerCatalog with possible odds " + runner.getRunnerName());
                 }
             }
         }

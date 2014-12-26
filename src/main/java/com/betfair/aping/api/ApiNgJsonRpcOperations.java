@@ -7,6 +7,8 @@ import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
 import com.betfair.aping.util.JsonConverter;
 import com.betfair.aping.util.JsonrpcRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.Set;
 public class ApiNgJsonRpcOperations extends ApiNgOperations {
 
     private static ApiNgJsonRpcOperations instance = null;
+    private Logger logger = LoggerFactory.getLogger(ApiNgJsonRpcOperations.class);
     String appKey;
     String sessionToken;
 
@@ -44,7 +47,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         params.put(LOCALE, locale);
         String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTTYPES, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         EventTypeResultContainer container = JsonConverter.convertFromJson(result, EventTypeResultContainer.class);
         if (container.getError() != null)
@@ -60,7 +63,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         params.put(LOCALE, locale);
         String result = getInstance().makeRequest(ApiNgOperation.LISTCOMPETITIONS, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         CompetitionResultContainer container = JsonConverter.convertFromJson(result, CompetitionResultContainer.class);
         if (container.getError() != null)
@@ -80,7 +83,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         params.put(MATCH_PROJECTION, matchProjection);
         String result = getInstance().makeRequest(ApiNgOperation.LISTMARKETBOOK, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         ListMarketBooksContainer container = JsonConverter.convertFromJson(result, ListMarketBooksContainer.class);
 
@@ -102,7 +105,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         params.put(MARKET_PROJECTION, marketProjection);
         String result = getInstance().makeRequest(ApiNgOperation.LISTMARKETCATALOGUE, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         ListMarketCatalogueContainer container = JsonConverter.convertFromJson(result, ListMarketCatalogueContainer.class);
 
@@ -120,7 +123,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
 
         String result = getInstance().makeRequest(ApiNgOperation.LISTEVENTS, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         ListEventsContainer container = JsonConverter.convertFromJson(result, ListEventsContainer.class);
 
@@ -139,7 +142,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         params.put(CUSTOMER_REF, customerRef);
         String result = getInstance().makeRequest(ApiNgOperation.PLACEORDERS, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         PlaceOrdersContainer container = JsonConverter.convertFromJson(result, PlaceOrdersContainer.class);
 
@@ -160,7 +163,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
 
         requestString = JsonConverter.convertToJson(request);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nRequest: " + requestString);
+            logger.info("\nRequest: " + requestString);
 
         //We need to pass the "sendPostRequest" method a string in util format:  requestString
         HttpUtil requester = new HttpUtil();
@@ -173,7 +176,7 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         Map<String, Object> params = new HashMap<String, Object>();
         String result = getInstance().makeRequest(ApiNgOperation.ACCOUNTFUNDS, params);
         if (ApiNGDemo.isDebug())
-            System.out.println("\nResponse: " + result);
+            logger.info("\nResponse: " + result);
 
         AccountFundsContainer container = JsonConverter.convertFromJson(result, AccountFundsContainer.class);
 

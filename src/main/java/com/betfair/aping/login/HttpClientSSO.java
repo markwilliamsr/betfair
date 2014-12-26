@@ -13,6 +13,8 @@ import org.apache.http.conn.ssl.StrictHostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -28,12 +30,11 @@ import java.util.Properties;
 
 
 public class HttpClientSSO {
-
-
     private static int port = 443;
     private static boolean debug;
     private Properties properties = new Properties();
     private Properties loginProperties = new Properties();
+    private Logger logger = LoggerFactory.getLogger(HttpClientSSO.class);
 
     public HttpClientSSO() {
         this.loadProperties();
@@ -60,7 +61,7 @@ public class HttpClientSSO {
             in.close();
 
         } catch (IOException e) {
-            System.out.println("Error loading the properties file: " + e.toString());
+            logger.info("Error loading the properties file: " + e.toString());
             System.exit(-1);
         }
     }
@@ -87,9 +88,9 @@ public class HttpClientSSO {
             setApplicationKey(loginResponse);
 
             if (debug) {
-                System.out.println(response.getStatusLine());
-                System.out.println("loginResponse" + loginResponse.toString());
-                //System.out.println("sessionToken: " + loginResponse.getSessionToken());
+                logger.info(response.getStatusLine().toString());
+                logger.info("loginResponse" + loginResponse.toString());
+                //logger.info("sessionToken: " + loginResponse.getSessionToken());
             }
 
             return loginResponse;

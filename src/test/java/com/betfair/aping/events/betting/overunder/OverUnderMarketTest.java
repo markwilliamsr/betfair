@@ -5,6 +5,8 @@ import com.betfair.aping.com.betfair.aping.events.betting.Score;
 import com.betfair.aping.entities.*;
 import com.google.gson.Gson;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,7 +18,7 @@ import static org.junit.Assert.assertEquals;
  * Created by markwilliams on 23/08/2014.
  */
 public class OverUnderMarketTest {
-
+    private Logger logger = LoggerFactory.getLogger(OverUnderMarketTest.class);
     public final String under25Goals = "Under 2.5 Goals";
     public final String over25Goals = "Over 2.5 Goals";
 
@@ -76,21 +78,21 @@ public class OverUnderMarketTest {
     }
 
     public void log(String s) {
-        System.out.println(s);
+        logger.info(s);
     }
 
     @Test
     public void calendarTest() {
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
-        System.out.println(df.format(cal.getTime()));
+        logger.info(df.format(cal.getTime()));
     }
 
     @Test
     public void safetyTest() {
         boolean safety = Boolean.valueOf("trues");
 
-        System.out.println(safety);
+        logger.info(String.valueOf(safety));
     }
 
     @Test

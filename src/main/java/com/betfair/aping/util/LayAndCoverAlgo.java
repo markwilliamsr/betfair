@@ -9,6 +9,8 @@ import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
 import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +20,7 @@ import java.util.List;
  * Created by markwilliams on 12/14/14.
  */
 public class LayAndCoverAlgo implements MarketAlgo {
+    private Logger logger = LoggerFactory.getLogger(LayAndCoverAlgo.class);
     private Gson gson = new Gson();
     private int MAX_PREV_SCORES = 6;
 
@@ -36,7 +39,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         MarketCatalogue mc = new MarketCatalogue();
 
         updateEventScore(event);
-        System.out.println(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
+        logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
 
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
@@ -44,7 +47,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
                 if (mc != null) {
                     if (isCandidateLayMarket(event)) {
-                        System.out.println("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
+                        logger.info("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
                         OverUnderMarket oum = new OverUnderMarket(mc);
                         Runner runner = oum.getUnderRunner();
 
@@ -77,7 +80,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                 }
             }
         } catch (IllegalArgumentException e) {
-            System.out.println("Could not determine the MarketType. Exception: " + e.toString());
+            logger.info("Could not determine the MarketType. Exception: " + e.toString());
         }
     }
 
@@ -153,48 +156,48 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Runner runner = oum.getUnderRunner();
 
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
-            System.out.println("Market is not OPEN");
+            logger.info("Market is not OPEN");
             return false;
         }
 
         if (!isMarketStartingSoon(event)) {
-            System.out.println("Market is not starting soon enough");
+            logger.info("Market is not starting soon enough");
             return false;
         }
 
         if (!isMarketStartedTooLongAgo(event)) {
-            System.out.println("Market started too long ago");
+            logger.info("Market started too long ago");
             return false;
         }
 
         if (isBetAlreadyOpen(marketCatalogue, oum)) {
-            System.out.println("Bet already open in the Market");
+            logger.info("Bet already open in the Market");
             return false;
         }
 
         if (event.getScore().getTotalGoals() > getTotalGoalLimit()) {
             //don't bet on some goalfest
-            System.out.println("Too many goals already scored: " + event.getScore().getTotalGoals() + ". Limit is " + getTotalGoalLimit());
+            logger.info("Too many goals already scored: " + event.getScore().getTotalGoals() + ". Limit is " + getTotalGoalLimit());
             return false;
         }
 
         try {
             if (!isBestOpeningLayPriceWithinBounds(oum, runner)) {
-                System.out.println("Lay Price not within Bounds");
+                logger.info("Lay Price not within Bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
-            System.out.println(ex);
+            logger.info(ex.toString());
             return false;
         }
 
         try {
             if (!isBackLaySpreadWithinBounds(oum, runner)) {
-                System.out.println("Back Lay Spread not within bounds");
+                logger.info("Back Lay Spread not within bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
-            System.out.println(ex);
+            logger.info(ex.toString());
             return false;
         }
 
@@ -208,37 +211,37 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Runner runner = oum.getUnderRunner();
 
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
-            System.out.println("Market is not OPEN");
+            logger.info("Market is not OPEN");
             return false;
         }
 
         if (!isMarketStartingSoon(event)) {
-            System.out.println("Market is not starting soon enough");
+            logger.info("Market is not starting soon enough");
             return false;
         }
 
         if (!isBetAlreadyOpen(marketCatalogue, oum)) {
-            System.out.println("No Lay Bets already open in the Market");
+            logger.info("No Lay Bets already open in the Market");
             return false;
         }
 
         try {
             if (!isBestCoveringLayPriceWithinBounds(marketCatalogue, oum)) {
-                System.out.println("Best Covering Lay Price not within Bounds");
+                logger.info("Best Covering Lay Price not within Bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
-            System.out.println(ex);
+            logger.info(ex.toString());
             return false;
         }
 
         try {
             if (!isBackLaySpreadWithinBounds(oum, runner)) {
-                System.out.println("Back Lay Spread not within bounds");
+                logger.info("Back Lay Spread not within bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
-            System.out.println(ex);
+            logger.info(ex.toString());
             return false;
         }
 
@@ -261,10 +264,10 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
     private boolean isBestOpeningLayPriceWithinBounds(OverUnderMarket oum, Runner runner) {
         if (oum.getLay(runner, 0).getPrice() <= getOverUnderLayLimit()) {
-            System.out.println("Best Lay Price: " + oum.getUnderRunnerName() + " : " + oum.getLay(runner, 0).toString());
+            logger.info("Best Lay Price: " + oum.getUnderRunnerName() + " : " + oum.getLay(runner, 0).toString());
             return true;
         }
-        System.out.println("Best Lay Price: " + oum.getUnderRunnerName() + " : " + oum.getLay(runner, 0).toString());
+        logger.info("Best Lay Price: " + oum.getUnderRunnerName() + " : " + oum.getLay(runner, 0).toString());
         return false;
     }
 
@@ -280,11 +283,11 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Double profitPercentage = (profit / initialStake) * 100;
 
         if (profitPercentage >= getCashOutProfitPercentage()) {
-            System.out.println("Best Lay Price: " + oum.getOverRunnerName() + " : " + oum.getLay(oum.getOverRunner(), 0).toString() + ". Profit Percentage: " + roundUpToNearestFraction(profitPercentage, 2d));
+            logger.info("Best Lay Price: " + oum.getOverRunnerName() + " : " + oum.getLay(oum.getOverRunner(), 0).toString() + ". Profit Percentage: " + roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
-        System.out.println("Best Lay Price: " + oum.getOverRunnerName() + " : " + oum.getLay(oum.getOverRunner(), 0).toString() + ". Profit Percentage: " + roundUpToNearestFraction(profitPercentage, 2d));
+        logger.info("Best Lay Price: " + oum.getOverRunnerName() + " : " + oum.getLay(oum.getOverRunner(), 0).toString() + ". Profit Percentage: " + roundUpToNearestFraction(profitPercentage, 2d));
         return false;
     }
 
@@ -294,7 +297,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         MarketType marketType = MarketType.fromTotalGoals(totalGoalsForMarket);
 
         if (marketType.equals(MarketType.OVER_UNDER_05)){
-            System.out.println("Request for " + marketType + ". Returning null.");
+            logger.info("Request for " + marketType + ". Returning null.");
         }
 
         return event.getMarket().get(marketType);

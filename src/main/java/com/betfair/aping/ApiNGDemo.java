@@ -33,20 +33,20 @@ public class ApiNGDemo {
             debug = new Boolean(prop.getProperty("DEBUG"));
 
         } catch (IOException e) {
-            System.out.println("Error loading the properties file: " + e.toString());
+            logger.info("Error loading the properties file: " + e.toString());
         }
     }
 
     public static void main(String[] args) {
 
-        System.out.println("Welcome to the Betfair API NG!");
+        logger.info("Welcome to the Betfair API NG!");
 
         HttpClientSSO sso = new HttpClientSSO();
         LoginResponse loginResponse = null;
         try {
             loginResponse = sso.login();
         } catch (Exception e) {
-            System.out.println(e);
+            logger.info(e.toString());
             System.exit(-1);
         }
 
@@ -57,7 +57,7 @@ public class ApiNGDemo {
         jsonRpcDemo.start();
         logger.warn("Start Logging??");
 
-        System.out.println("Completed Successfully.");
+        logger.info("Completed Successfully.");
     }
 
     public static Properties getProp() {

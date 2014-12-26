@@ -7,9 +7,9 @@ import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
 import com.betfair.aping.util.LayAndCoverAlgo;
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -19,10 +19,8 @@ import java.util.*;
  * runner</li> <li>handle the error</li>
  */
 public class ApiNGJsonRpcDemo {
-    Gson gson = new Gson();
-    DecimalFormat df = new DecimalFormat("0.00");
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+    private Logger logger = LoggerFactory.getLogger(ApiNGJsonRpcDemo.class);
+            Gson gson = new Gson();
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
 
     private static Properties getProps() {
@@ -45,18 +43,18 @@ public class ApiNGJsonRpcDemo {
             printMarketBooks(events);
             for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
                 if (isBackUnderEnabled()) {
-                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Back Under Mkt Iteration " + i + " Start--------------------");
+                    logger.info("--------------------Back Under Mkt Iteration " + i + " Start--------------------");
                     for (Event event : events) {
                         marketAlgo1.process(event);
                     }
-                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Back Under Mkt Iteration " + i + " End--------------------");
+                    logger.info("--------------------Back Under Mkt Iteration " + i + " End--------------------");
                 }
                 if (isLayAndCoverEnabled()) {
-                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Lay and Cover Iteration " + i + " Start--------------------");
+                    logger.info("--------------------Lay and Cover Iteration " + i + " Start--------------------");
                     for (Event event : events) {
                         marketAlgo2.process(event);
                     }
-                    System.out.println(dtf.format(Calendar.getInstance().getTime()) + " --------------------Lay and Cover Iteration " + i + " End--------------------");
+                    logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
                 }
                 Thread.sleep(5000);
                 if (i > 0 && i % 10 == 0) {
@@ -65,14 +63,14 @@ public class ApiNGJsonRpcDemo {
                 refreshOdds(events);
             }
         } catch (APINGException apiExc) {
-            System.out.println(apiExc.toString());
+            logger.info(apiExc.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private List<Event> refreshEvents(List<Event> currentEvents) throws APINGException {
-        System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Refreshing Event List. Start");
+        logger.info("Refreshing Event List. Start");
         List<Event> newEvents = getCurrentEventsWithCatalogues();
         boolean found = false;
         for (Event currentEvent : currentEvents) {
@@ -83,7 +81,7 @@ public class ApiNGJsonRpcDemo {
             }
             if (!found) {
                 currentEvents.remove(currentEvent);
-                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Event Removed " + currentEvent.getName());
+                logger.info("Event Removed " + currentEvent.getName());
             }
         }
 
@@ -95,11 +93,11 @@ public class ApiNGJsonRpcDemo {
             }
             if (!found) {
                 currentEvents.add(newEvent);
-                System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Event Added " + newEvent.getName());
+                logger.info("Event Added " + newEvent.getName());
             }
         }
 
-        System.out.println(dtf.format(Calendar.getInstance().getTime()) + " Refreshing Event List. Complete");
+        logger.info("Refreshing Event List. Complete");
         return currentEvents;
     }
 
@@ -112,14 +110,14 @@ public class ApiNGJsonRpcDemo {
     }
 
     private void printMarketBooks(List<Event> events) {
-        System.out.println("Full MarketBook Listing Start");
+        logger.info("Full MarketBook Listing Start");
         for (Event e : events) {
-            System.out.println(e.getName());
+            logger.info(e.getName());
             for (MarketType mt : e.getMarket().keySet()) {
-                System.out.println("  " + mt + ": " + gson.toJson(e.getMarket().get(mt)));
+                logger.info("  " + mt + ": " + gson.toJson(e.getMarket().get(mt)));
             }
         }
-        System.out.println("Full MarketBook Listing End");
+        logger.info("Full MarketBook Listing End");
     }
 
     private void refreshOdds(List<Event> events) throws APINGException {
@@ -167,11 +165,11 @@ public class ApiNGJsonRpcDemo {
     }
 
     private void printEvents(List<Event> events) {
-        System.out.println("Full Event Listing Start");
+        logger.info("Full Event Listing Start");
         for (Event e : events) {
-            System.out.println(gson.toJson(e));
+            logger.info(gson.toJson(e));
         }
-        System.out.println("Full Event Listing End");
+        logger.info("Full Event Listing End");
     }
 
     private List<Event> getCurrentEventsWithCatalogues() throws APINGException {
@@ -193,11 +191,11 @@ public class ApiNGJsonRpcDemo {
     }
 
     private List<EventResult> getEvents() throws APINGException {
-        System.out.println("3.1 (listEvents) Get all events for " + gson.toJson(getMarketFilter().getMarketTypeCodes()) + "...");
+        logger.info("3.1 (listEvents) Get all events for " + gson.toJson(getMarketFilter().getMarketTypeCodes()) + "...");
 
         List<EventResult> events = jsonOperations.listEvents(getMarketFilter());
 
-        System.out.println("3.2 (listEvents) Events Returned: " + events.size() + "\n");
+        logger.info("3.2 (listEvents) Events Returned: " + events.size() + "\n");
 
         return events;
     }
@@ -249,13 +247,13 @@ public class ApiNGJsonRpcDemo {
         MarketFilter marketFilter = getMarketFilter();
         marketFilter.setEventIds(eventIds);
 
-        System.out.println("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
+        logger.info("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
         String maxResults = getProps().getProperty("MAX_RESULTS");
 
         List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults);
 
-        System.out.println("4.2. Print Event, Market Info, name and runners...\n");
+        logger.info("4.2. Print Event, Market Info, name and runners...\n");
         //printMarketCatalogue(mks);
         return mks;
     }
@@ -266,16 +264,16 @@ public class ApiNGJsonRpcDemo {
         Set<String> competitions = new HashSet<String>();
         competitions = gson.fromJson(getProps().getProperty("COMPETITIONS"), competitions.getClass());
 
-        System.out.println("2.1.(listCompetitions) Get all Competitions...");
+        logger.info("2.1.(listCompetitions) Get all Competitions...");
         List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter);
-        System.out.println("2.2. Extract Competition Ids...");
+        logger.info("2.2. Extract Competition Ids...");
         for (CompetitionResult competitionResult : c) {
             if (competitions.contains(competitionResult.getCompetition().getName())) {
-                System.out.println("2.3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId());
+                logger.info("2.3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId());
                 competitionIds.add(competitionResult.getCompetition().getId().toString());
             }
         }
-        System.out.println();
+        logger.info("");
         return competitionIds;
     }
 
@@ -286,12 +284,12 @@ public class ApiNGJsonRpcDemo {
 
         eventTypes = gson.fromJson(getProps().getProperty("EVENT_TYPES"), eventTypes.getClass());
 
-        System.out.println("1.1.(listEventTypes) Get all Event Types...");
+        logger.info("1.1.(listEventTypes) Get all Event Types...");
         List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter);
-        System.out.println("1.2. Extract Event Type Ids...");
+        logger.info("1.2. Extract Event Type Ids...");
         for (EventTypeResult eventTypeResult : r) {
             if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
-                System.out.println("1.3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
+                logger.info("1.3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
                 eventTypeIds.add(eventTypeResult.getEventType().getId().toString());
             }
         }
@@ -300,13 +298,13 @@ public class ApiNGJsonRpcDemo {
 
     private void printMarketCatalogue(List<MarketCatalogue> mks) {
         for (MarketCatalogue mk : mks) {
-            System.out.println("Event: " + mk.getEvent().getName() + ", Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
+            logger.info("Event: " + mk.getEvent().getName() + ", Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
             List<RunnerCatalog> runners = mk.getRunners();
             if (runners != null) {
                 for (RunnerCatalog rCat : runners) {
-                    System.out.println("  Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId());
+                    logger.info("  Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId());
                 }
-                System.out.println();
+                logger.info("");
             }
         }
     }
