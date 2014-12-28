@@ -176,6 +176,12 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
+
+        if (!isScoreChanging(event)) {
+            logger.info("Score is currently changing. Previous scores: " + event.getPreviousScores());
+            return false;
+        }
+
         if (event.getScore().getTotalGoals() > getTotalGoalLimit()) {
             //don't bet on some goalfest
             logger.info("Too many goals already scored: " + event.getScore().getTotalGoals() + ". Limit is " + getTotalGoalLimit());
@@ -202,6 +208,20 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean isScoreChanging(Event event) {
+        if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
+            ScoreEnum firstScore = event.getPreviousScores().get(0);
+            for (ScoreEnum score : event.getPreviousScores()) {
+                if (!score.equals(firstScore)){
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
         return true;
     }
 
