@@ -176,7 +176,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
-        if (!isScoreChanging(event)) {
+        if (isScoreChanging(event)) {
             logger.info("Score is currently changing. Previous scores: " + event.getPreviousScores());
             return false;
         }
