@@ -176,7 +176,6 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
-
         if (!isScoreChanging(event)) {
             logger.info("Score is currently changing. Previous scores: " + event.getPreviousScores());
             return false;
@@ -216,13 +215,13 @@ public class LayAndCoverAlgo implements MarketAlgo {
             ScoreEnum firstScore = event.getPreviousScores().get(0);
             for (ScoreEnum score : event.getPreviousScores()) {
                 if (!score.equals(firstScore)){
-                    return false;
+                    return true;
                 }
             }
         } else {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private boolean isCandidateCoverMarket(Event event) throws Exception {
