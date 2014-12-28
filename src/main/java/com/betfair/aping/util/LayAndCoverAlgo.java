@@ -181,7 +181,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
-        if (event.getScore().getTotalGoals() > getTotalGoalLimit()) {
+        if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
             //don't bet on some goalfest
             logger.info("Too many goals already scored: " + event.getScore().getTotalGoals() + ". Limit is " + getTotalGoalLimit());
             return false;
