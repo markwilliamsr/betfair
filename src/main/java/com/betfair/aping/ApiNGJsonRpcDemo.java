@@ -54,6 +54,10 @@ public class ApiNGJsonRpcDemo {
                 logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
             }
             Thread.sleep(5000);
+            if (isReloadPropertiesEnabled()) {
+                logger.debug("Reloading Properties");
+                ApiNGDemo.loadProperties();
+            }
             if (i > 0 && i % 300 == 0) {
                 events = refreshEvents(events);
             }
@@ -95,6 +99,10 @@ public class ApiNGJsonRpcDemo {
 
     private Boolean isLayAndCoverEnabled() {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LNC_ENABLED", "false"));
+    }
+
+    private Boolean isReloadPropertiesEnabled() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("RELOAD_PROPERTIES", "false"));
     }
 
     private Boolean isBackUnderEnabled() {

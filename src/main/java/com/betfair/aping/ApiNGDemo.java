@@ -6,6 +6,7 @@ import com.betfair.aping.login.LoginResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -56,9 +57,10 @@ public class ApiNGDemo {
         }
     }
 
-    private static void loadProperties() {
+    public static void loadProperties() {
         try {
-            InputStream in = ApiNGDemo.class.getResourceAsStream("/apingdemo.properties");
+            //InputStream in = ApiNGDemo.class.getResourceAsStream("/apingdemo.properties");
+            InputStream in = new FileInputStream("/Users/markwilliams/GitHub/betfair/src/main/resources/apingdemo.properties");
             prop.load(in);
             in.close();
 
