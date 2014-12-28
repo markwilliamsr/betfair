@@ -118,12 +118,13 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
                 ScoreEnum firstScore = event.getPreviousScores().get(0);
+                updateScore = true;
                 for (int i = 1; i < MAX_PREV_SCORES; i++) {
                     ScoreEnum loopScore = event.getPreviousScores().get(i);
                     if (!loopScore.equals(firstScore)) {
-                        continue;
+                        updateScore = false;
+                        break;
                     }
-                    updateScore = true;
                 }
                 if (updateScore) {
                     event.setScore(firstScore);
@@ -296,7 +297,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Integer totalGoalsForMarket = event.getScore().getTotalGoals() + offset;
         MarketType marketType = MarketType.fromTotalGoals(totalGoalsForMarket);
 
-        if (marketType.equals(MarketType.OVER_UNDER_05)){
+        if (marketType.equals(MarketType.OVER_UNDER_05)) {
             logger.info("Request for " + marketType + ". Returning null.");
         }
 

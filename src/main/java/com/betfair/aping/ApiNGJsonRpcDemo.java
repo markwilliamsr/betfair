@@ -57,7 +57,7 @@ public class ApiNGJsonRpcDemo {
                     logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
                 }
                 Thread.sleep(5000);
-                if (i > 0 && i % 10 == 0) {
+                if (i > 0 && i % 300 == 0) {
                     events = refreshEvents(events);
                 }
                 refreshOdds(events);
