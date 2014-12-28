@@ -18,26 +18,14 @@ import java.util.Properties;
  */
 public class ApiNGDemo {
 
-    private static Properties prop = new Properties();
-    private static boolean debug;
-    //private static Logger logger = Logger.getLogger(ApiNGDemo.class);
     static Logger logger = LoggerFactory.getLogger(ApiNGDemo.class);
 
-
-    static {
-        try {
-            InputStream in = ApiNGDemo.class.getResourceAsStream("/apingdemo.properties");
-            prop.load(in);
-            in.close();
-
-            debug = new Boolean(prop.getProperty("DEBUG"));
-
-        } catch (IOException e) {
-            logger.info("Error loading the properties file: " + e.toString());
-        }
-    }
+    private static Properties prop = new Properties();
+    private static boolean debug;
 
     public static void main(String[] args) {
+
+        loadProperties();
 
         logger.info("Welcome to the Betfair API NG!");
 
@@ -54,10 +42,31 @@ public class ApiNGDemo {
         ApiNgJsonRpcOperations.getInstance().setSessionToken(loginResponse.getSessionToken());
 
         ApiNGJsonRpcDemo jsonRpcDemo = new ApiNGJsonRpcDemo();
-        jsonRpcDemo.start();
-        logger.warn("Start Logging??");
+        int i = 0;
+        while (true) {
+            try {
+                jsonRpcDemo.start();
+            } catch (Exception e) {
+                logger.error("******************Fatal error, Restarting {}'th time *******************", i);
+                logger.error("Error:", e);
+                logger.error("******************Fatal error, Restarting {}'th time *******************", i);
+                logger.error("******************Fatal error, Restarting {}'th time *******************", i);
+                i++;
+            }
+        }
+    }
 
-        logger.info("Completed Successfully.");
+    private static void loadProperties() {
+        try {
+            InputStream in = ApiNGDemo.class.getResourceAsStream("/apingdemo.properties");
+            prop.load(in);
+            in.close();
+
+            debug = new Boolean(prop.getProperty("DEBUG"));
+
+        } catch (IOException e) {
+            logger.info("Error loading the properties file: " + e.toString());
+        }
     }
 
     public static Properties getProp() {

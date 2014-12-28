@@ -19,53 +19,45 @@ import java.util.*;
  * runner</li> <li>handle the error</li>
  */
 public class ApiNGJsonRpcDemo {
+    Gson gson = new Gson();
     private Logger logger = LoggerFactory.getLogger(ApiNGJsonRpcDemo.class);
-            Gson gson = new Gson();
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
 
     private static Properties getProps() {
         return ApiNGDemo.getProp();
     }
 
-    public void start() {
-        try {
-            MarketFilter marketFilter;
+    public void start() throws Exception {
 
-            MarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
-            MarketAlgo marketAlgo2 = new LayAndCoverAlgo();
+        MarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
+        MarketAlgo marketAlgo2 = new LayAndCoverAlgo();
 
+        List<Event> events = getCurrentEventsWithCatalogues();
 
-            List<Event> events = getCurrentEventsWithCatalogues();
+        printEvents(events);
 
-            printEvents(events);
-
-            refreshOdds(events);
-            printMarketBooks(events);
-            for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
-                if (isBackUnderEnabled()) {
-                    logger.info("--------------------Back Under Mkt Iteration " + i + " Start--------------------");
-                    for (Event event : events) {
-                        marketAlgo1.process(event);
-                    }
-                    logger.info("--------------------Back Under Mkt Iteration " + i + " End--------------------");
+        refreshOdds(events);
+        printMarketBooks(events);
+        for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
+            if (isBackUnderEnabled()) {
+                logger.info("--------------------Back Under Mkt Iteration " + i + " Start--------------------");
+                for (Event event : events) {
+                    marketAlgo1.process(event);
                 }
-                if (isLayAndCoverEnabled()) {
-                    logger.info("--------------------Lay and Cover Iteration " + i + " Start--------------------");
-                    for (Event event : events) {
-                        marketAlgo2.process(event);
-                    }
-                    logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
-                }
-                Thread.sleep(5000);
-                if (i > 0 && i % 300 == 0) {
-                    events = refreshEvents(events);
-                }
-                refreshOdds(events);
+                logger.info("--------------------Back Under Mkt Iteration " + i + " End--------------------");
             }
-        } catch (APINGException apiExc) {
-            logger.info(apiExc.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (isLayAndCoverEnabled()) {
+                logger.info("--------------------Lay and Cover Iteration " + i + " Start--------------------");
+                for (Event event : events) {
+                    marketAlgo2.process(event);
+                }
+                logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
+            }
+            Thread.sleep(5000);
+            if (i > 0 && i % 300 == 0) {
+                events = refreshEvents(events);
+            }
+            refreshOdds(events);
         }
     }
 

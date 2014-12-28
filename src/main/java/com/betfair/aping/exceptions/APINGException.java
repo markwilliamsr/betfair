@@ -1,6 +1,6 @@
 package com.betfair.aping.exceptions;
 
-public class APINGException extends Throwable {
+public class APINGException extends Exception {
 	private String errorDetails;
 	private String errorCode;
 	private String requestUUID;
