@@ -6,3 +6,6 @@ release/*/*/*/*SNAPSHOT*
 release/*/*/*/*maven*
 snapshots/*/*/*/*SNAPSHOT*
 snapshots/*/*/*/*maven*
+release.properties
+
+pom.xml.releaseBackup
