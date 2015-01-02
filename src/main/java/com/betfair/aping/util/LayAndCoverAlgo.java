@@ -274,14 +274,16 @@ public class LayAndCoverAlgo implements MarketAlgo {
     private boolean isBackLaySpreadWithinBounds(OverUnderMarket oum, Runner runner) {
         Double back = oum.getBack(runner, 0).getPrice();
         Double lay = oum.getLay(runner, 0).getPrice();
+        Long spread = 0l;
 
         if (back != null && lay != null) {
             Double increment = PriceIncrement.getIncrement(back);
-            Long spread = Math.round((lay - back) / increment);
+            spread = Math.round((lay - back) / increment);
             if (spread <= getMaxBackLaySpread()) {
                 return true;
             }
         }
+        logger.info("{}; Back Lay Spread not within bounds. Lay: {}, Back: {}, Spread: {}", oum.getMarketType(), lay, back, spread);
         return false;
     }
 
