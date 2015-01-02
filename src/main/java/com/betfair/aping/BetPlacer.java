@@ -22,11 +22,11 @@ import java.util.List;
 public class BetPlacer {
     private Logger logger = LoggerFactory.getLogger(BetPlacer.class);
             Gson gson = new Gson();
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+    SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
     private ApiNgOperations jsonOperations = ApiNgJsonRpcOperations.getInstance();
 
     public void placeBets(List<Bet> bets) throws APINGException {
+        Calendar cal = Calendar.getInstance();
         List<PlaceInstruction> instructions = new ArrayList<PlaceInstruction>();
         String marketId = "";
 
@@ -61,6 +61,8 @@ public class BetPlacer {
             } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
                 logger.info("Your bet has NOT been placed :*( ");
                 logger.info("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());
+                logger.info(gson.toJson(instructions));
+                logger.info(gson.toJson(placeBetResult));
             }
         } else {
             logger.info("Safety is on, did NOT place any bets.");
