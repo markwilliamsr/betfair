@@ -42,7 +42,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
                 if (mc != null) {
                     if (isCandidateMarket(event)) {
                         logger.info("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
-                        Exposure exposure = new Exposure(mc);
+                        Exposure exposure = new Exposure(event, mc);
                         OverUnderMarket oum = new OverUnderMarket(mc);
                         Runner runner = oum.getUnderRunner();
 
@@ -138,7 +138,7 @@ public class BackUnderMarketAlgo implements MarketAlgo {
             return false;
         }
 
-        if (isBetAlreadyOpen(marketCatalogue)) {
+        if (isBetAlreadyOpen(marketCatalogue, event)) {
             logger.info("Bet already open in the Market");
             return false;
         }
@@ -202,8 +202,8 @@ public class BackUnderMarketAlgo implements MarketAlgo {
         return event.getMarket().get(marketType);
     }
 
-    private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue) throws Exception {
-        Exposure exposure = new Exposure(marketCatalogue);
+    private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue, Event event) throws Exception {
+        Exposure exposure = new Exposure(event, marketCatalogue);
         if (exposure.calcNetExposure() > 0.1) {
             //already bet on this market
             return true;

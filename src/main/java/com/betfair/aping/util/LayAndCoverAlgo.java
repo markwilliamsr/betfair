@@ -7,7 +7,6 @@ import com.betfair.aping.com.betfair.aping.events.betting.*;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
-import com.betfair.aping.exceptions.APINGException;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
     }
 
     @Override
-    public void process(Event event) throws Exception, APINGException {
+    public void process(Event event) throws Exception {
         BetPlacer betPlacer = new BetPlacer();
         Integer maxGoals = getTotalGoalLimit();
 
@@ -65,7 +64,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                     MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event, numberOfGoals);
 
                     if (isCandidateCoverMarket(event, marketCatalogue)) {
-                        Exposure exposure = new Exposure(marketCatalogue);
+                        Exposure exposure = new Exposure(event, marketCatalogue);
                         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
                         Runner runner = oum.getOverRunner();
                         Bet cashOutBet = getBetForMarket(marketCatalogue, runner, Side.LAY);
@@ -167,17 +166,16 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         if (!isMarketStartingSoon(event)) {
-            logger.info("{}; {}; Market is not starting soon enough", event.getName(), marketCatalogue.getMarketName());
+            logger.debug("{}; {}; Market is not starting soon enough", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
         if (!isMarketStartedTooLongAgo(event)) {
-            logger.info("{}; {}; Market started too long ago", event.getName(), marketCatalogue.getMarketName());
+            logger.debug("{}; {}; Market started too long ago", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
-        if (isBetAlreadyOpen(marketCatalogue, oum)) {
-            logger.info("{}; {}; Bet already open in the Market", event.getName(), marketCatalogue.getMarketName());
+        if (isBetAlreadyOpen(marketCatalogue, event)) {
             return false;
         }
 
@@ -188,7 +186,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
             //don't bet on some goalfest
-            logger.info("{}; Too many goals already scored: {}. Limit is {}", event.getName(), event.getScore().getTotalGoals(), getTotalGoalLimit());
+            logger.debug("{}; Too many goals already scored: {}. Limit is {}", event.getName(), event.getScore().getTotalGoals(), getTotalGoalLimit());
             return false;
         }
 
@@ -236,22 +234,22 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Runner runner = oum.getUnderRunner();
 
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
-            logger.info("{}; {}; Market is not OPEN", event.getName(), marketCatalogue.getMarketName());
+            logger.debug("{}; {}; Market is not OPEN", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
         if (!isMarketStartingSoon(event)) {
-            logger.info("{}; {}; Market is not starting soon enough", event.getName(), marketCatalogue.getMarketName());
+            logger.debug("{}; {}; Market is not starting soon enough", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
-        if (!isBetAlreadyOpen(marketCatalogue, oum)) {
-            logger.info("{}; {}; No Lay Bets already open in the Market", event.getName(), marketCatalogue.getMarketName());
+        if (!isBetAlreadyOpen(marketCatalogue, event)) {
+            logger.debug("{}; {}; No Lay Bets already open in the Market", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
         try {
-            if (!isBestCoveringLayPriceWithinBounds(marketCatalogue, oum)) {
+            if (!isBestCoveringLayPriceWithinBounds(event, marketCatalogue, oum)) {
                 logger.info("{}; {}; Best Covering Lay Price not within Bounds", event.getName(), marketCatalogue.getMarketName());
                 return false;
             }
@@ -296,8 +294,8 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return false;
     }
 
-    private boolean isBestCoveringLayPriceWithinBounds(MarketCatalogue marketCatalogue, OverUnderMarket oum) throws Exception {
-        Exposure exposure = new Exposure(marketCatalogue);
+    private boolean isBestCoveringLayPriceWithinBounds(Event event, MarketCatalogue marketCatalogue, OverUnderMarket oum) throws Exception {
+        Exposure exposure = new Exposure(event, marketCatalogue);
         Double layExposure = exposure.calcNetExposure(true);
 
         Double cashOutStake = calcCashOutBetSize(oum, layExposure);
@@ -322,10 +320,10 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return event.getMarket().get(marketType);
     }
 
-    private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue, OverUnderMarket oum) throws Exception {
-        Exposure exposure = new Exposure(marketCatalogue);
+    private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue, Event event) throws Exception {
+        Exposure exposure = new Exposure(event, marketCatalogue);
         if (exposure.calcNetExposure(true) > 0.1) {
-            //already bet on this market
+            logger.info("{}; {}; Bet already open in the Market. Exposure: {}", event.getName(), marketCatalogue.getMarketName(), exposure.calcNetExposure(true));
             return true;
         }
         return false;

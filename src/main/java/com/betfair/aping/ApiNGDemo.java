@@ -48,10 +48,9 @@ public class ApiNGDemo {
             try {
                 jsonRpcDemo.start();
             } catch (Exception e) {
-                logger.error("******************Fatal error, Restarting {}'th time *******************", i);
+                logger.error("****************** Fatal error, Restarting *******************", i);
                 logger.error("Error:", e);
-                logger.error("******************Fatal error, Restarting {}'th time *******************", i);
-                logger.error("******************Fatal error, Restarting {}'th time *******************", i);
+                logger.error("****************** Restart Count {} **************************", i);
                 i++;
             }
         }

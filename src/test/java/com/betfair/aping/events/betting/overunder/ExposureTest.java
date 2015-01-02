@@ -29,7 +29,7 @@ public class ExposureTest {
 
         Runner r = ouc.getUnderRunner();
 
-        Exposure exposure = new Exposure(mc);
+        Exposure exposure = new Exposure(event, mc);
 
         PriceSize priceSize = new PriceSize();
         priceSize.setPrice(4.1d);

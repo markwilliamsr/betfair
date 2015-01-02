@@ -11,10 +11,12 @@ import java.util.List;
  * Created by markwilliams on 26/08/2014.
  */
 public class Exposure {
-    private MarketCatalogue marketCatalogue;
+    private final Event event;
+    private final MarketCatalogue marketCatalogue;
     private Logger logger = LoggerFactory.getLogger(Exposure.class);
 
-    public Exposure(MarketCatalogue marketCatalogue) {
+    public Exposure(Event event, MarketCatalogue marketCatalogue) {
+        this.event = event;
         this.marketCatalogue = marketCatalogue;
     }
 
@@ -100,23 +102,21 @@ public class Exposure {
         Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalUnderExposure = backUnderExposure - layUnderExposure;
 
-        //logger.info("Best Under Back: " + oum.getBack(r, 0).getPrice() + " Best Under Lay: " + oum.getLay(r, 0).getPrice());
-        //logger.info("Back Under Exposure: " + backUnderExposure + " Lay Under Exposure: " + layUnderExposure + " Total Under Exposure: " + totalUnderExposure);
-
         r = oum.getOverRunner();
 
         Double backOverExposure = calcExposureForSide(r, Side.BACK, includeUnMatched);
         Double layOverExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalOverExposure = backOverExposure - layOverExposure;
 
-        //logger.info("Best Over Back: " + oum.getBack(r, 0).getPrice() + " Best Over Lay: " + oum.getLay(r, 0).getPrice());
-        //logger.info("Back Over Exposure: " + backOverExposure + " Lay Over Exposure: " + layOverExposure + " Total Over Exposure: " + totalUnderExposure);
-
         Double totalExposure = Math.abs(totalOverExposure - totalUnderExposure);
         //round to nearest penny
         totalExposure = totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
 
-        logger.info("Total Exposure: " + totalExposure);
+        if (totalExposure > 0.1) {
+            logger.info("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
+        } else {
+            logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
+        }
 
         return totalExposure;
     }
