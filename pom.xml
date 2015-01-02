@@ -3,7 +3,7 @@
 
     <groupId>com.betfair</groupId>
     <artifactId>aping</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.65-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>api ng sample code</name>
@@ -28,7 +28,7 @@
         <connection>scm:git:https://github.com/markwilliamsr/betfair.git</connection>
         <developerConnection>scm:git:git@github.com:markwilliamsr/betfair.git</developerConnection>
         <url>https://github.com/markwilliamsr/betfair</url>
-        <tag>HEAD</tag>
+        <tag>aping-${project.version}</tag>
     </scm>
 
     <build>
@@ -73,33 +73,33 @@
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.4.1</version>
-                <!--<configuration>-->
-                    <!--<useReleaseProfile>false</useReleaseProfile>-->
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
                     <!--<releaseProfiles>release</releaseProfiles>-->
-                    <!--<autoVersionSubmodules>true</autoVersionSubmodules>-->
-                <!--</configuration>-->
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <configuration>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                            <url>${project.distributionManagement.repository.url}</url>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <groupId>${project.groupId}</groupId>
-                            <version>${project.version}</version>
-                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-deploy-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>deploy</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>deploy-file</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<packaging>jar</packaging>-->
+                            <!--<generatePom>true</generatePom>-->
+                            <!--<url>${project.distributionManagement.repository.url}</url>-->
+                            <!--<artifactId>${project.artifactId}</artifactId>-->
+                            <!--<groupId>${project.groupId}</groupId>-->
+                            <!--<version>${project.version}</version>-->
+                            <!--<file>${project.build.directory}/${project.build.finalName}.jar</file>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 
@@ -134,7 +134,6 @@
             </build>
         </profile>
     </profiles>
-
 
     <dependencies>
         <dependency>
