@@ -413,7 +413,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         if (profitPercentage <= 0
-                && getTimeSinceMarketStart(event) > getLosingMarketTimeSinceStart()) {
+                && getTimeSinceMarketStart(event) > getLosingMarketFinalCloseOutTime()) {
             //you lose...
             logger.info("{}; {}; Losing Cover Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
