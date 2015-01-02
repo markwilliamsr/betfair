@@ -1,5 +1,6 @@
 package com.betfair.aping.com.betfair.aping.account;
 
+import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.JsonRpcTestBase;
 import com.betfair.aping.entities.AccountFundsResponse;
 import com.betfair.aping.exceptions.APINGException;
@@ -13,6 +14,7 @@ public class AccountOperationsTest extends JsonRpcTestBase {
 
     @Test
     public void getAvailableToBetBalanceTest() throws APINGException, Exception {
+        ApiNGDemo.loadProperties();
         AccountFundsResponse accountFundsResponse = getAvailableToBetBalance();
         Assert.assertNotNull(accountFundsResponse);
     }

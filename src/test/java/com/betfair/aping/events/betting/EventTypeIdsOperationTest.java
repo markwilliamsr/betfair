@@ -1,5 +1,6 @@
 package com.betfair.aping.events.betting;
 
+import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.JsonRpcTestBase;
 import com.betfair.aping.entities.EventTypeResult;
 import com.betfair.aping.entities.MarketFilter;
@@ -23,6 +24,7 @@ public class EventTypeIdsOperationTest extends JsonRpcTestBase {
 
     @Test
     public void getEventIdsTest() throws APINGException, Exception {
+        ApiNGDemo.loadProperties();
         Set<String> eventTypeIds = getEventTypeIds();
         assertEquals(1, eventTypeIds.size());
         for (String id : eventTypeIds) {
