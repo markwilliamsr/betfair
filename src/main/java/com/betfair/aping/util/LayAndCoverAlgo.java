@@ -12,9 +12,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by markwilliams on 12/14/14.
@@ -22,7 +20,7 @@ import java.util.List;
 public class LayAndCoverAlgo implements MarketAlgo {
     private Logger logger = LoggerFactory.getLogger(LayAndCoverAlgo.class);
     private Gson gson = new Gson();
-    private int MAX_PREV_SCORES = 6;
+    private int MAX_PREV_SCORES = getScoreStabalizationIteration();
 
     private static double getSize() {
         try {
@@ -36,7 +34,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
     @Override
     public void process(Event event) throws Exception, APINGException {
         BetPlacer betPlacer = new BetPlacer();
-        MarketCatalogue mc;
+        Integer maxGoals = getTotalGoalLimit();
 
         updateEventScore(event);
         logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
@@ -44,23 +42,25 @@ public class LayAndCoverAlgo implements MarketAlgo {
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
 
-                mc = getMarketCatalogueForTotalGoals(event, event.getScore().getTotalGoals() + 1);
+                int initialGoals = event.getScore().getTotalGoals() + 1;
+                for (int numberOfGoals = initialGoals; numberOfGoals <= maxGoals; numberOfGoals++) {
+                    MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event, numberOfGoals);
 
-                if (mc != null && isCandidateLayMarket(event)) {
-                    logger.info("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
-                    OverUnderMarket oum = new OverUnderMarket(mc);
-                    Runner runner = oum.getUnderRunner();
+                    if (marketCatalogue != null && isCandidateLayMarket(event, marketCatalogue)) {
+                        logger.info("OPEN: Candidate Mkt Found: " + marketCatalogue.getMarketName() + " " + gson.toJson(event));
+                        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
+                        Runner runner = oum.getUnderRunner();
 
-                    Bet initialBet = getBetForMarket(mc, runner, Side.LAY);
-                    initialBet.getPriceSize().setSize(getSize());
-                    List<Bet> initialLayBet = new ArrayList<Bet>();
-                    initialLayBet.add(initialBet);
-                    if (isSafetyOff()) {
-                        betPlacer.placeBets(initialLayBet);
+                        Bet initialBet = getBetForMarket(marketCatalogue, runner, Side.LAY);
+                        initialBet.getPriceSize().setSize(getSize());
+                        List<Bet> initialLayBet = new ArrayList<Bet>();
+                        initialLayBet.add(initialBet);
+                        if (isSafetyOff()) {
+                            betPlacer.placeBets(initialLayBet);
+                        }
                     }
                 }
 
-                Integer maxGoals = getTotalGoalLimit();
                 for (int numberOfGoals = 0; numberOfGoals <= maxGoals; numberOfGoals++) {
                     MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event, numberOfGoals);
 
@@ -152,20 +152,17 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return bet;
     }
 
-    private boolean isCandidateLayMarket(Event event) throws Exception {
-        Integer numberOfGoals = event.getScore().getTotalGoals() + 1;
-        MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event, numberOfGoals);
+    private boolean isCandidateLayMarket(Event event, MarketCatalogue marketCatalogue) throws Exception {
 
         if (marketCatalogue == null) {
             return false;
         }
 
-
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner runner = oum.getUnderRunner();
 
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
-            logger.info("Market is not OPEN");
+            logger.info("{}; {}; Market is not OPEN", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
@@ -175,29 +172,28 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         if (!isMarketStartedTooLongAgo(event)) {
-            logger.info("Market started too long ago");
+            logger.info("{}; {}; Market started too long ago", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
         if (isBetAlreadyOpen(marketCatalogue, oum)) {
-            logger.info("Bet already open in the Market");
+            logger.info("{}; {}; Bet already open in the Market", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
 
         if (isScoreChanging(event)) {
-            logger.info("Score is currently changing. Previous scores: " + event.getPreviousScores());
+            logger.info("{}; Score is currently changing. Previous scores: {}", event.getName(), event.getPreviousScores());
             return false;
         }
 
         if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
             //don't bet on some goalfest
-            logger.info("Too many goals already scored: " + event.getScore().getTotalGoals() + ". Limit is " + getTotalGoalLimit());
+            logger.info("{}; Too many goals already scored: {}. Limit is {}", event.getName(), event.getScore().getTotalGoals(), getTotalGoalLimit());
             return false;
         }
 
         try {
             if (!isBestOpeningLayPriceWithinBounds(oum, runner)) {
-                logger.info("Lay Price not within Bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -207,7 +203,6 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         try {
             if (!isBackLaySpreadWithinBounds(oum, runner)) {
-                logger.info("Back Lay Spread not within bounds");
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -293,11 +288,11 @@ public class LayAndCoverAlgo implements MarketAlgo {
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(OverUnderMarket oum, Runner runner) {
-        if (oum.getLay(runner, 0).getPrice() <= getOverUnderLayLimit()) {
-            logger.info("Best Lay Price: " + oum.getUnderRunnerName() + " : " + oum.getLay(runner, 0).toString());
+        if (oum.getLay(runner, 0).getPrice() <= getOverUnderLayLimit(oum.getMarketType())) {
+            logger.info("{}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
             return true;
         }
-        logger.info("Best Lay Price: " + oum.getUnderRunnerName() + " : " + oum.getLay(runner, 0).toString());
+        logger.info("{}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
         return false;
     }
 
@@ -363,8 +358,11 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return false;
     }
 
-    private Double getOverUnderLayLimit() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_OVER_UNDER_LAY_LIMIT"));
+    private Double getOverUnderLayLimit(MarketType marketType) {
+        Map<String, Double> limits = new HashMap<String, Double>();
+        limits = gson.fromJson(ApiNGDemo.getProp().getProperty("LNC_OVER_UNDER_LAY_LIMIT"), limits.getClass());
+
+        return limits.get(String.valueOf(marketType.getTotalGoals()));
     }
 
     private Integer getMinutesBeforeMarketStartTimeToBet() {
@@ -389,6 +387,10 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
     private Integer getMaxBackLaySpread() {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty("MAX_BACK_LAY_SPREAD_INCREMENT"));
+    }
+
+    private Integer getScoreStabalizationIteration() {
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty("GOAL_STABALIZATION_ITERATION_COUNT"));
     }
 
     private Boolean isMarketStartTimeLimitOn() {

@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -138,6 +140,18 @@ public class OverUnderMarketTest {
         marketType = MarketType.fromTotalGoals(totalGoals);
 
         assertEquals(MarketType.OVER_UNDER_35, marketType);
+    }
+
+    @Test
+    public void jsonTest() {
+        String prop = "{1:2.5,2:1.5}";
+        Gson gson = new Gson();
+        Map<Integer, Double> limits = new HashMap<Integer, Double>();
+        limits = gson.fromJson(prop, limits.getClass());
+
+        int num = 1;
+
+        System.out.println(limits.get(String.valueOf(num)));
     }
 }
 

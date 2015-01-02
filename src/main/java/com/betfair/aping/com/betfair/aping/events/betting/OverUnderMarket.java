@@ -20,6 +20,10 @@ public class OverUnderMarket {
         this.marketType = MarketType.fromMarketName(marketCatalogue.getMarketName());
     }
 
+    public MarketType getMarketType() {
+        return marketType;
+    }
+
     public List<RunnerCatalog> getRunnerCatalogs() {
         return marketCatalogue.getRunners();
     }
