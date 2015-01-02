@@ -67,9 +67,19 @@ public class LayAndCoverAlgo implements MarketAlgo {
                         Exposure exposure = new Exposure(event, marketCatalogue);
                         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
                         Runner runner = oum.getOverRunner();
-                        Bet cashOutBet = getBetForMarket(marketCatalogue, runner, Side.LAY);
+                        Side side = Side.LAY;
 
-                        Double cashOutBetSize = calcCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
+                        Double cashOutBetSize = calcOverRunnerCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
+
+                        if (cashOutBetSize < getMinimumBetSize()) {
+                            side = Side.LAY;
+                        } else {
+                            cashOutBetSize = calcUnderRunnerCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
+                            side = Side.BACK;
+                        }
+
+                        Bet cashOutBet = getBetForMarket(marketCatalogue, runner, side);
+
                         cashOutBet.getPriceSize().setSize(cashOutBetSize);
 
                         List<Bet> coverBet = new ArrayList<Bet>();
@@ -89,7 +99,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                         Runner runner = oum.getUnderRunner();
                         Bet cashOutBet = getBetForMarket(marketCatalogue, runner, Side.BACK);
 
-                        Double cashOutBetSize = calcLosingCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
+                        Double cashOutBetSize = calcUnderRunnerCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
                         cashOutBet.getPriceSize().setSize(cashOutBetSize);
 
                         List<Bet> coverBet = new ArrayList<Bet>();
@@ -106,12 +116,12 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
     }
 
-    private double calcCashOutBetSize(OverUnderMarket oum, Double netExposure) throws Exception {
+    private double calcOverRunnerCashOutBetSize(OverUnderMarket oum, Double netExposure) throws Exception {
         Runner runner = oum.getOverRunner();
         return roundUpToNearestFraction(netExposure / oum.getPrice(runner, 0, Side.LAY).getPrice(), 0.01);
     }
 
-    private double calcLosingCashOutBetSize(OverUnderMarket oum, Double netExposure) throws Exception {
+    private double calcUnderRunnerCashOutBetSize(OverUnderMarket oum, Double netExposure) throws Exception {
         Runner runner = oum.getUnderRunner();
         return roundUpToNearestFraction(netExposure / oum.getPrice(runner, 0, Side.BACK).getPrice(), 0.01);
     }
@@ -365,16 +375,24 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         int goalDifference = oum.getMarketType().getTotalGoals() - event.getScore().getTotalGoals();
 
-        if (goalDifference == 1 && profitPercentage >= getCashOutProfitPercentage()) {
+        if (goalDifference == 0 && profitPercentage >= getCashOutProfitPercentage()) {
             //some kind of profit on the closest market, close it out
             logger.info("{}; {}; Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
-        if (goalDifference == 2 && profitPercentage >= getBestCaseCashOutProfitPercentage()) {
+        if (goalDifference == 1 && profitPercentage >= getBestCaseCashOutProfitPercentage()) {
             //only close the next market up if we have some kind of gangbuster profit right off the bat
             logger.info("{}; {}; Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                    goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+            return true;
+        }
+
+        if (goalDifference == 1 && profitPercentage >= getCashOutProfitPercentage()
+                && getTimeSinceMarketStart(event) > getSmallWinCloseoutMarketTimeSinceStart()) {
+            //only close the next market up if we have some kind of gangbuster profit right off the bat
+            logger.info("{}; {}; Small Win Cover: Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
@@ -423,7 +441,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Exposure exposure = new Exposure(event, marketCatalogue);
         Double layExposure = exposure.calcNetExposure(true);
 
-        Double cashOutStake = calcCashOutBetSize(oum, layExposure);
+        Double cashOutStake = calcOverRunnerCashOutBetSize(oum, layExposure);
         Double initialStake = getSize();
 
         Double profit = cashOutStake + initialStake - layExposure;
@@ -504,6 +522,10 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_LOSING_CLOSE_OUT_TIME_SINCE_START"));
     }
 
+    private Double getSmallWinCloseoutMarketTimeSinceStart() {
+        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_SMALL_WIN_CLOSE_OUT_TIME_SINCE_START"));
+    }
+
     private Double getLosingMarketFinalCloseOutTime() {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_LOSING_CLOSE_OUT_FINAL_TIME"));
     }
@@ -530,6 +552,10 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
     private Boolean isSafetyOff() {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LNC_SAFETY_OFF", "false"));
+    }
+
+    private Double getMinimumBetSize() {
+        return Double.valueOf(ApiNGDemo.getProp().getProperty("MINIMUM_BET_SIZE"));
     }
 
     private Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {

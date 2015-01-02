@@ -20,9 +20,9 @@ import static org.junit.Assert.assertEquals;
  * Created by markwilliams on 23/08/2014.
  */
 public class OverUnderMarketTest {
-    private Logger logger = LoggerFactory.getLogger(OverUnderMarketTest.class);
     public final String under25Goals = "Under 2.5 Goals";
     public final String over25Goals = "Over 2.5 Goals";
+    private Logger logger = LoggerFactory.getLogger(OverUnderMarketTest.class);
 
     @Test
     public void castTest() {
@@ -86,7 +86,7 @@ public class OverUnderMarketTest {
     @Test
     public void calendarTest() {
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
         logger.info(df.format(cal.getTime()));
     }
 
