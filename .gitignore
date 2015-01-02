@@ -4,3 +4,5 @@ target/*/*
 *.log.*
 release/*/*/*/*SNAPSHOT*
 release/*/*/*/*maven*
+snapshots/*/*/*/*SNAPSHOT*
+snapshots/*/*/*/*maven*
