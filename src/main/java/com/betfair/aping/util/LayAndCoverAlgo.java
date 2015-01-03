@@ -229,7 +229,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         try {
-            if (!isBestOpeningLayPriceWithinBounds(oum, runner)) {
+            if (!isBestOpeningLayPriceWithinBounds(event, oum, runner)) {
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -238,7 +238,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         try {
-            if (!isBackLaySpreadWithinBounds(oum, runner)) {
+            if (!isBackLaySpreadWithinBounds(event, oum, runner)) {
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -284,7 +284,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         try {
-            if (!isBackLaySpreadWithinBounds(oum, runner)) {
+            if (!isBackLaySpreadWithinBounds(event, oum, runner)) {
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -318,7 +318,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         }
 
         try {
-            if (!isBackLaySpreadWithinBounds(oum, runner)) {
+            if (!isBackLaySpreadWithinBounds(event, oum, runner)) {
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -347,7 +347,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return false;
     }
 
-    private boolean isBackLaySpreadWithinBounds(OverUnderMarket oum, Runner runner) {
+    private boolean isBackLaySpreadWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
         Double back = oum.getBack(runner, 0).getPrice();
         Double lay = oum.getLay(runner, 0).getPrice();
         Long spread = 0l;
@@ -359,16 +359,16 @@ public class LayAndCoverAlgo implements MarketAlgo {
                 return true;
             }
         }
-        logger.info("{}; Back Lay Spread not within bounds. Lay: {}, Back: {}, Spread: {}", oum.getMarketType().getMarketName(), lay, back, spread);
+        logger.info("{}, {}; Back Lay Spread not within bounds. Lay: {}, Back: {}, Spread: {}", event.getName(), oum.getMarketType().getMarketName(), lay, back, spread);
         return false;
     }
 
-    private boolean isBestOpeningLayPriceWithinBounds(OverUnderMarket oum, Runner runner) {
+    private boolean isBestOpeningLayPriceWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
         if (oum.getLay(runner, 0).getPrice() <= getOverUnderLayLimit(oum.getMarketType())) {
-            logger.info("{}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
+            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
             return true;
         }
-        logger.info("{}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
+        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
         return false;
     }
 
@@ -399,7 +399,9 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return true;
         }
 
-        logger.info("Best Lay Price: " + oum.getOverRunnerName() + " : " + oum.getLay(oum.getOverRunner(), 0).toString() + ". Profit Percentage: " + roundUpToNearestFraction(profitPercentage, 2d));
+        logger.info("{}; {}; Covering Lay not yet within bounds. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+
         return false;
     }
 
