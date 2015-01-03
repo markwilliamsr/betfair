@@ -46,7 +46,6 @@ public class LayAndCoverAlgo implements MarketAlgo {
                     MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event, numberOfGoals);
 
                     if (marketCatalogue != null && isCandidateLayMarket(event, marketCatalogue)) {
-                        logger.info("OPEN: Candidate Mkt Found: " + marketCatalogue.getMarketName() + " " + gson.toJson(event));
                         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
                         Runner runner = oum.getUnderRunner();
 
@@ -55,6 +54,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                         List<Bet> initialLayBet = new ArrayList<Bet>();
                         initialLayBet.add(initialBet);
                         if (isSafetyOff()) {
+                            logger.info("{}, {}, OPEN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), initialBet.toString());
                             betPlacer.placeBets(initialLayBet);
                         }
                     }
@@ -85,6 +85,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                         List<Bet> coverBet = new ArrayList<Bet>();
                         coverBet.add(cashOutBet);
                         if (isSafetyOff()) {
+                            logger.info("{}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
                             betPlacer.placeBets(coverBet);
                         }
                     }
@@ -105,6 +106,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                         List<Bet> coverBet = new ArrayList<Bet>();
                         coverBet.add(cashOutBet);
                         if (isSafetyOff()) {
+                            logger.info("{}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
                             betPlacer.placeBets(coverBet);
                         }
                     }
@@ -377,7 +379,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         if (goalDifference == 0 && profitPercentage >= getCashOutProfitPercentage()) {
             //some kind of profit on the closest market, close it out
-            logger.info("{}; {}; Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+            logger.info("{}; {}; Regular Next Mkt Closeout. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
@@ -392,7 +394,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         if (goalDifference == 1 && profitPercentage >= getBestCaseCashOutProfitPercentage()) {
             //only close the next market up if we have some kind of gangbuster profit right off the bat
-            logger.info("{}; {}; Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+            logger.info("{}; {}; Large Profit Skip Mkt Closeout. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
@@ -407,20 +409,20 @@ public class LayAndCoverAlgo implements MarketAlgo {
         if (profitPercentage <= getLosingCashOutProfitPercentage()
                 && getTimeSinceMarketStart(event) > getLosingMarketTimeSinceStart()) {
             //you lose...
-            logger.info("{}; {}; Losing Cover Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+            logger.info("{}; {}; Losing Cover. Under getLosingCashOutProfitPercentage() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                    getLosingCashOutProfitPercentage(), oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
         if (profitPercentage <= 0
                 && getTimeSinceMarketStart(event) > getLosingMarketFinalCloseOutTime()) {
             //you lose...
-            logger.info("{}; {}; Losing Cover Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+            logger.info("{}; {}; Losing Cover. After getLosingMarketFinalCloseOutTime() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                    getLosingMarketFinalCloseOutTime(), oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
-        logger.info("{}; {}; Losing Cover Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+        logger.info("{}; {}; Not Yet Closing Losing Cover. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                 oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
 
         return false;
