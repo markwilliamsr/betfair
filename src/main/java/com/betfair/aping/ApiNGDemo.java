@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import static com.betfair.aping.login.LoginConstants.LOGIN_PROPERTIES_FILE;
+
 /**
  * This is a demonstration class to show a quick demo of the new Betfair API-NG.
  * When you execute the class will: <li>find a market (next horse race in the
@@ -23,14 +25,29 @@ public class ApiNGDemo {
 
     private static Properties prop = new Properties();
     private static boolean debug;
+    private static String propertiesPath;
+
+    public static String getPropertiesPath() {
+        return propertiesPath;
+    }
+
+    public static void setPropertiesPath(String propertiesPath) {
+        ApiNGDemo.propertiesPath = propertiesPath;
+    }
 
     public static void main(String[] args) {
+        //setLoginPropertiesPath("/Users/markwilliams/GitHub/betfair/src/main/resources/apingdemo.properties");
+
+        if (args.length > 0) {
+            setPropertiesPath(args[0]);
+        }
 
         loadProperties();
 
         logger.info("Welcome to the Betfair API NG!");
 
         HttpClientSSO sso = new HttpClientSSO();
+        sso.setLoginPropertiesPath(getProp().getProperty(LOGIN_PROPERTIES_FILE));
         LoginResponse loginResponse = null;
         try {
             loginResponse = sso.login();
@@ -58,8 +75,8 @@ public class ApiNGDemo {
 
     public static void loadProperties() {
         try {
-            //InputStream in = ApiNGDemo.class.getResourceAsStream("/apingdemo.properties");
-            InputStream in = new FileInputStream("/Users/markwilliams/GitHub/betfair/src/main/resources/apingdemo.properties");
+            //InputStream in = ApiNGDemo.class.getResourceAsStream(getLoginPropertiesPath());
+            InputStream in = new FileInputStream(getPropertiesPath());
             prop.load(in);
             in.close();
 

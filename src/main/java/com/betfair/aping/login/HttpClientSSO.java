@@ -35,9 +35,9 @@ public class HttpClientSSO {
     private Properties properties = new Properties();
     private Properties loginProperties = new Properties();
     private Logger logger = LoggerFactory.getLogger(HttpClientSSO.class);
+    private String loginPropertiesPath;
 
     public HttpClientSSO() {
-        this.loadProperties();
     }
 
     private static KeyManager[] getKeyManagers(String keyStoreType, InputStream keyStoreFile, String keyStorePassword) throws Exception {
@@ -48,15 +48,19 @@ public class HttpClientSSO {
         return kmf.getKeyManagers();
     }
 
+    public String getLoginPropertiesPath() {
+        return loginPropertiesPath;
+    }
+
+    public void setLoginPropertiesPath(String loginPropertiesPath) {
+        this.loginPropertiesPath = loginPropertiesPath;
+    }
+
     public void loadProperties() {
         try {
-            InputStream in = HttpClientSSO.class.getResourceAsStream("/apingdemo.properties");
-            properties.load(in);
-            in.close();
-
             debug = new Boolean(properties.getProperty("DEBUG"));
 
-            in = new FileInputStream(properties.getProperty(LoginConstants.LOGIN_PROPERTIES_FILE));
+            InputStream in = new FileInputStream(getLoginPropertiesPath());
             loginProperties.load(in);
             in.close();
 
@@ -67,7 +71,7 @@ public class HttpClientSSO {
     }
 
     public LoginResponse login() throws Exception {
-
+        loadProperties();
         String responseString = "";
         DefaultHttpClient httpClient = new DefaultHttpClient();
 

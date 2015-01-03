@@ -13,7 +13,7 @@ import org.junit.Test;
 public class AccountOperationsTest extends JsonRpcTestBase {
 
     @Test
-    public void getAvailableToBetBalanceTest() throws APINGException, Exception {
+    public void getAvailableToBetBalanceTest() throws Exception {
         ApiNGDemo.loadProperties();
         AccountFundsResponse accountFundsResponse = getAvailableToBetBalance();
         Assert.assertNotNull(accountFundsResponse);

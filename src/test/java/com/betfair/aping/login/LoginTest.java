@@ -1,5 +1,6 @@
 package com.betfair.aping.login;
 
+import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.containers.ListEventsContainer;
 import com.betfair.aping.entities.EventResult;
 import com.betfair.aping.util.JsonConverter;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.betfair.aping.login.LoginConstants.LOGIN_PROPERTIES_FILE;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -21,7 +23,11 @@ public class LoginTest {
 
     @Test
     public void loginTest() throws Exception {
+        ApiNGDemo.setPropertiesPath("/Users/markwilliams/GitHub/betfair/src/test/resources/test.properties");
+        ApiNGDemo.loadProperties();
         HttpClientSSO httpClientSSO = new HttpClientSSO();
+        httpClientSSO.setLoginPropertiesPath(ApiNGDemo.getProp().getProperty(LOGIN_PROPERTIES_FILE));
+
         LoginResponse r = httpClientSSO.login();
         assertEquals("SUCCESS", r.getLoginStatus());
     }

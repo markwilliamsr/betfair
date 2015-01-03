@@ -37,7 +37,7 @@ public class EventTypeIdsOperationTest extends JsonRpcTestBase {
         Set<String> eventTypeIds = new HashSet<String>();
         Set<String> eventTypes = new HashSet<String>();
 
-        eventTypes = gson.fromJson(api.getProp().getProperty("EVENT_TYPES"), eventTypes.getClass());
+        eventTypes = gson.fromJson(ApiNGDemo.getProp().getProperty("EVENT_TYPES"), eventTypes.getClass());
 
         List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter);
         for (EventTypeResult eventTypeResult : r) {
