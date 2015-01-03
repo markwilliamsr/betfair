@@ -71,7 +71,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
                         Double cashOutBetSize = calcOverRunnerCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
 
-                        if (cashOutBetSize < getMinimumBetSize()) {
+                        if (cashOutBetSize > getMinimumBetSize()) {
                             side = Side.LAY;
                         } else {
                             cashOutBetSize = calcUnderRunnerCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
@@ -382,17 +382,17 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return true;
         }
 
-        if (goalDifference == 1 && profitPercentage >= getBestCaseCashOutProfitPercentage()) {
-            //only close the next market up if we have some kind of gangbuster profit right off the bat
-            logger.info("{}; {}; Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
-            return true;
-        }
-
         if (goalDifference == 1 && profitPercentage >= getCashOutProfitPercentage()
                 && getTimeSinceMarketStart(event) > getSmallWinCloseoutMarketTimeSinceStart()) {
             //only close the next market up if we have some kind of gangbuster profit right off the bat
             logger.info("{}; {}; Small Win Cover: Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                    goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+            return true;
+        }
+
+        if (goalDifference == 1 && profitPercentage >= getBestCaseCashOutProfitPercentage()) {
+            //only close the next market up if we have some kind of gangbuster profit right off the bat
+            logger.info("{}; {}; Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
