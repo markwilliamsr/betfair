@@ -112,11 +112,7 @@ public class Exposure {
         //round to nearest penny
         totalExposure = totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
 
-        if (totalExposure > 0.1) {
-            logger.info("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
-        } else {
-            logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
-        }
+        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
 
         return totalExposure;
     }

@@ -36,7 +36,11 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Integer maxGoals = getTotalGoalLimit();
 
         updateEventScore(event);
-        logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
+        if (isMarketStartingSoon(event)) {
+            logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
+        } else {
+            logger.debug(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
+        }
 
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
@@ -275,7 +279,6 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         try {
             if (!isBestCoveringLayPriceWithinBounds(event, marketCatalogue, oum)) {
-                logger.info("{}; {}; Best Covering Lay Price not within Bounds", event.getName(), marketCatalogue.getMarketName());
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -309,7 +312,6 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         try {
             if (!isLosingCoverLayPriceWithinBounds(event, marketCatalogue, oum)) {
-                logger.info("{}; {}; Best Losing Covering Lay Price not within Bounds", event.getName(), marketCatalogue.getMarketName());
                 return false;
             }
         } catch (RuntimeException ex) {
@@ -462,7 +464,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
     private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue, Event event) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
         if (exposure.calcNetExposure(true) > 0.1) {
-            logger.info("{}; {}; Bet already open in the Market. Exposure: {}", event.getName(), marketCatalogue.getMarketName(), exposure.calcNetExposure(true));
+            logger.debug("{}; {}; Bet already open in the Market. Exposure: {}", event.getName(), marketCatalogue.getMarketName(), exposure.calcNetExposure(true));
             return true;
         }
         return false;
