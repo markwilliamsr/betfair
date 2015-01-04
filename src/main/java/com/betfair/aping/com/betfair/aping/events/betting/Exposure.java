@@ -117,6 +117,22 @@ public class Exposure {
         return totalExposure;
     }
 
+    public Double calcNetLtdExposure(boolean includeUnMatched) throws Exception {
+        MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+        Runner r = mom.getDrawRunner();
+
+        Double backUnderExposure = calcExposureForSide(r, Side.BACK, includeUnMatched);
+        Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
+        Double totalExposure = backUnderExposure - layUnderExposure;
+
+        //round to nearest penny
+        totalExposure = totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
+
+        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
+
+        return totalExposure;
+    }
+
     public Double calcNetExposure() throws Exception {
         return calcNetExposure(false);
     }

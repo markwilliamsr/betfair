@@ -6,6 +6,7 @@ import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
 import com.betfair.aping.util.LayAndCoverAlgo;
+import com.betfair.aping.util.LayTheDrawAlgo;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class ApiNGJsonRpcDemo {
 
         MarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
         MarketAlgo marketAlgo2 = new LayAndCoverAlgo();
+        MarketAlgo marketAlgo3 = new LayTheDrawAlgo();
 
         List<Event> events = getCurrentEventsWithCatalogues();
 
@@ -52,6 +54,13 @@ public class ApiNGJsonRpcDemo {
                     marketAlgo2.process(event);
                 }
                 logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
+            }
+            if (isLayTheDrawEnabled()) {
+                logger.info("--------------------Lay The Draw Iteration " + i + " Start--------------------");
+                for (Event event : events) {
+                    marketAlgo3.process(event);
+                }
+                logger.info("--------------------Lay The Draw Iteration " + i + " End--------------------");
             }
             Thread.sleep(5000);
             if (isReloadPropertiesEnabled()) {
@@ -99,6 +108,10 @@ public class ApiNGJsonRpcDemo {
 
     private Boolean isLayAndCoverEnabled() {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LNC_ENABLED", "false"));
+    }
+
+    private Boolean isLayTheDrawEnabled() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LTD_ENABLED", "false"));
     }
 
     private Boolean isReloadPropertiesEnabled() {
