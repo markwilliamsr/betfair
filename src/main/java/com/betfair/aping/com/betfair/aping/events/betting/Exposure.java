@@ -125,6 +125,8 @@ public class Exposure {
         Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalExposure = backUnderExposure - layUnderExposure;
 
+        totalExposure = Math.abs(totalExposure);
+
         //round to nearest penny
         totalExposure = totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
 

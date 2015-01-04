@@ -67,7 +67,7 @@ public class ApiNGJsonRpcDemo {
                 logger.debug("Reloading Properties");
                 ApiNGDemo.loadProperties();
             }
-            if (i > 0 && i % 300 == 0) {
+            if (i > 0 && i % 100 == 0) {
                 events = refreshEvents(events);
             }
             refreshOdds(events);

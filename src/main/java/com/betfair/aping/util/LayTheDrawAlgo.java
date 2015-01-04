@@ -76,20 +76,19 @@ public class LayTheDrawAlgo implements MarketAlgo {
 
                     Double cashOutBetSize = calcBackRunnerCashOutBetSize(mom, Math.abs(exposure.calcNetLtdExposure(true)));
 
-                    if (cashOutBetSize < getMinimumBetSize()) {
+                    if (cashOutBetSize >= getMinimumBetSize()) {
+                        Bet cashOutBet = getBetForMarket(marketCatalogue, runner, side);
+
+                        cashOutBet.getPriceSize().setSize(cashOutBetSize);
+
+                        List<Bet> coverBet = new ArrayList<Bet>();
+                        coverBet.add(cashOutBet);
+                        if (isSafetyOff()) {
+                            logger.info("{}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
+                            betPlacer.placeBets(coverBet);
+                        }
+                    } else {
                         logger.warn("{}, {}; HUM. Cash Out Bet Size Less than Minimum Bet.", event.getName(), marketCatalogue.getMarketName(), cashOutBetSize);
-                        cashOutBetSize = getMinimumBetSize();
-                    }
-
-                    Bet cashOutBet = getBetForMarket(marketCatalogue, runner, side);
-
-                    cashOutBet.getPriceSize().setSize(cashOutBetSize);
-
-                    List<Bet> coverBet = new ArrayList<Bet>();
-                    coverBet.add(cashOutBet);
-                    if (isSafetyOff()) {
-                        logger.info("{}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
-                        betPlacer.placeBets(coverBet);
                     }
                 }
             }
@@ -405,11 +404,12 @@ public class LayTheDrawAlgo implements MarketAlgo {
     private Double calcPercentageProfit(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
         Double layExposure = exposure.calcNetLtdExposure(true);
-
         Double cashOutStake = calcBackRunnerCashOutBetSize(mom, layExposure);
         Double initialStake = getSize();
 
-        Double profit = cashOutStake + initialStake - layExposure;
+        Double profit = initialStake - cashOutStake;
+
+        profit = roundUpToNearestFraction(profit, 0.01);
 
         return (profit / initialStake) * 100;
     }
