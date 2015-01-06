@@ -45,7 +45,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
 
-                int initialGoals = event.getScore().getTotalGoals() + 1;
+                int initialGoals = event.getScore().getTotalGoals();
                 for (int numberOfGoals = initialGoals; numberOfGoals <= maxGoals; numberOfGoals++) {
                     MarketCatalogue marketCatalogue = getMarketCatalogueForTotalGoals(event, numberOfGoals);
 
