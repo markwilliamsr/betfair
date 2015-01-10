@@ -37,7 +37,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
         updateEventScore(event);
         if (isMarketStartingSoon(event)) {
-            logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
+            logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Minutes Elapesd [" + getTimeSinceMarketStart(event) + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
         } else {
             logger.debug(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
         }
@@ -212,7 +212,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return false;
         }
 
-        if (!isMarketStartedTooLongAgo(event)) {
+        if (!isMarketStartedTooLongAgo(event, oum)) {
             logger.debug("{}; {}; Market started too long ago", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
@@ -370,7 +370,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
             logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
             return true;
         }
-        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
+        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}; Time Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()), getMinutesAfterMarketStartTimeToBet(oum.getMarketType()));
         return false;
     }
 
@@ -386,7 +386,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
             return true;
         }
 
-        if (goalDifference == 1 && profitPercentage >= getCashOutProfitPercentage()
+        if (goalDifference == 1 && profitPercentage >= 0.0
                 && getTimeSinceMarketStart(event) > getSmallWinCloseoutMarketTimeSinceStart()) {
             //only close the next market up if we have some kind of gangbuster profit right off the bat
             logger.info("{}; {}; Small Win Cover: Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
@@ -483,9 +483,9 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return false;
     }
 
-    private boolean isMarketStartedTooLongAgo(Event event) {
+    private boolean isMarketStartedTooLongAgo(Event event, OverUnderMarket oum) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, -1 * getMinutesAfterMarketStartTimeToBet());
+        calendar.add(Calendar.MINUTE, -1 * getMinutesAfterMarketStartTimeToBet(oum.getMarketType()));
         if (!isMarketStartTimeLimitOn()) {
             return true;
         }
@@ -508,8 +508,11 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty("LNC_MINUTES_BEFORE_MARKET_START"));
     }
 
-    private Integer getMinutesAfterMarketStartTimeToBet() {
-        return Integer.valueOf(ApiNGDemo.getProp().getProperty("LNC_MINUTES_AFTER_MARKET_START"));
+    private Integer getMinutesAfterMarketStartTimeToBet(MarketType marketType) {
+        Map<String, Double> limits = new HashMap<String, Double>();
+        limits = gson.fromJson(ApiNGDemo.getProp().getProperty("LNC_MINUTES_AFTER_MARKET_START"), limits.getClass());
+
+        return limits.get(String.valueOf(marketType.getTotalGoals())).intValue();
     }
 
     private Integer getTotalGoalLimit() {
