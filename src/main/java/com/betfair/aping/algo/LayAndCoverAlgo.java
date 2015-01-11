@@ -38,8 +38,8 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Integer maxGoals = getTotalGoalLimit();
 
         updateEventScore(event);
-        logEventName(event);
         classifyMarket(event);
+        logEventName(event);
 
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
