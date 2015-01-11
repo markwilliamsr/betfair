@@ -1,12 +1,14 @@
 package com.betfair.aping;
 
+import com.betfair.aping.algo.BackUnderMarketAlgo;
+import com.betfair.aping.algo.LayAndCoverAlgo;
+import com.betfair.aping.algo.LayTheDrawAlgo;
+import com.betfair.aping.algo.MarketAlgo;
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.*;
 import com.betfair.aping.exceptions.APINGException;
-import com.betfair.aping.util.LayAndCoverAlgo;
-import com.betfair.aping.util.LayTheDrawAlgo;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

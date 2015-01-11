@@ -1,4 +1,4 @@
-package com.betfair.aping;
+package com.betfair.aping.algo;
 
 import com.betfair.aping.entities.Event;
 import com.betfair.aping.exceptions.APINGException;

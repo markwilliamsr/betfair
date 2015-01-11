@@ -1,5 +1,7 @@
-package com.betfair.aping;
+package com.betfair.aping.algo;
 
+import com.betfair.aping.ApiNGDemo;
+import com.betfair.aping.BetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.*;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
