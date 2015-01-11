@@ -35,15 +35,21 @@ public class MatchOddsMarket {
     }
 
     public Runner getHomeRunner() throws Exception {
-        return getRunnerByName(this.getHomeRunnerName());
+        RunnerCatalog rc = getRunnerCatalogs().get(0);
+        Runner runner = getRunnerBySelectionId(rc.getSelectionId());
+        return runner;
     }
 
     public Runner getAwayRunner() throws Exception {
-        return getRunnerByName(this.getAwayRunnerName());
+        RunnerCatalog rc = getRunnerCatalogs().get(1);
+        Runner runner = getRunnerBySelectionId(rc.getSelectionId());
+        return runner;
     }
 
     public Runner getDrawRunner() throws Exception {
-        return getRunnerByName(this.getDrawRunnerName());
+        RunnerCatalog rc = getRunnerCatalogs().get(2);
+        Runner runner = getRunnerBySelectionId(rc.getSelectionId());
+        return runner;
     }
 
     public Runner getRunnerByName(String runnerName) throws Exception {

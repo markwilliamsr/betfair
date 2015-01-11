@@ -42,6 +42,16 @@ public class ApiNGJsonRpcDemo {
 
         refreshOdds(events);
         printMarketBooks(events);
+
+        Comparator<Event> comp = new Comparator<Event>() {
+            @Override
+            public int compare(Event o1, Event o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        };
+
+        Collections.sort(events, comp);
+
         for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
             if (isBackUnderEnabled()) {
                 logger.info("--------------------Back Under Mkt Iteration " + i + " Start--------------------");

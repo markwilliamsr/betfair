@@ -1,6 +1,7 @@
 package com.betfair.aping.entities;
 
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
+import com.betfair.aping.enums.MarketClassification;
 
 import java.util.*;
 
@@ -15,6 +16,15 @@ public class Event {
     private ScoreEnum score = ScoreEnum.NIL_NIL;
     private List<ScoreEnum> previousScores = new ArrayList<ScoreEnum>();
     private Map<MarketType, MarketCatalogue> market = new TreeMap<MarketType, MarketCatalogue>();
+    private MarketClassification marketClassification;
+
+    public MarketClassification getMarketClassification() {
+        return marketClassification;
+    }
+
+    public void setMarketClassification(MarketClassification marketClassification) {
+        this.marketClassification = marketClassification;
+    }
 
     public List<ScoreEnum> getPreviousScores() {
         return previousScores;

@@ -91,6 +91,13 @@ public class OverUnderMarketTest {
     }
 
     @Test
+    public void calendarTest1() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm");
+        logger.info(df.format(cal.getTime()));
+    }
+
+    @Test
     public void safetyTest() {
         boolean safety = Boolean.valueOf("trues");
 

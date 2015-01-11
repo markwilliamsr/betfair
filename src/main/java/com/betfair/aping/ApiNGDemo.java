@@ -36,8 +36,6 @@ public class ApiNGDemo {
     }
 
     public static void main(String[] args) {
-        //setLoginPropertiesPath("/Users/markwilliams/GitHub/betfair/src/main/resources/apingdemo.properties");
-
         if (args.length > 0) {
             setPropertiesPath(args[0]);
         }

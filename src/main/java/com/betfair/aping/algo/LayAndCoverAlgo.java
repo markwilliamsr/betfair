@@ -4,12 +4,15 @@ import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.BetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.*;
 import com.betfair.aping.entities.*;
+import com.betfair.aping.enums.MarketClassification;
 import com.betfair.aping.enums.MarketStatus;
+import com.betfair.aping.enums.OddsClassification;
 import com.betfair.aping.enums.Side;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -35,11 +38,8 @@ public class LayAndCoverAlgo implements MarketAlgo {
         Integer maxGoals = getTotalGoalLimit();
 
         updateEventScore(event);
-        if (isMarketStartingSoon(event)) {
-            logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Minutes Elapesd [" + getTimeSinceMarketStart(event) + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
-        } else {
-            logger.debug(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
-        }
+        logEventName(event);
+        classifyMarket(event);
 
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
@@ -70,7 +70,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
                         Exposure exposure = new Exposure(event, marketCatalogue);
                         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
                         Runner runner = oum.getOverRunner();
-                        Side side = Side.LAY;
+                        Side side;
 
                         Double cashOutBetSize = calcOverRunnerCashOutBetSize(oum, Math.abs(exposure.calcNetExposure(true)));
 
@@ -118,6 +118,75 @@ public class LayAndCoverAlgo implements MarketAlgo {
             }
         } catch (IllegalArgumentException e) {
             logger.info("Could not determine the MarketType. Exception: " + e.toString());
+        }
+    }
+
+    private void classifyMarket(Event event) throws Exception {
+
+        if (event.getMarketClassification() != null && getTimeSinceMarketStart(event) > 1) {
+            return;
+        }
+
+        MatchOddsMarket mom = new MatchOddsMarket(event.getMarket().get(MarketType.MATCH_ODDS));
+        Runner home = mom.getHomeRunner();
+        Runner away = mom.getAwayRunner();
+
+        Double bestHomeBack = mom.getBack(home, 0).getPrice();
+        Double bestAwayBack = mom.getBack(away, 0).getPrice();
+
+        OddsClassification homeClassification = classifyOdds(bestHomeBack);
+        OddsClassification awayClassification = classifyOdds(bestAwayBack);
+
+        if (event.getMarketClassification() == null) {
+            event.setMarketClassification(MarketClassification.WARM);
+        }
+
+        if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.HIGH)) {
+            event.setMarketClassification(MarketClassification.COLD);
+        } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.MED)) {
+            event.setMarketClassification(MarketClassification.WARM);
+        } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.LOW)) {
+            event.setMarketClassification(MarketClassification.HOT);
+        } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.HIGH)) {
+            event.setMarketClassification(MarketClassification.WARM);
+        } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.MED)) {
+            event.setMarketClassification(MarketClassification.COLD);
+        } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.LOW)) {
+            event.setMarketClassification(MarketClassification.COLD);
+        } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.HIGH)) {
+            event.setMarketClassification(MarketClassification.HOT);
+        } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.MED)) {
+            event.setMarketClassification(MarketClassification.WARM);
+        } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.LOW)) {
+            event.setMarketClassification(MarketClassification.WARM);
+        }
+    }
+
+
+    private OddsClassification classifyOdds(Double odds) {
+        Map<OddsClassification, Double> oddsConfigurations = getOddsConfigurations();
+        OddsClassification classification = OddsClassification.MED;
+
+        if (odds > oddsConfigurations.get(OddsClassification.HIGH)) {
+            classification = OddsClassification.HIGH;
+        } else if (odds > oddsConfigurations.get(OddsClassification.MED)) {
+            classification = OddsClassification.MED;
+        } else if (odds > oddsConfigurations.get(OddsClassification.LOW)) {
+            classification = OddsClassification.LOW;
+        }
+
+        return classification;
+    }
+
+    private void logEventName(Event event) {
+        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm");
+
+        if (isMarketStartingSoon(event)) {
+            logger.info("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
+                    String.format("%1$-35s", event.getName()), String.format("%1$4s", event.getMarketClassification()), df.format(event.getOpenDate()), getTimeSinceMarketStart(event), event.getScore(), event.getPreviousScores().toString());
+        } else {
+            logger.info("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
+                    String.format("%1$-35s", event.getName()), String.format("%1$4s", event.getMarketClassification()), df.format(event.getOpenDate()), getTimeSinceMarketStart(event), event.getScore(), event.getPreviousScores().toString());
         }
     }
 
@@ -365,11 +434,12 @@ public class LayAndCoverAlgo implements MarketAlgo {
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
-        if (oum.getLay(runner, 0).getPrice() <= getOverUnderLayLimit(oum.getMarketType())) {
-            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()));
+        Double layLimit = getMarketConfig(event.getMarketClassification(), oum.getMarketType()).getLayLimit();
+        if (oum.getLay(runner, 0).getPrice() <= layLimit) {
+            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), layLimit);
             return true;
         }
-        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}; Time Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), getOverUnderLayLimit(oum.getMarketType()), getMinutesAfterMarketStartTimeToBet(oum.getMarketType()));
+        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}; Time Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), layLimit, getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
         return false;
     }
 
@@ -484,7 +554,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
 
     private boolean isMarketStartedTooLongAgo(Event event, OverUnderMarket oum) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, -1 * getMinutesAfterMarketStartTimeToBet(oum.getMarketType()));
+        calendar.add(Calendar.MINUTE, -1 * getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
         if (!isMarketStartTimeLimitOn()) {
             return true;
         }
@@ -507,11 +577,9 @@ public class LayAndCoverAlgo implements MarketAlgo {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty("LNC_MINUTES_BEFORE_MARKET_START"));
     }
 
-    private Integer getMinutesAfterMarketStartTimeToBet(MarketType marketType) {
-        Map<String, Double> limits = new HashMap<String, Double>();
-        limits = gson.fromJson(ApiNGDemo.getProp().getProperty("LNC_MINUTES_AFTER_MARKET_START"), limits.getClass());
-
-        return limits.get(String.valueOf(marketType.getTotalGoals())).intValue();
+    private Integer getMinutesAfterMarketStartTimeToBet(Event event, MarketType marketType) {
+        MarketConfig marketConfig = getMarketConfigurations().get(event.getMarketClassification()).get(marketType);
+        return marketConfig.getLayTimeLimit();
     }
 
     private Integer getTotalGoalLimit() {
@@ -574,5 +642,46 @@ public class LayAndCoverAlgo implements MarketAlgo {
     private Double roundUpToNearestFraction(Double number, Double fractionAsDecimal) {
         Double factor = 1 / fractionAsDecimal;
         return Math.round((number + (fractionAsDecimal / 2)) * factor) / factor;
+    }
+
+    private MarketConfig getMarketConfig(MarketClassification marketClassification, MarketType marketType) {
+        return getMarketConfigurations().get(marketClassification).get(marketType);
+    }
+
+    public Map<MarketClassification, Map<MarketType, MarketConfig>> getMarketConfigurations() {
+        Map<String, Map<String, Map<String, Double>>> rawMarketConfigurations = new HashMap<String, Map<String, Map<String, Double>>>();
+        Map<MarketClassification, Map<MarketType, MarketConfig>> marketConfigurations = new HashMap<MarketClassification, Map<MarketType, MarketConfig>>();
+
+        String prop = ApiNGDemo.getProp().getProperty("LNC_OVER_UNDER_LAY_LIMIT");
+
+        rawMarketConfigurations = gson.fromJson(prop, rawMarketConfigurations.getClass());
+
+        for (Map.Entry<String, Map<String, Map<String, Double>>> classification : rawMarketConfigurations.entrySet()) {
+            Map<MarketType, MarketConfig> marketConfigs = new HashMap<MarketType, MarketConfig>();
+            for (Map.Entry<String, Map<String, Double>> type : classification.getValue().entrySet()) {
+                MarketConfig marketConfig = new MarketConfig();
+                marketConfig.setLayLimit(type.getValue().get("LAY_LIMIT"));
+                marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT").intValue());
+                marketConfigs.put(MarketType.valueOf(type.getKey()), marketConfig);
+            }
+            marketConfigurations.put(MarketClassification.valueOf(classification.getKey()), marketConfigs);
+        }
+
+        return marketConfigurations;
+    }
+
+    public Map<OddsClassification, Double> getOddsConfigurations() {
+        Map<String, Double> rawOddsConfigurations = new HashMap<String, Double>();
+        Map<OddsClassification, Double> oddsConfigurations = new HashMap<OddsClassification, Double>();
+
+        String prop = ApiNGDemo.getProp().getProperty("LNC_ODDS_CLASSIFICATION");
+
+        rawOddsConfigurations = gson.fromJson(prop, rawOddsConfigurations.getClass());
+
+        for (Map.Entry<String, Double> entry : rawOddsConfigurations.entrySet()) {
+            oddsConfigurations.put(OddsClassification.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        return oddsConfigurations;
     }
 }
