@@ -3,7 +3,6 @@ target/*/*
 *.log
 *.log.*
 release/*/*/*/*SNAPSHOT*
-release/*/*/*/*
 snapshots/*/*/*/*SNAPSHOT*
 snapshots/*/*/*/*maven*
 release.properties
