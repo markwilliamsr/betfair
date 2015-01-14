@@ -72,8 +72,7 @@ public abstract class MarketAlgo {
             } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.LOW)) {
                 event.setMarketClassification(MarketClassification.WARM);
             }
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             logger.error("Exception Classifying Market: ", e);
             event.setMarketClassification(MarketClassification.COLD);
         }
