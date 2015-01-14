@@ -3,7 +3,7 @@ package com.betfair.aping;
 import com.betfair.aping.algo.BackUnderMarketAlgo;
 import com.betfair.aping.algo.LayAndCoverAlgo;
 import com.betfair.aping.algo.LayTheDrawAlgo;
-import com.betfair.aping.algo.MarketAlgo;
+import com.betfair.aping.algo.IMarketAlgo;
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.entities.*;
@@ -32,9 +32,9 @@ public class ApiNGJsonRpcDemo {
 
     public void start() throws Exception {
 
-        MarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
-        MarketAlgo marketAlgo2 = new LayAndCoverAlgo();
-        MarketAlgo marketAlgo3 = new LayTheDrawAlgo();
+        IMarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
+        IMarketAlgo marketAlgo2 = new LayAndCoverAlgo();
+        IMarketAlgo marketAlgo3 = new LayTheDrawAlgo();
 
         List<Event> events = getCurrentEventsWithCatalogues();
 

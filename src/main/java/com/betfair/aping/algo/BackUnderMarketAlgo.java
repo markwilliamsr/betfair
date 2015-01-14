@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BackUnderMarketAlgo implements MarketAlgo {
+public class BackUnderMarketAlgo implements IMarketAlgo {
     private Logger logger = LoggerFactory.getLogger(BackUnderMarketAlgo.class);
     private Gson gson = new Gson();
     private int MAX_PREV_SCORES = 6;

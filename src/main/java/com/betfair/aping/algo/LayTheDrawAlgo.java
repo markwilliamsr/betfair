@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by markwilliams on 12/14/14.
  */
-public class LayTheDrawAlgo implements MarketAlgo {
+public class LayTheDrawAlgo implements IMarketAlgo {
     private Logger logger = LoggerFactory.getLogger(LayTheDrawAlgo.class);
     private Gson gson = new Gson();
     private int MAX_PREV_SCORES = getScoreStabalizationIteration();
