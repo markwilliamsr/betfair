@@ -131,7 +131,7 @@ public class ApiNGJsonRpcDemo {
     }
 
     private Boolean isBackUnderEnabled() {
-        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("BU_ENABLED", "false"));
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("OUM_ENABLED", "false"));
     }
 
     private void printMarketBooks(List<Event> events) {

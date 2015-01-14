@@ -1,15 +1,11 @@
 package com.betfair.aping.algo;
 
 import com.betfair.aping.ApiNGDemo;
-import com.betfair.aping.com.betfair.aping.events.betting.MatchOddsMarket;
-import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
-import com.betfair.aping.com.betfair.aping.events.betting.Score;
-import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
-import com.betfair.aping.entities.Event;
-import com.betfair.aping.entities.MarketType;
-import com.betfair.aping.entities.Runner;
+import com.betfair.aping.com.betfair.aping.events.betting.*;
+import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketClassification;
 import com.betfair.aping.enums.OddsClassification;
+import com.betfair.aping.enums.Side;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +19,14 @@ import java.util.Map;
 /**
  * Created by markwilliams on 1/14/15.
  */
-public class MarketAlgo {
-    protected Logger logger = LoggerFactory.getLogger(LayAndCoverAlgo.class);
+public abstract class MarketAlgo {
+    protected Logger logger = LoggerFactory.getLogger(MarketAlgo.class);
     protected Gson gson = new Gson();
     protected int MAX_PREV_SCORES = getScoreStabalizationIteration();
 
-    protected static double getSize() {
+    protected double getSize() {
         try {
-            return new Double((String) ApiNGDemo.getProp().get("LNC_BET_SIZE"));
+            return new Double((String) ApiNGDemo.getProp().get(getAlgoType() + "_BET_SIZE"));
         } catch (NumberFormatException e) {
             //returning the default value
             return new Double(0.01);
@@ -208,8 +204,45 @@ public class MarketAlgo {
         return false;
     }
 
+    protected boolean isBackLaySpreadWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
+        Double back = oum.getBack(runner, 0).getPrice();
+        Double lay = oum.getLay(runner, 0).getPrice();
+        Long spread = 0l;
+
+        if (back != null && lay != null) {
+            Double increment = PriceIncrement.getIncrement(back);
+            spread = Math.round((lay - back) / increment);
+            if (spread <= getMaxBackLaySpread()) {
+                return true;
+            }
+        }
+        logger.info("{}, {}; Back Lay Spread not within bounds. Lay: {}, Back: {}, Spread: {}", event.getName(), oum.getMarketType().getMarketName(), lay, back, spread);
+        return false;
+    }
+
+    protected MarketConfig getMarketConfig(MarketClassification marketClassification, MarketType marketType) {
+        return getMarketConfigurations().get(marketClassification).get(marketType);
+    }
+
+    protected Bet getBetForMarket(MarketCatalogue marketCatalogue, Runner runner, Side side) {
+        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
+        Bet bet = new Bet();
+        PriceSize priceSize = new PriceSize();
+
+        priceSize.setPrice(oum.getPrice(runner, 0, side).getPrice());
+
+        bet.setMarketId(marketCatalogue.getMarketId());
+        bet.setPriceSize(priceSize);
+        bet.setSide(side);
+        bet.setSelectionId(runner.getSelectionId());
+
+        return bet;
+    }
+
+    protected abstract String getAlgoType();
+
     private Integer getMinutesBeforeMarketStartTimeToBet() {
-        return Integer.valueOf(ApiNGDemo.getProp().getProperty("LNC_MINUTES_BEFORE_MARKET_START"));
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_MINUTES_BEFORE_MARKET_START"));
     }
 
     protected Integer getMinutesAfterMarketStartTimeToBet(Event event, MarketType marketType) {
@@ -218,7 +251,7 @@ public class MarketAlgo {
     }
 
     protected Integer getTotalGoalLimit() {
-        return Integer.valueOf(ApiNGDemo.getProp().getProperty("LNC_TOTAL_GOAL_LIMIT"));
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_TOTAL_GOAL_LIMIT"));
     }
 
     protected Integer getMaxBackLaySpread() {
@@ -234,7 +267,7 @@ public class MarketAlgo {
     }
 
     protected Boolean isSafetyOff() {
-        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LNC_SAFETY_OFF", "false"));
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_SAFETY_OFF", "false"));
     }
 
     protected Double getMinimumBetSize() {
@@ -255,7 +288,7 @@ public class MarketAlgo {
         Map<String, Map<String, Map<String, Double>>> rawMarketConfigurations = new HashMap<String, Map<String, Map<String, Double>>>();
         Map<MarketClassification, Map<MarketType, MarketConfig>> marketConfigurations = new HashMap<MarketClassification, Map<MarketType, MarketConfig>>();
 
-        String prop = ApiNGDemo.getProp().getProperty("LNC_OVER_UNDER_LAY_LIMIT");
+        String prop = ApiNGDemo.getProp().getProperty(getAlgoType() + "_OVER_UNDER_LAY_LIMIT");
 
         rawMarketConfigurations = gson.fromJson(prop, rawMarketConfigurations.getClass());
 
@@ -277,7 +310,7 @@ public class MarketAlgo {
         Map<String, Double> rawOddsConfigurations = new HashMap<String, Double>();
         Map<OddsClassification, Double> oddsConfigurations = new HashMap<OddsClassification, Double>();
 
-        String prop = ApiNGDemo.getProp().getProperty("LNC_ODDS_CLASSIFICATION");
+        String prop = ApiNGDemo.getProp().getProperty(getAlgoType() + "_ODDS_CLASSIFICATION");
 
         rawOddsConfigurations = gson.fromJson(prop, rawOddsConfigurations.getClass());
 

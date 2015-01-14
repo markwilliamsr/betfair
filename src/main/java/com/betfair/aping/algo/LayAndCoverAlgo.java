@@ -2,18 +2,24 @@ package com.betfair.aping.algo;
 
 import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.BetPlacer;
-import com.betfair.aping.com.betfair.aping.events.betting.*;
+import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
+import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
-import com.betfair.aping.enums.MarketClassification;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by markwilliams on 12/14/14.
  */
 public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
+
+    protected Logger logger = LoggerFactory.getLogger(LayAndCoverAlgo.class);
+    private static final String ALGO_TYPE = "LNC";
 
     @Override
     public void process(Event event) throws Exception {
@@ -103,7 +109,6 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
         }
     }
 
-
     private double calcOverRunnerCashOutBetSize(OverUnderMarket oum, Double netExposure) throws Exception {
         Runner runner = oum.getOverRunner();
         return roundUpToNearestFraction(netExposure / oum.getPrice(runner, 0, Side.LAY).getPrice(), 0.01);
@@ -112,21 +117,6 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
     private double calcUnderRunnerCashOutBetSize(OverUnderMarket oum, Double netExposure) throws Exception {
         Runner runner = oum.getUnderRunner();
         return roundUpToNearestFraction(netExposure / oum.getPrice(runner, 0, Side.BACK).getPrice(), 0.01);
-    }
-
-    private Bet getBetForMarket(MarketCatalogue marketCatalogue, Runner runner, Side side) {
-        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Bet bet = new Bet();
-        PriceSize priceSize = new PriceSize();
-
-        priceSize.setPrice(oum.getPrice(runner, 0, side).getPrice());
-
-        bet.setMarketId(marketCatalogue.getMarketId());
-        bet.setPriceSize(priceSize);
-        bet.setSide(side);
-        bet.setSelectionId(runner.getSelectionId());
-
-        return bet;
     }
 
     private boolean isCandidateLayMarket(Event event, MarketCatalogue marketCatalogue) throws Exception {
@@ -271,22 +261,6 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
         return false;
     }
 
-    private boolean isBackLaySpreadWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
-        Double back = oum.getBack(runner, 0).getPrice();
-        Double lay = oum.getLay(runner, 0).getPrice();
-        Long spread = 0l;
-
-        if (back != null && lay != null) {
-            Double increment = PriceIncrement.getIncrement(back);
-            spread = Math.round((lay - back) / increment);
-            if (spread <= getMaxBackLaySpread()) {
-                return true;
-            }
-        }
-        logger.info("{}, {}; Back Lay Spread not within bounds. Lay: {}, Back: {}, Spread: {}", event.getName(), oum.getMarketType().getMarketName(), lay, back, spread);
-        return false;
-    }
-
     private boolean isBestOpeningLayPriceWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
         Double layLimit = getMarketConfig(event.getMarketClassification(), oum.getMarketType()).getLayLimit();
         if (oum.getLay(runner, 0).getPrice() <= layLimit) {
@@ -382,13 +356,6 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
         return false;
     }
 
-    private Double getOverUnderLayLimit(MarketType marketType) {
-        Map<String, Double> limits = new HashMap<String, Double>();
-        limits = gson.fromJson(ApiNGDemo.getProp().getProperty("LNC_OVER_UNDER_LAY_LIMIT"), limits.getClass());
-
-        return limits.get(String.valueOf(marketType.getTotalGoals()));
-    }
-
     private Double getCashOutProfitPercentage() {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_CLOSE_OUT_PROFIT_PERCENTAGE"));
     }
@@ -413,12 +380,8 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_BEST_CASE_CLOSE_OUT_PROFIT_PERCENTAGE"));
     }
 
-    private Integer getSafetyGoalMargin() {
-        return Integer.valueOf(ApiNGDemo.getProp().getProperty("SAFETY_GOAL_MARGIN", "2"));
+    @Override
+    protected String getAlgoType() {
+        return ALGO_TYPE;
     }
-
-    private MarketConfig getMarketConfig(MarketClassification marketClassification, MarketType marketType) {
-        return getMarketConfigurations().get(marketClassification).get(marketType);
-    }
-
 }
