@@ -190,7 +190,7 @@ public abstract class MarketAlgo {
         return false;
     }
 
-    protected boolean isMarketStartedTooLongAgo(Event event, OverUnderMarket oum) {
+    protected boolean isMarketStartedTooLongAgo(Event event, BaseMarket oum) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, -1 * getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
         if (!isMarketStartTimeLimitOn()) {
@@ -204,7 +204,7 @@ public abstract class MarketAlgo {
         return false;
     }
 
-    protected boolean isBackLaySpreadWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
+    protected boolean isBackLaySpreadWithinBounds(Event event, BaseMarket oum, Runner runner) {
         Double back = oum.getBack(runner, 0).getPrice();
         Double lay = oum.getLay(runner, 0).getPrice();
         Long spread = 0l;
