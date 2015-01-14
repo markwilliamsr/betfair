@@ -205,11 +205,11 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
-        if (mom.getLay(runner, 0).getPrice() <= getLayTheDrawLayLimit(mom.getMarketType())) {
-            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), getLayTheDrawLayLimit(mom.getMarketType()));
+        if (mom.getLay(runner, 0).getPrice() <= getLayTheDrawLayLimit()) {
+            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), getLayTheDrawLayLimit());
             return true;
         }
-        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), getLayTheDrawLayLimit(mom.getMarketType()));
+        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), getLayTheDrawLayLimit());
         return false;
     }
 
@@ -251,7 +251,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         return false;
     }
 
-    private Double getLayTheDrawLayLimit(MarketType marketType) {
+    private Double getLayTheDrawLayLimit() {
         Double limits = Double.valueOf(ApiNGDemo.getProp().getProperty("LTD_OVER_UNDER_LAY_LIMIT"));
 
         return limits;
