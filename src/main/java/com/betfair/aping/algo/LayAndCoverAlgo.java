@@ -185,7 +185,7 @@ public class LayAndCoverAlgo implements MarketAlgo {
             logger.info("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
                     String.format("%1$-35s", event.getName()), String.format("%1$4s", event.getMarketClassification()), df.format(event.getOpenDate()), getTimeSinceMarketStart(event), event.getScore(), event.getPreviousScores().toString());
         } else {
-            logger.info("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
+            logger.debug("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
                     String.format("%1$-35s", event.getName()), String.format("%1$4s", event.getMarketClassification()), df.format(event.getOpenDate()), getTimeSinceMarketStart(event), event.getScore(), event.getPreviousScores().toString());
         }
     }
