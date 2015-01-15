@@ -139,63 +139,6 @@ public class Exposure {
         return calcNetExposure(false);
     }
 
-    public Bet calcCashOutBet(Bet placedBet, Double profitPercentage) throws Exception {
-        Bet bet = new Bet();
-
-        Double profit = placedBet.getPriceSize().getSize() * (profitPercentage / 100.0);
-        Double totalExposure;
-
-        if (placedBet.getSide().equals(Side.BACK)) {
-            totalExposure = placedBet.getPriceSize().getPrice() * placedBet.getPriceSize().getSize();
-        } else {
-            totalExposure = -1d * placedBet.getPriceSize().getPrice() * placedBet.getPriceSize().getSize();
-        }
-
-        calcCashOutPriceSize(bet, placedBet.getPriceSize().getSize(), profit, totalExposure);
-
-        bet.setSelectionId(placedBet.getSelectionId());
-        bet.setMarketId(placedBet.getMarketId());
-
-        return bet;
-    }
-
-    private Bet calcCashOutPriceSize(Bet bet, Double placedSize, Double profit, Double totalExposure) {
-        PriceSize priceSize = new PriceSize();
-        Double returnedSize;
-        Double price;
-        if (Math.abs(totalExposure) > 0) {
-            if (totalExposure < 0) {
-                //too much on the lay side
-                returnedSize = placedSize - profit;
-                bet.setSide(Side.BACK);
-            } else {
-                //too much on the back side
-                returnedSize = placedSize + profit;
-                bet.setSide(Side.LAY);
-            }
-            priceSize.setSize(roundUpToNearestFraction(returnedSize, 0.01));
-            price = calcPriceWithCorrectIncrement(totalExposure, returnedSize, bet.getSide());
-        } else {
-            return null;
-        }
-
-        priceSize.setPrice(price);
-
-        bet.setPriceSize(priceSize);
-
-        return bet;
-    }
-
-    private Double calcPriceWithCorrectIncrement(Double totalExposure, Double cashOutSize, Side side) {
-        Double price = Math.abs(totalExposure) / cashOutSize;
-
-        if (side.equals(Side.BACK)) {
-            return roundUpToNearestFraction(price, PriceIncrement.getIncrement(price));
-        } else {
-            return roundDownToNearestFraction(price, PriceIncrement.getIncrement(price));
-        }
-    }
-
     private Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {
         Double factor = 1 / fractionAsDecimal;
         return Math.round((number - (fractionAsDecimal / 2)) * factor) / factor;

@@ -58,5 +58,22 @@ public class PriceIncrementTest {
     public void incrementTest10() {
         assertEquals(10, PriceIncrement.getIncrement(160), 0);
     }
+
+    @Test
+    public void incrementTest11() {
+        Double tickSize = PriceIncrement.getIncrement(3);
+        Double betPrice = 3.5d;
+        betPrice = betPrice - tickSize;
+        System.out.println(betPrice);
+        Double newTick = PriceIncrement.getIncrement(betPrice);
+        betPrice = roundDownToNearestFraction(betPrice, newTick);
+        System.out.println(betPrice);
+        assertEquals(2.94, betPrice, 0);
+    }
+
+    private Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {
+        Double factor = 1 / fractionAsDecimal;
+        return Math.round((number - (fractionAsDecimal / 2)) * factor) / factor;
+    }
 }
 

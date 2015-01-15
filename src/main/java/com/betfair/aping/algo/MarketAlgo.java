@@ -273,7 +273,7 @@ public abstract class MarketAlgo {
         return Double.valueOf(ApiNGDemo.getProp().getProperty("MINIMUM_BET_SIZE"));
     }
 
-    private Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {
+    protected Double roundDownToNearestFraction(Double number, Double fractionAsDecimal) {
         Double factor = 1 / fractionAsDecimal;
         return Math.round((number - (fractionAsDecimal / 2)) * factor) / factor;
     }

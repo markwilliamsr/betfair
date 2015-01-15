@@ -128,12 +128,6 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             return false;
         }
 
-//        if (event.getScore().getTotalGoals() >= getTotalGoalLimit()) {
-//            //don't bet on some goalfest
-//            logger.debug("{}; Too many goals already scored: {}. Limit is {}", event.getName(), event.getScore().getTotalGoals(), getTotalGoalLimit());
-//            return false;
-//        }
-
         try {
             if (!isBestOpeningLayPriceWithinBounds(event, mom, runner)) {
                 return false;

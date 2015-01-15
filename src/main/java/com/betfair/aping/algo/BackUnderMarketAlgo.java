@@ -4,6 +4,7 @@ import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.BetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
+import com.betfair.aping.com.betfair.aping.events.betting.PriceIncrement;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
@@ -17,32 +18,60 @@ public class BackUnderMarketAlgo extends MarketAlgo implements IMarketAlgo {
     private static final String ALGO_TYPE = "OUM";
     protected Logger logger = LoggerFactory.getLogger(BackUnderMarketAlgo.class);
 
+
+    public Bet calcCashOutBet(Bet placedBet, Integer ticks) throws Exception {
+        Bet cashOutBet = new Bet();
+
+        Double cashOutBetPrice = placedBet.getPriceSize().getPrice();
+        Double tickSize = PriceIncrement.getIncrement(cashOutBetPrice);
+        cashOutBetPrice = cashOutBetPrice - (ticks * tickSize);
+        Double newTick = PriceIncrement.getIncrement(cashOutBetPrice);
+        cashOutBetPrice = roundDownToNearestFraction(cashOutBetPrice, newTick);
+
+        PriceSize priceSize = new PriceSize();
+        priceSize.setPrice(cashOutBetPrice);
+        cashOutBet.setPriceSize(priceSize);
+        cashOutBet.setSide(Side.LAY);
+
+        Double totalExposure = placedBet.getPriceSize().getPrice() * placedBet.getPriceSize().getSize();
+
+        Double cashOutBetSize = totalExposure / cashOutBetPrice;
+        cashOutBetSize = roundUpToNearestFraction(cashOutBetSize, 0.01);
+
+        cashOutBet.getPriceSize().setSize(cashOutBetSize);
+
+        cashOutBet.setSelectionId(placedBet.getSelectionId());
+        cashOutBet.setMarketId(placedBet.getMarketId());
+
+        return cashOutBet;
+    }
+
     @Override
     public void process(Event event) throws Exception {
         BetPlacer betPlacer = new BetPlacer();
-        MarketCatalogue mc = new MarketCatalogue();
+        MarketCatalogue marketCatalogue = new MarketCatalogue();
 
         updateEventScore(event);
         logEventName(event);
 
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
-                mc = getMarketCatalogueForTotalGoals(event);
+                marketCatalogue = getMarketCatalogueForTotalGoals(event);
 
-                if (mc != null) {
+                if (marketCatalogue != null) {
                     if (isCandidateMarket(event)) {
-                        logger.info("OPEN: Candidate Mkt Found: " + mc.getMarketName() + " " + gson.toJson(event));
-                        Exposure exposure = new Exposure(event, mc);
-                        OverUnderMarket oum = new OverUnderMarket(mc);
+                        logger.info("OPEN: Candidate Mkt Found: " + marketCatalogue.getMarketName() + " " + gson.toJson(event));
+                        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
                         Runner runner = oum.getUnderRunner();
 
-                        Bet initialBet = getBetForMarket(mc, runner, Side.BACK);
+                        Bet initialBet = getBetForMarket(marketCatalogue, runner, Side.BACK);
                         initialBet.getPriceSize().setSize(getSize());
-                        Bet cashOutBet = exposure.calcCashOutBet(initialBet, getCashOutProfitPercentage());
+                        Bet cashOutBet = calcCashOutBet(initialBet, getCashOutTickNumber());
                         List<Bet> bets = new ArrayList<Bet>();
                         bets.add(initialBet);
                         bets.add(cashOutBet);
                         if (isSafetyOff()) {
+                            logger.info("{}, {}, OPEN: Candidate Mkt Found. Placing Initial Bet: {}, CashOut Bet: {}", event.getName(), marketCatalogue.getMarketName(), initialBet.toString(), cashOutBet.toString());
                             betPlacer.placeBets(bets);
                         }
                     }
@@ -141,7 +170,7 @@ public class BackUnderMarketAlgo extends MarketAlgo implements IMarketAlgo {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_SAFETY_GOAL_MARGIN", "2"));
     }
 
-    private Double getCashOutProfitPercentage() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_CLOSE_OUT_PROFIT_PERCENTAGE"));
+    private Integer getCashOutTickNumber() {
+        return Integer.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_CASH_OUT_TICK_NUMBER"));
     }
 }
