@@ -46,7 +46,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                         List<Bet> initialLayBet = new ArrayList<Bet>();
                         initialLayBet.add(initialBet);
                         if (isSafetyOff()) {
-                            logger.info("{}, {}, OPEN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), initialBet.toString());
+                            logger.info("{}, {}, {}, OPEN: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification(), marketCatalogue.getMarketName(), initialBet.toString());
                             betPlacer.placeBets(initialLayBet);
                         }
                     }
@@ -77,7 +77,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                         List<Bet> coverBet = new ArrayList<Bet>();
                         coverBet.add(cashOutBet);
                         if (isSafetyOff()) {
-                            logger.info("{}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
+                            logger.info("{}, {}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification(), marketCatalogue.getMarketName(), cashOutBet.toString());
                             betPlacer.placeBets(coverBet);
                         }
                     }
@@ -98,7 +98,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                         List<Bet> coverBet = new ArrayList<Bet>();
                         coverBet.add(cashOutBet);
                         if (isSafetyOff()) {
-                            logger.info("{}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
+                            logger.info("{}, {}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification(), marketCatalogue.getMarketName(), cashOutBet.toString());
                             betPlacer.placeBets(coverBet);
                         }
                     }
