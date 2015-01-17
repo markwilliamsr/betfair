@@ -6,6 +6,7 @@ import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.MatchOddsMarket;
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
+import com.betfair.aping.enums.MarketClassification;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.Side;
 import org.slf4j.Logger;
@@ -199,11 +200,12 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
-        if (mom.getLay(runner, 0).getPrice() <= getLayTheDrawLayLimit()) {
-            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), getLayTheDrawLayLimit());
+        Double layLimit = getLayTheDrawLayLimit(event.getMarketClassification(), mom.getMarketType());
+        if (mom.getLay(runner, 0).getPrice() <= layLimit) {
+            logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), layLimit);
             return true;
         }
-        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), getLayTheDrawLayLimit());
+        logger.info("{}, {}; Lay Price not within bounds. Best Lay Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), layLimit);
         return false;
     }
 
@@ -245,10 +247,8 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         return false;
     }
 
-    private Double getLayTheDrawLayLimit() {
-        Double limits = Double.valueOf(ApiNGDemo.getProp().getProperty("LTD_OVER_UNDER_LAY_LIMIT"));
-
-        return limits;
+    private Double getLayTheDrawLayLimit(MarketClassification marketClassification, MarketType marketType) {
+        return getMarketConfigurations().get(marketClassification).get(marketType).getLayLimit();
     }
 
     private Double getCashOutProfitPercentage() {

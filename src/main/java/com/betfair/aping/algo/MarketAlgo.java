@@ -39,38 +39,41 @@ public abstract class MarketAlgo {
             return;
         }
         try {
-            MatchOddsMarket mom = new MatchOddsMarket(event.getMarket().get(MarketType.MATCH_ODDS));
-            Runner home = mom.getHomeRunner();
-            Runner away = mom.getAwayRunner();
+            MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.MATCH_ODDS);
+            if (marketCatalogue != null) {
+                MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+                Runner home = mom.getHomeRunner();
+                Runner away = mom.getAwayRunner();
 
-            Double bestHomeBack = mom.getBack(home, 0).getPrice();
-            Double bestAwayBack = mom.getBack(away, 0).getPrice();
+                Double bestHomeBack = mom.getBack(home, 0).getPrice();
+                Double bestAwayBack = mom.getBack(away, 0).getPrice();
 
-            OddsClassification homeClassification = classifyOdds(bestHomeBack);
-            OddsClassification awayClassification = classifyOdds(bestAwayBack);
+                OddsClassification homeClassification = classifyOdds(bestHomeBack);
+                OddsClassification awayClassification = classifyOdds(bestAwayBack);
 
-            if (event.getMarketClassification() == null) {
-                event.setMarketClassification(MarketClassification.WARM);
-            }
+                if (event.getMarketClassification() == null) {
+                    event.setMarketClassification(MarketClassification.WARM);
+                }
 
-            if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.HIGH)) {
-                event.setMarketClassification(MarketClassification.COLD);
-            } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.MED)) {
-                event.setMarketClassification(MarketClassification.WARM);
-            } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.LOW)) {
-                event.setMarketClassification(MarketClassification.HOT);
-            } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.HIGH)) {
-                event.setMarketClassification(MarketClassification.WARM);
-            } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.MED)) {
-                event.setMarketClassification(MarketClassification.COLD);
-            } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.LOW)) {
-                event.setMarketClassification(MarketClassification.COLD);
-            } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.HIGH)) {
-                event.setMarketClassification(MarketClassification.HOT);
-            } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.MED)) {
-                event.setMarketClassification(MarketClassification.WARM);
-            } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.LOW)) {
-                event.setMarketClassification(MarketClassification.WARM);
+                if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.HIGH)) {
+                    event.setMarketClassification(MarketClassification.COLD);
+                } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.MED)) {
+                    event.setMarketClassification(MarketClassification.WARM);
+                } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.LOW)) {
+                    event.setMarketClassification(MarketClassification.HOT);
+                } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.HIGH)) {
+                    event.setMarketClassification(MarketClassification.WARM);
+                } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.MED)) {
+                    event.setMarketClassification(MarketClassification.COLD);
+                } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.LOW)) {
+                    event.setMarketClassification(MarketClassification.COLD);
+                } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.HIGH)) {
+                    event.setMarketClassification(MarketClassification.HOT);
+                } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.MED)) {
+                    event.setMarketClassification(MarketClassification.WARM);
+                } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.LOW)) {
+                    event.setMarketClassification(MarketClassification.WARM);
+                }
             }
         } catch (RuntimeException e) {
             logger.error("Exception Classifying Market: ", e);
