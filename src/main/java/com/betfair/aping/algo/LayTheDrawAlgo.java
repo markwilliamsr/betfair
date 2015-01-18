@@ -286,7 +286,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     private boolean isCoveringLossWithinBounds(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Double expProfitPercentage = calcPercentageProfitExposure(event, marketCatalogue, mom);
 
-        if (expProfitPercentage <= getLayTheDrawLossLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType())) {
+        if (Math.abs(expProfitPercentage) >= getLayTheDrawLossLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType())) {
             logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
                     mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 2d));
             return true;
@@ -335,9 +335,8 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
         Double profit = initialStake - cashOutStake;
 
-        profit = roundUpToNearestFraction(profit, 0.01);
+        return roundUpToNearestFraction((profit / layExposure) * 100, 0.01);
 
-        return (profit / layExposure) * 100;
     }
 
     private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue, Event event) throws Exception {
