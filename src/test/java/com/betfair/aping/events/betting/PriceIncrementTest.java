@@ -62,7 +62,7 @@ public class PriceIncrementTest {
     @Test
     public void incrementTest11() {
         Double tickSize = PriceIncrement.getIncrement(3);
-        Double betPrice = 3.5d;
+        Double betPrice = 3d;
         betPrice = betPrice - tickSize;
         System.out.println(betPrice);
         Double newTick = PriceIncrement.getIncrement(betPrice);

@@ -27,11 +27,8 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         BetPlacer betPlacer = new BetPlacer();
 
         updateEventScore(event);
-        if (isMarketStartingSoon(event)) {
-            logger.info(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
-        } else {
-            logger.debug(event.getName() + ": Starts At: [" + event.getOpenDate() + "], Current Score: " + event.getScore() + ", Previous Score: " + event.getPreviousScores().toString());
-        }
+        classifyMarket(event);
+        logEventName(event);
 
         try {
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
@@ -77,7 +74,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                             betPlacer.placeBets(coverBet);
                         }
                     } else {
-                        logger.warn("{}, {}; HUM. Cash Out Bet Size Less than Minimum Bet.", event.getName(), marketCatalogue.getMarketName(), cashOutBetSize);
+                        logger.warn("{}, {}; HUM. Cash Out Bet Size Less than Minimum Bet. {}", event.getName(), marketCatalogue.getMarketName(), cashOutBetSize);
                     }
                 }
             }
