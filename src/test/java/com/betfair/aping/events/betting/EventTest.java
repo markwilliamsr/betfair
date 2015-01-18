@@ -1,5 +1,6 @@
 package com.betfair.aping.events.betting;
 
+import com.betfair.aping.com.betfair.aping.events.betting.MarketClassification;
 import com.betfair.aping.entities.Event;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ public class EventTest {
     public void loggingTest() {
         Event event = new Event();
         event.setName("Aaaa vs alskfhegbevbjdk");
+        event.setMarketClassification(new MarketClassification());
 
         logger.info("{}; {}: Starts At: [{}], Elapsed [], Current Score: {}, Previous Score: {}",
                 String.format("%1$35s", event.getName()), event.getMarketClassification().getMarketTemp(), event.getOpenDate(), event.getScore(), event.getPreviousScores().toString());
