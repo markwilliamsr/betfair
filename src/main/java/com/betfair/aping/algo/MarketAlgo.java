@@ -111,7 +111,7 @@ public abstract class MarketAlgo {
         DecimalFormat def = new DecimalFormat("0.00");
 
         if (isMarketStartingSoon(event)) {
-            logger.info("{}; {} [H:{} A:{} D:{}]:  Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
+            logger.info("{}; {} [H:{} A:{} D:{}]: Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
                     String.format("%1$-35s", event.getName()),
                     String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
                     def.format(event.getMarketClassification().getHomeOdds()),
@@ -120,7 +120,7 @@ public abstract class MarketAlgo {
                     dtf.format(event.getOpenDate()), getTimeSinceMarketStart(event),
                     event.getScore(), event.getPreviousScores().toString());
         } else {
-            logger.info("{}; {} [H:{} A:{} D:{}]:  Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
+            logger.debug("{}; {} [H:{} A:{} D:{}]: Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
                     String.format("%1$-35s", event.getName()),
                     String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
                     def.format(event.getMarketClassification().getHomeOdds()),
@@ -323,6 +323,8 @@ public abstract class MarketAlgo {
                 MarketConfig marketConfig = new MarketConfig();
                 marketConfig.setLayLimit(type.getValue().get("LAY_LIMIT"));
                 marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT").intValue());
+                marketConfig.setExpLossLimit(type.getValue().get("EXP_LOSS_LIMIT"));
+                marketConfig.setStakeLossLimit(type.getValue().get("STAKE_LOSS_LIMIT"));
                 marketConfigs.put(MarketType.valueOf(type.getKey()), marketConfig);
             }
             marketConfigurations.put(MarketTemp.valueOf(classification.getKey()), marketConfigs);

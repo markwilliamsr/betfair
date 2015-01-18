@@ -6,6 +6,24 @@ package com.betfair.aping.algo;
 public class MarketConfig {
     Double layLimit;
     Integer layTimeLimit;
+    Double expLossLimit;
+    Double stakeLossLimit;
+
+    public Double getExpLossLimit() {
+        return expLossLimit;
+    }
+
+    public void setExpLossLimit(Double expLossLimit) {
+        this.expLossLimit = expLossLimit;
+    }
+
+    public Double getStakeLossLimit() {
+        return stakeLossLimit;
+    }
+
+    public void setStakeLossLimit(Double stakeLossLimit) {
+        this.stakeLossLimit = stakeLossLimit;
+    }
 
     public Double getLayLimit() {
         return layLimit;
