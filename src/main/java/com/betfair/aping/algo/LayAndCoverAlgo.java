@@ -46,7 +46,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                         List<Bet> initialLayBet = new ArrayList<Bet>();
                         initialLayBet.add(initialBet);
                         if (isSafetyOff()) {
-                            logger.info("{}, {}, {}, OPEN: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification(), marketCatalogue.getMarketName(), initialBet.toString());
+                            logger.info("{}, {}, {}, OPEN: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification().getMarketTemp(), marketCatalogue.getMarketName(), initialBet.toString());
                             betPlacer.placeBets(initialLayBet);
                         }
                     }
@@ -77,7 +77,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                         List<Bet> coverBet = new ArrayList<Bet>();
                         coverBet.add(cashOutBet);
                         if (isSafetyOff()) {
-                            logger.info("{}, {}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification(), marketCatalogue.getMarketName(), cashOutBet.toString());
+                            logger.info("{}, {}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification().getMarketTemp(), marketCatalogue.getMarketName(), cashOutBet.toString());
                             betPlacer.placeBets(coverBet);
                         }
                     }
@@ -98,7 +98,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                         List<Bet> coverBet = new ArrayList<Bet>();
                         coverBet.add(cashOutBet);
                         if (isSafetyOff()) {
-                            logger.info("{}, {}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification(), marketCatalogue.getMarketName(), cashOutBet.toString());
+                            logger.info("{}, {}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), event.getMarketClassification().getMarketTemp(), marketCatalogue.getMarketName(), cashOutBet.toString());
                             betPlacer.placeBets(coverBet);
                         }
                     }
@@ -262,7 +262,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
-        Double layLimit = getMarketConfig(event.getMarketClassification(), oum.getMarketType()).getLayLimit();
+        Double layLimit = getMarketConfig(event.getMarketClassification().getMarketTemp(), oum.getMarketType()).getLayLimit();
         if (oum.getLay(runner, 0).getPrice() <= layLimit) {
             logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), layLimit);
             return true;

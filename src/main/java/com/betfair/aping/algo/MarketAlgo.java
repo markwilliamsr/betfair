@@ -3,13 +3,14 @@ package com.betfair.aping.algo;
 import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.com.betfair.aping.events.betting.*;
 import com.betfair.aping.entities.*;
-import com.betfair.aping.enums.MarketClassification;
+import com.betfair.aping.enums.MarketTemp;
 import com.betfair.aping.enums.OddsClassification;
 import com.betfair.aping.enums.Side;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,8 +35,11 @@ public abstract class MarketAlgo {
     }
 
     protected void classifyMarket(Event event) throws Exception {
+        MarketClassification marketClassification = new MarketClassification();
 
-        if (event.getMarketClassification() != null && getTimeSinceMarketStart(event) > 1) {
+        if (event.getMarketClassification() != null
+                && event.getMarketClassification().getMarketTemp() != null
+                && getTimeSinceMarketStart(event) > 1) {
             return;
         }
         try {
@@ -44,41 +48,47 @@ public abstract class MarketAlgo {
                 MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
                 Runner home = mom.getHomeRunner();
                 Runner away = mom.getAwayRunner();
+                Runner draw = mom.getDrawRunner();
 
                 Double bestHomeBack = mom.getBack(home, 0).getPrice();
                 Double bestAwayBack = mom.getBack(away, 0).getPrice();
+                Double bestDrawBack = mom.getBack(draw, 0).getPrice();
 
                 OddsClassification homeClassification = classifyOdds(bestHomeBack);
                 OddsClassification awayClassification = classifyOdds(bestAwayBack);
 
-                if (event.getMarketClassification() == null) {
-                    event.setMarketClassification(MarketClassification.WARM);
+                if (marketClassification.getMarketTemp() == null) {
+                    marketClassification.setMarketTemp(MarketTemp.WARM);
                 }
 
                 if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.HIGH)) {
-                    event.setMarketClassification(MarketClassification.COLD);
+                    marketClassification.setMarketTemp(MarketTemp.COLD);
                 } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.MED)) {
-                    event.setMarketClassification(MarketClassification.WARM);
+                    marketClassification.setMarketTemp(MarketTemp.WARM);
                 } else if (homeClassification.equals(OddsClassification.HIGH) && awayClassification.equals(OddsClassification.LOW)) {
-                    event.setMarketClassification(MarketClassification.HOT);
+                    marketClassification.setMarketTemp(MarketTemp.HOT);
                 } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.HIGH)) {
-                    event.setMarketClassification(MarketClassification.WARM);
+                    marketClassification.setMarketTemp(MarketTemp.WARM);
                 } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.MED)) {
-                    event.setMarketClassification(MarketClassification.COLD);
+                    marketClassification.setMarketTemp(MarketTemp.COLD);
                 } else if (homeClassification.equals(OddsClassification.MED) && awayClassification.equals(OddsClassification.LOW)) {
-                    event.setMarketClassification(MarketClassification.COLD);
+                    marketClassification.setMarketTemp(MarketTemp.COLD);
                 } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.HIGH)) {
-                    event.setMarketClassification(MarketClassification.HOT);
+                    marketClassification.setMarketTemp(MarketTemp.HOT);
                 } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.MED)) {
-                    event.setMarketClassification(MarketClassification.WARM);
+                    marketClassification.setMarketTemp(MarketTemp.WARM);
                 } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.LOW)) {
-                    event.setMarketClassification(MarketClassification.WARM);
+                    marketClassification.setMarketTemp(MarketTemp.WARM);
                 }
+                marketClassification.setAwayOdds(bestAwayBack);
+                marketClassification.setHomeOdds(bestHomeBack);
+                marketClassification.setDrawOdds(bestDrawBack);
             }
         } catch (RuntimeException e) {
             logger.error("Exception Classifying Market: ", e);
-            event.setMarketClassification(MarketClassification.COLD);
+            marketClassification.setMarketTemp(MarketTemp.COLD);
         }
+        event.setMarketClassification(marketClassification);
     }
 
     private OddsClassification classifyOdds(Double odds) {
@@ -97,14 +107,27 @@ public abstract class MarketAlgo {
     }
 
     protected void logEventName(Event event) {
-        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm");
+        SimpleDateFormat dtf = new SimpleDateFormat("MMM dd HH:mm");
+        DecimalFormat def = new DecimalFormat("0.00");
 
         if (isMarketStartingSoon(event)) {
-            logger.info("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
-                    String.format("%1$-35s", event.getName()), String.format("%1$4s", event.getMarketClassification()), df.format(event.getOpenDate()), getTimeSinceMarketStart(event), event.getScore(), event.getPreviousScores().toString());
+            logger.info("{}; {} [H:{} A:{} D:{}]:  Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
+                    String.format("%1$-35s", event.getName()),
+                    String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
+                    def.format(event.getMarketClassification().getHomeOdds()),
+                    def.format(event.getMarketClassification().getAwayOdds()),
+                    def.format(event.getMarketClassification().getDrawOdds()),
+                    dtf.format(event.getOpenDate()), getTimeSinceMarketStart(event),
+                    event.getScore(), event.getPreviousScores().toString());
         } else {
-            logger.debug("{}; {}: Starts At: [{}], Elapsed [{}], Current Score: {}, Previous Score: {}",
-                    String.format("%1$-35s", event.getName()), String.format("%1$4s", event.getMarketClassification()), df.format(event.getOpenDate()), getTimeSinceMarketStart(event), event.getScore(), event.getPreviousScores().toString());
+            logger.info("{}; {} [H:{} A:{} D:{}]:  Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
+                    String.format("%1$-35s", event.getName()),
+                    String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
+                    def.format(event.getMarketClassification().getHomeOdds()),
+                    def.format(event.getMarketClassification().getAwayOdds()),
+                    def.format(event.getMarketClassification().getDrawOdds()),
+                    dtf.format(event.getOpenDate()), getTimeSinceMarketStart(event),
+                    event.getScore(), event.getPreviousScores().toString());
         }
     }
 
@@ -222,8 +245,8 @@ public abstract class MarketAlgo {
         return false;
     }
 
-    protected MarketConfig getMarketConfig(MarketClassification marketClassification, MarketType marketType) {
-        return getMarketConfigurations().get(marketClassification).get(marketType);
+    protected MarketConfig getMarketConfig(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType);
     }
 
     protected Bet getBetForMarket(MarketCatalogue marketCatalogue, Runner runner, Side side) {
@@ -248,7 +271,7 @@ public abstract class MarketAlgo {
     }
 
     protected Integer getMinutesAfterMarketStartTimeToBet(Event event, MarketType marketType) {
-        MarketConfig marketConfig = getMarketConfigurations().get(event.getMarketClassification()).get(marketType);
+        MarketConfig marketConfig = getMarketConfigs().get(event.getMarketClassification().getMarketTemp()).get(marketType);
         return marketConfig.getLayTimeLimit();
     }
 
@@ -286,9 +309,9 @@ public abstract class MarketAlgo {
         return Math.round((number + (fractionAsDecimal / 2)) * factor) / factor;
     }
 
-    public Map<MarketClassification, Map<MarketType, MarketConfig>> getMarketConfigurations() {
+    public Map<MarketTemp, Map<MarketType, MarketConfig>> getMarketConfigs() {
         Map<String, Map<String, Map<String, Double>>> rawMarketConfigurations = new HashMap<String, Map<String, Map<String, Double>>>();
-        Map<MarketClassification, Map<MarketType, MarketConfig>> marketConfigurations = new HashMap<MarketClassification, Map<MarketType, MarketConfig>>();
+        Map<MarketTemp, Map<MarketType, MarketConfig>> marketConfigurations = new HashMap<MarketTemp, Map<MarketType, MarketConfig>>();
 
         String prop = ApiNGDemo.getProp().getProperty(getAlgoType() + "_OVER_UNDER_LAY_LIMIT");
 
@@ -302,7 +325,7 @@ public abstract class MarketAlgo {
                 marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT").intValue());
                 marketConfigs.put(MarketType.valueOf(type.getKey()), marketConfig);
             }
-            marketConfigurations.put(MarketClassification.valueOf(classification.getKey()), marketConfigs);
+            marketConfigurations.put(MarketTemp.valueOf(classification.getKey()), marketConfigs);
         }
 
         return marketConfigurations;

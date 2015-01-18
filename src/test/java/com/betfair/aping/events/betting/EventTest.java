@@ -20,7 +20,7 @@ public class EventTest {
         event.setName("Aaaa vs alskfhegbevbjdk");
 
         logger.info("{}; {}: Starts At: [{}], Elapsed [], Current Score: {}, Previous Score: {}",
-                String.format("%1$35s", event.getName()), event.getMarketClassification(), event.getOpenDate(), event.getScore(), event.getPreviousScores().toString());
+                String.format("%1$35s", event.getName()), event.getMarketClassification().getMarketTemp(), event.getOpenDate(), event.getScore(), event.getPreviousScores().toString());
     }
 
     @Test

@@ -6,8 +6,8 @@ import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.MatchOddsMarket;
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
-import com.betfair.aping.enums.MarketClassification;
 import com.betfair.aping.enums.MarketStatus;
+import com.betfair.aping.enums.MarketTemp;
 import com.betfair.aping.enums.Side;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,7 +197,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
-        Double layLimit = getLayTheDrawLayLimit(event.getMarketClassification(), mom.getMarketType());
+        Double layLimit = getLayTheDrawLayLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType());
         if (mom.getLay(runner, 0).getPrice() <= layLimit) {
             logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), layLimit);
             return true;
@@ -244,8 +244,8 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         return false;
     }
 
-    private Double getLayTheDrawLayLimit(MarketClassification marketClassification, MarketType marketType) {
-        return getMarketConfigurations().get(marketClassification).get(marketType).getLayLimit();
+    private Double getLayTheDrawLayLimit(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getLayLimit();
     }
 
     private Double getCashOutProfitPercentage() {

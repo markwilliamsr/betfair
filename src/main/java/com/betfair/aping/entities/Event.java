@@ -1,7 +1,7 @@
 package com.betfair.aping.entities;
 
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
-import com.betfair.aping.enums.MarketClassification;
+import com.betfair.aping.com.betfair.aping.events.betting.MarketClassification;
 
 import java.util.*;
 
