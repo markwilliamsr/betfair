@@ -278,6 +278,12 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             logger.debug("{}; {}; No Lay Bets already open in the Market", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
+
+        if (isScoreChanging(event)) {
+            logger.info("{}; Score is currently changing. Previous scores: {}", event.getName(), event.getPreviousScores());
+            return false;
+        }
+
         return true;
     }
 
