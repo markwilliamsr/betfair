@@ -20,6 +20,25 @@ public class Exposure {
         this.marketCatalogue = marketCatalogue;
     }
 
+    public Double calcPlacedBetsForSide(Runner runner, Side side, boolean includeUnMatched) throws Exception {
+        Double bet = 0.0;
+        List<Order> orders = runner.getOrders();
+
+        if (orders == null) {
+            return bet;
+        }
+
+        for (Order order : orders) {
+            if (order.getSide().equals(side)) {
+                bet += order.getSizeMatched();
+                if (includeUnMatched) {
+                    bet += order.getSizeRemaining();
+                }
+            }
+        }
+        return bet;
+    }
+
     public Double calcExposureForSide(Runner runner, Side side, boolean includeUnMatched) throws Exception {
         Double exposure = 0.0;
         List<Order> orders = runner.getOrders();
@@ -119,19 +138,27 @@ public class Exposure {
 
     public Double calcNetLtdExposure(boolean includeUnMatched) throws Exception {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
-        Runner r = mom.getDrawRunner();
 
+        Double drawExposure = calcExposureForRunner(includeUnMatched, mom.getDrawRunner());
+        Double homeExposure = calcExposureForRunner(includeUnMatched, mom.getHomeRunner());
+        Double awayExposure = calcExposureForRunner(includeUnMatched, mom.getAwayRunner());
+
+        Double totalExposure = drawExposure + homeExposure + awayExposure;
+
+        //round to nearest penny
+        totalExposure = totalExposure != 0 ? roundDownToNearestFraction(totalExposure, 0.01) : 0d;
+
+        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
+
+        return totalExposure;
+    }
+
+    private Double calcExposureForRunner(boolean includeUnMatched, Runner r) throws Exception {
         Double backUnderExposure = calcExposureForSide(r, Side.BACK, includeUnMatched);
         Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalExposure = backUnderExposure - layUnderExposure;
 
         totalExposure = Math.abs(totalExposure);
-
-        //round to nearest penny
-        totalExposure = totalExposure != 0 ? roundUpToNearestFraction(totalExposure, 0.01) : 0d;
-
-        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
-
         return totalExposure;
     }
 

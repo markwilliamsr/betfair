@@ -79,6 +79,10 @@ public abstract class MarketAlgo {
                     marketClassification.setMarketTemp(MarketTemp.WARM);
                 } else if (homeClassification.equals(OddsClassification.LOW) && awayClassification.equals(OddsClassification.LOW)) {
                     marketClassification.setMarketTemp(MarketTemp.WARM);
+                } else if (homeClassification.equals(OddsClassification.V_HIGH) || awayClassification.equals(OddsClassification.V_HIGH)) {
+                    marketClassification.setMarketTemp(MarketTemp.XHOT);
+                } else {
+                    marketClassification.setMarketTemp(MarketTemp.COLD);
                 }
                 marketClassification.setAwayOdds(bestAwayBack);
                 marketClassification.setHomeOdds(bestHomeBack);
@@ -95,7 +99,9 @@ public abstract class MarketAlgo {
         Map<OddsClassification, Double> oddsConfigurations = getOddsConfigurations();
         OddsClassification classification = OddsClassification.MED;
 
-        if (odds > oddsConfigurations.get(OddsClassification.HIGH)) {
+        if (odds > oddsConfigurations.get(OddsClassification.V_HIGH)) {
+            classification = OddsClassification.V_HIGH;
+        } else if (odds > oddsConfigurations.get(OddsClassification.HIGH)) {
             classification = OddsClassification.HIGH;
         } else if (odds > oddsConfigurations.get(OddsClassification.MED)) {
             classification = OddsClassification.MED;
@@ -288,7 +294,7 @@ public abstract class MarketAlgo {
     }
 
     private Boolean isMarketStartTimeLimitOn() {
-        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("MARKET_START_TIME_LIMIT_ON", "true"));
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_MARKET_START_TIME_LIMIT_ON", "true"));
     }
 
     protected Boolean isSafetyOff() {

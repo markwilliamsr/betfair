@@ -51,44 +51,44 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                     }
                 }
 
-                //Check for Profitable trades
                 MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.MATCH_ODDS);
                 if (marketCatalogue != null) {
                     MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
                     Exposure exposure = new Exposure(event, marketCatalogue);
-                    if (calcPercentageProfitStake(event, marketCatalogue, mom) > 0 && isCandidateCoverMarket(event, marketCatalogue)) {
 
-                        Bet cashOutBet = getCashOutBetForMarket(marketCatalogue, Math.abs(exposure.calcNetLtdExposure(true)));
-
-                        if (cashOutBet.getPriceSize().getSize() >= getMinimumBetSize()) {
+                    //Check for Profitable Trades
+                    if (isCandidateCoverMarket(event, marketCatalogue)) {
+                        if (calcPercentageProfitStake(event, marketCatalogue, mom) > 0) {
+                            Bet cashOutBet = getCashOutBetForMarket(marketCatalogue, Math.abs(exposure.calcNetLtdExposure(true)));
                             List<Bet> coverBet = new ArrayList<Bet>();
                             coverBet.add(cashOutBet);
                             if (isSafetyOff()) {
                                 logger.info("{}, {}, WIN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
                                 betPlacer.placeBets(coverBet);
                             }
-                        } else {
-                            logger.warn("{}, {}; HUM. Winning Cash Out Bet Size Less than Minimum Bet. {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.getPriceSize().getSize());
                         }
                     }
-                    if (calcPercentageProfitStake(event, marketCatalogue, mom) < 0 && isCandidateLosingCoverMarket(event, marketCatalogue)) {
-                        Bet cashOutBet = getCashOutBetForMarket(marketCatalogue, Math.abs(exposure.calcNetLtdExposure(true)));
+                    //Check for Losing Trades
+                    if (isCandidateLosingCoverMarket(event, marketCatalogue)) {
+                        if (calcPercentageProfitStake(event, marketCatalogue, mom) < 0) {
+                            Bet cashOutBet = getCashOutBetForMarket(marketCatalogue, Math.abs(exposure.calcNetLtdExposure(true)));
 
-                        if (cashOutBet.getPriceSize().getSize() >= getMinimumBetSize()) {
-                            List<Bet> coverBet = new ArrayList<Bet>();
-                            coverBet.add(cashOutBet);
-                            if (isSafetyOff()) {
-                                logger.info("{}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
-                                betPlacer.placeBets(coverBet);
+                            if (cashOutBet.getPriceSize().getSize() >= getMinimumBetSize()) {
+                                List<Bet> coverBet = new ArrayList<Bet>();
+                                coverBet.add(cashOutBet);
+                                if (isSafetyOff()) {
+                                    logger.info("{}, {}, LOSE: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.toString());
+                                    betPlacer.placeBets(coverBet);
+                                }
+                            } else {
+                                logger.warn("{}, {}; HUM. Losing Cash Out Bet Size Less than Minimum Bet. {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.getPriceSize().getSize());
                             }
-                        } else {
-                            logger.warn("{}, {}; HUM. Losing Cash Out Bet Size Less than Minimum Bet. {}", event.getName(), marketCatalogue.getMarketName(), cashOutBet.getPriceSize().getSize());
                         }
                     }
                 }
             }
-        } catch (IllegalArgumentException e) {
-            logger.info("Could not determine the MarketType. Exception: " + e.toString());
+        } catch (Exception e) {
+            logger.error("Exception in processing loop: ", e);
         }
     }
 
@@ -201,7 +201,13 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
         Runner runner = mom.getDrawRunner();
 
-        if (isBasicCoverCandidate(event, marketCatalogue)) return false;
+        if (isBasicCoverCandidate(event, marketCatalogue)) {
+            return false;
+        }
+
+        if (!isBetAlreadyOpen(marketCatalogue, event)) {
+            return false;
+        }
 
         try {
             if (!isBestCoveringLayPriceWithinBounds(event, marketCatalogue, mom)) {
@@ -232,7 +238,9 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
         Runner runner = mom.getDrawRunner();
 
-        if (isBasicCoverCandidate(event, marketCatalogue)) return false;
+        if (!isBasicCoverCandidate(event, marketCatalogue)) {
+            return false;
+        }
 
         try {
             if (!isCoveringLossWithinBounds(event, marketCatalogue, mom)) {
@@ -258,19 +266,19 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     private boolean isBasicCoverCandidate(Event event, MarketCatalogue marketCatalogue) throws Exception {
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
             logger.debug("{}; {}; Market is not OPEN", event.getName(), marketCatalogue.getMarketName());
-            return true;
+            return false;
         }
 
         if (!isMarketStartingSoon(event)) {
             logger.debug("{}; {}; Market is not starting soon enough", event.getName(), marketCatalogue.getMarketName());
-            return true;
+            return false;
         }
 
         if (!isBetAlreadyOpen(marketCatalogue, event)) {
             logger.debug("{}; {}; No Lay Bets already open in the Market", event.getName(), marketCatalogue.getMarketName());
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
@@ -288,12 +296,12 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
         if (Math.abs(expProfitPercentage) >= getLayTheDrawLossLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType())) {
             logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 2d));
+                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d));
             return true;
         }
 
-        logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 2d));
+        logger.info("{}; {}; Reg. Closeout Not OK. Best Lay: {}, {}, Exp Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
+                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d));
 
         return false;
     }
@@ -304,12 +312,12 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         if (profitPercentage >= getCashOutProfitPercentage()) {
             //some kind of profit on the closest market, close it out
             logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 0.01d));
             return true;
         }
 
         logger.info("{}; {}; Cov. Lay Not OK. Best Lay: {}, {}, Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 0.01d));
 
         return false;
     }
@@ -318,7 +326,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         Exposure exposure = new Exposure(event, marketCatalogue);
         Double layExposure = exposure.calcNetLtdExposure(true);
         Double cashOutStake = calcBackRunnerCashOutBetSize(mom, layExposure);
-        Double initialStake = getSize();
+        Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
         Double profit = initialStake - cashOutStake;
 
@@ -331,7 +339,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         Exposure exposure = new Exposure(event, marketCatalogue);
         Double layExposure = exposure.calcNetLtdExposure(true);
         Double cashOutStake = calcBackRunnerCashOutBetSize(mom, layExposure);
-        Double initialStake = getSize();
+        Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
         Double profit = initialStake - cashOutStake;
 
@@ -353,7 +361,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     }
 
     private Double getLayTheDrawLossLimit(MarketTemp marketTemp, MarketType marketType) {
-        return getMarketConfigs().get(marketTemp).get(marketType).getLayLimit();
+        return getMarketConfigs().get(marketTemp).get(marketType).getExpLossLimit();
     }
 
     private Double getCashOutProfitPercentage() {
