@@ -1,9 +1,9 @@
 package com.betfair.aping;
 
 import com.betfair.aping.algo.BackUnderMarketAlgo;
+import com.betfair.aping.algo.IMarketAlgo;
 import com.betfair.aping.algo.LayAndCoverAlgo;
 import com.betfair.aping.algo.LayTheDrawAlgo;
-import com.betfair.aping.algo.IMarketAlgo;
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.entities.*;
@@ -79,18 +79,20 @@ public class ApiNGJsonRpcDemo {
                 logger.debug("Reloading Properties");
                 ApiNGDemo.loadProperties();
             }
-            if (i > 0 && i % 100 == 0) {
+            if (i > 0 && i % 10 == 0) {
                 events = refreshEvents(events);
             }
             refreshOdds(events);
-            cancelUnmatchedBets(events);
+            //cancelUnmatchedBets(events);
         }
     }
 
     private List<Event> refreshEvents(List<Event> currentEvents) throws APINGException {
         logger.info("Refreshing Event List. Start");
         List<Event> newEvents = getCurrentEventsWithCatalogues();
+        List<Event> oldEvents = new ArrayList<Event>();
         boolean found = false;
+
         for (Event currentEvent : currentEvents) {
             for (Event newEvent : newEvents) {
                 if (currentEvent.getId().equals(newEvent.getId())) {
@@ -98,9 +100,13 @@ public class ApiNGJsonRpcDemo {
                 }
             }
             if (!found) {
-                currentEvents.remove(currentEvent);
-                logger.info("Event Removed " + currentEvent.getName());
+                oldEvents.add(currentEvent);
             }
+        }
+
+        for (Event event : oldEvents) {
+            currentEvents.remove(event);
+            logger.info("Event Removed " + event.getName());
         }
 
         for (Event newEvent : newEvents) {
@@ -150,8 +156,8 @@ public class ApiNGJsonRpcDemo {
         for (Event event : events) {
             for (MarketCatalogue mc : event.getMarket().values()) {
                 MarketBook marketBook = mc.getMarketBook();
-                for (Runner runner : marketBook.getRunners()){
-                    for (Order order: runner.getOrders()) {
+                for (Runner runner : marketBook.getRunners()) {
+                    for (Order order : runner.getOrders()) {
                         if (order.getSizeRemaining() > 0) {
                             logger.warn("{}, {}; Cancelling Bet: ID: {}, Side: {}, Rem: {}", event.getName(), mc.getMarketName(), order.getBetId(), order.getSide(), order.getSizeRemaining());
                         }
