@@ -91,8 +91,6 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
             throw container.getError().getData().getAPINGException();
 
         return container.getResult();
-
-
     }
 
     public List<MarketCatalogue> listMarketCatalogue(MarketFilter filter, Set<MarketProjection> marketProjection,
@@ -150,7 +148,24 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
             throw container.getError().getData().getAPINGException();
 
         return container.getResult();
+    }
 
+    public PlaceExecutionReport cancelOrders(String marketId, List<PlaceInstruction> instructions, String customerRef) throws APINGException {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put(LOCALE, locale);
+        params.put(MARKET_ID, marketId);
+        params.put(INSTRUCTIONS, instructions);
+        params.put(CUSTOMER_REF, customerRef);
+        String result = getInstance().makeRequest(ApiNgOperation.PLACEORDERS, params);
+        if (ApiNGDemo.isDebug())
+            logger.info("\nResponse: " + result);
+
+        PlaceOrdersContainer container = JsonConverter.convertFromJson(result, PlaceOrdersContainer.class);
+
+        if (container.getError() != null)
+            throw container.getError().getData().getAPINGException();
+
+        return container.getResult();
     }
 
     protected String makeRequest(ApiNgOperation operation, Map<String, Object> params) {

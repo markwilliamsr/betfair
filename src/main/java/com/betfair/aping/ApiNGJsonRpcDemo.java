@@ -83,6 +83,7 @@ public class ApiNGJsonRpcDemo {
                 events = refreshEvents(events);
             }
             refreshOdds(events);
+            cancelUnmatchedBets(events);
         }
     }
 
@@ -143,6 +144,21 @@ public class ApiNGJsonRpcDemo {
             }
         }
         logger.info("Full MarketBook Listing End");
+    }
+
+    private void cancelUnmatchedBets(List<Event> events) {
+        for (Event event : events) {
+            for (MarketCatalogue mc : event.getMarket().values()) {
+                MarketBook marketBook = mc.getMarketBook();
+                for (Runner runner : marketBook.getRunners()){
+                    for (Order order: runner.getOrders()) {
+                        if (order.getSizeRemaining() > 0) {
+                            logger.warn("{}, {}; Cancelling Bet: ID: {}, Side: {}, Rem: {}", event.getName(), mc.getMarketName(), order.getBetId(), order.getSide(), order.getSizeRemaining());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void refreshOdds(List<Event> events) throws APINGException {
