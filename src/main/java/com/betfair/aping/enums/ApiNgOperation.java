@@ -11,6 +11,7 @@ public enum ApiNgOperation {
     LISTMARKETCATALOGUE("listMarketCatalogue", "SPORTS_APING_V1_0", "betting"),
     LISTMARKETBOOK("listMarketBook", "SPORTS_APING_V1_0", "betting"),
     PLACEORDERS("placeOrders", "SPORTS_APING_V1_0", "betting"),
+    CANCELORDERS("cancelOrders", "SPORTS_APING_V1_0", "betting"),
     ACCOUNTFUNDS("getAccountFunds", "ACCOUNTS_APING_V1_0", "account"),;
 
     private String operationName;

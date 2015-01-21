@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -79,11 +80,11 @@ public class ApiNGJsonRpcDemo {
                 logger.debug("Reloading Properties");
                 ApiNGDemo.loadProperties();
             }
-            if (i > 0 && i % 10 == 0) {
+            if (i > 0 && i % 100 == 0) {
                 events = refreshEvents(events);
             }
             refreshOdds(events);
-            //cancelUnmatchedBets(events);
+            cancelUnmatchedBets(events);
         }
     }
 
@@ -152,15 +153,49 @@ public class ApiNGJsonRpcDemo {
         logger.info("Full MarketBook Listing End");
     }
 
+    protected long getTimeSinceBetPlaced(Order order) {
+        Date now = Calendar.getInstance().getTime();
+
+        long diffMs = now.getTime() - order.getPlacedDate().getTime();
+        long diffSec = diffMs / 1000;
+
+        return diffSec;
+    }
+
     private void cancelUnmatchedBets(List<Event> events) {
+        SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
         for (Event event : events) {
             for (MarketCatalogue mc : event.getMarket().values()) {
                 MarketBook marketBook = mc.getMarketBook();
+                List<CancelInstruction> cancelInstructions = new ArrayList<CancelInstruction>();
                 for (Runner runner : marketBook.getRunners()) {
-                    for (Order order : runner.getOrders()) {
-                        if (order.getSizeRemaining() > 0) {
-                            logger.warn("{}, {}; Cancelling Bet: ID: {}, Side: {}, Rem: {}", event.getName(), mc.getMarketName(), order.getBetId(), order.getSide(), order.getSizeRemaining());
+                    if (runner.getOrders() != null) {
+                        for (Order order : runner.getOrders()) {
+                            if (order.getSizeRemaining() > 0) {
+                                if (getTimeSinceBetPlaced(order) > 20) {
+                                    CancelInstruction cancelInstruction = new CancelInstruction();
+                                    cancelInstruction.setBetId(order.getBetId());
+                                    cancelInstructions.add(cancelInstruction);
+                                    logger.warn("{}, {}; Cancelling Bet: ID: {}, Side: {}, Rem: {}", event.getName(), mc.getMarketName(), order.getBetId(), order.getSide(), order.getSizeRemaining());
+                                }
+                            }
                         }
+                    }
+                }
+                if (cancelInstructions.size() > 0) {
+                    String ref = "CXL:" + dtf.format(Calendar.getInstance().getTime());
+                    try {
+                        CancelExecutionReport cancelExecutionReport = jsonOperations.cancelOrders(mc.getMarketId(), cancelInstructions, ref);
+                        if (cancelExecutionReport.getStatus() == ExecutionReportStatus.SUCCESS) {
+                            logger.info("Your cancellation has been placed. {} ", gson.toJson(cancelExecutionReport.getInstructionReports()));
+                        } else if (cancelExecutionReport.getStatus() == ExecutionReportStatus.FAILURE) {
+                            logger.info("Your cancellation has NOT been placed :*( ");
+                            logger.info("The error is: " + cancelExecutionReport.getErrorCode() + ": " + cancelExecutionReport.getErrorCode().getMessage());
+                            logger.info(gson.toJson(cancelInstructions));
+                            logger.info(gson.toJson(cancelExecutionReport));
+                        }
+                    } catch (APINGException exception) {
+                        logger.error("Exception Cancelling Unmatched Bets: {}", exception);
                     }
                 }
             }

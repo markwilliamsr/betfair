@@ -39,6 +39,8 @@ public abstract class ApiNgOperations {
 
 	public abstract PlaceExecutionReport placeOrders(String marketId, List<PlaceInstruction> instructions, String customerRef) throws APINGException;
 
+    public abstract CancelExecutionReport cancelOrders(String marketId, List<CancelInstruction> instructions, String customerRef) throws APINGException;
+
     protected abstract String makeRequest(ApiNgOperation operation, Map<String, Object> params) throws  APINGException;
 
     public abstract AccountFundsResponse getAccountFunds() throws APINGException;

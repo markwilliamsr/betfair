@@ -56,8 +56,7 @@ public class BetPlacer {
             PlaceExecutionReport placeBetResult = jsonOperations.placeOrders(marketId, instructions, customerRef);
             // Handling the operation result
             if (placeBetResult.getStatus() == ExecutionReportStatus.SUCCESS) {
-                logger.info("Your bet has been placed!!");
-                logger.info(gson.toJson(placeBetResult.getInstructionReports()));
+                logger.info("Your bet has been placed. {} ", gson.toJson(placeBetResult.getInstructionReports()));
             } else if (placeBetResult.getStatus() == ExecutionReportStatus.FAILURE) {
                 logger.info("Your bet has NOT been placed :*( ");
                 logger.info("The error is: " + placeBetResult.getErrorCode() + ": " + placeBetResult.getErrorCode().getMessage());

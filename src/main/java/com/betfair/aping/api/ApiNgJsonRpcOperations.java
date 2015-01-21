@@ -150,17 +150,17 @@ public class ApiNgJsonRpcOperations extends ApiNgOperations {
         return container.getResult();
     }
 
-    public PlaceExecutionReport cancelOrders(String marketId, List<PlaceInstruction> instructions, String customerRef) throws APINGException {
+    public CancelExecutionReport cancelOrders(String marketId, List<CancelInstruction> instructions, String customerRef) throws APINGException {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(LOCALE, locale);
         params.put(MARKET_ID, marketId);
         params.put(INSTRUCTIONS, instructions);
         params.put(CUSTOMER_REF, customerRef);
-        String result = getInstance().makeRequest(ApiNgOperation.PLACEORDERS, params);
+        String result = getInstance().makeRequest(ApiNgOperation.CANCELORDERS, params);
         if (ApiNGDemo.isDebug())
             logger.info("\nResponse: " + result);
 
-        PlaceOrdersContainer container = JsonConverter.convertFromJson(result, PlaceOrdersContainer.class);
+        CancelOrdersContainer container = JsonConverter.convertFromJson(result, CancelOrdersContainer.class);
 
         if (container.getError() != null)
             throw container.getError().getData().getAPINGException();
