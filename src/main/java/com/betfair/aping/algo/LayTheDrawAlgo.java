@@ -1,6 +1,5 @@
 package com.betfair.aping.algo;
 
-import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.BetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.MatchOddsMarket;
@@ -26,6 +25,12 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     @Override
     protected void classifyMarket(Event event) throws Exception {
+        if (event.getMarketClassification() != null
+                && event.getMarketClassification().getMarketTemp() != null
+                && getTimeSinceMarketStart(event) > 1) {
+            return;
+        }
+
         super.classifyMarket(event);
 
         MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.MATCH_ODDS);
@@ -353,7 +358,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
         MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
 
-        if (profitPercentage > getCashOutProfitPercentage()) {
+        if (profitPercentage > getCashOutProfitPercentage(marketTemp, mom.getMarketType())) {
             if (marketTemp.equals(MarketTemp.XHOT) || marketTemp.equals(MarketTemp.HOT)) {
                 if (score.isHomeTeamWinning() && event.getMarketClassification().isHomeFavourite()) {
                     if (score.goalDifference() == 1) {
@@ -421,7 +426,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         return getMarketConfigs().get(marketTemp).get(marketType).getExpLossLimit();
     }
 
-    private Double getCashOutProfitPercentage() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LTD_CLOSE_OUT_PROFIT_PERCENTAGE"));
+    private Double getCashOutProfitPercentage(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
     }
 }

@@ -8,6 +8,24 @@ public class MarketConfig {
     Integer layTimeLimit;
     Double expLossLimit;
     Double stakeLossLimit;
+    Double cashOutProfitPercentage;
+    Integer singleGoalTimeLimit;
+
+    public Double getCashOutProfitPercentage() {
+        return cashOutProfitPercentage;
+    }
+
+    public void setCashOutProfitPercentage(Double cashOutProfitPercentage) {
+        this.cashOutProfitPercentage = cashOutProfitPercentage;
+    }
+
+    public Integer getSingleGoalTimeLimit() {
+        return singleGoalTimeLimit;
+    }
+
+    public void setSingleGoalTimeLimit(Integer singleGoalTimeLimit) {
+        this.singleGoalTimeLimit = singleGoalTimeLimit;
+    }
 
     public Double getExpLossLimit() {
         return expLossLimit;
