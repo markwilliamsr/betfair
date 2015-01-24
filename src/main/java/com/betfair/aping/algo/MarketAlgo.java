@@ -21,6 +21,7 @@ import java.util.Map;
  * Created by markwilliams on 1/14/15.
  */
 public abstract class MarketAlgo {
+    public static final String WIN = "WIN";
     protected Logger logger = LoggerFactory.getLogger(MarketAlgo.class);
     protected Gson gson = new Gson();
     protected int MAX_PREV_SCORES = getScoreStabalizationIteration();
@@ -54,8 +55,8 @@ public abstract class MarketAlgo {
                 Double bestAwayBack = mom.getBack(away, 0).getPrice();
                 Double bestDrawBack = mom.getBack(draw, 0).getPrice();
 
-                OddsClassification homeClassification = classifyOdds(bestHomeBack);
-                OddsClassification awayClassification = classifyOdds(bestAwayBack);
+                OddsClassification homeClassification = classifyOdds(bestHomeBack, WIN);
+                OddsClassification awayClassification = classifyOdds(bestAwayBack, WIN);
 
                 if (marketClassification.getMarketTemp() == null) {
                     marketClassification.setMarketTemp(MarketTemp.WARM);
@@ -95,17 +96,17 @@ public abstract class MarketAlgo {
         event.setMarketClassification(marketClassification);
     }
 
-    private OddsClassification classifyOdds(Double odds) {
-        Map<OddsClassification, Double> oddsConfigurations = getOddsConfigurations();
+    protected OddsClassification classifyOdds(Double odds, String type) {
+        Map<OddsClassification, Double> oddsConfigurations = getOddsConfigurations(type);
         OddsClassification classification = OddsClassification.MED;
 
-        if (odds > oddsConfigurations.get(OddsClassification.V_HIGH)) {
+        if (odds >= oddsConfigurations.get(OddsClassification.V_HIGH)) {
             classification = OddsClassification.V_HIGH;
-        } else if (odds > oddsConfigurations.get(OddsClassification.HIGH)) {
+        } else if (odds >= oddsConfigurations.get(OddsClassification.HIGH)) {
             classification = OddsClassification.HIGH;
-        } else if (odds > oddsConfigurations.get(OddsClassification.MED)) {
+        } else if (odds >= oddsConfigurations.get(OddsClassification.MED)) {
             classification = OddsClassification.MED;
-        } else if (odds > oddsConfigurations.get(OddsClassification.LOW)) {
+        } else if (odds >= oddsConfigurations.get(OddsClassification.LOW)) {
             classification = OddsClassification.LOW;
         }
 
@@ -339,11 +340,11 @@ public abstract class MarketAlgo {
         return marketConfigurations;
     }
 
-    public Map<OddsClassification, Double> getOddsConfigurations() {
+    public Map<OddsClassification, Double> getOddsConfigurations(String type) {
         Map<String, Double> rawOddsConfigurations = new HashMap<String, Double>();
         Map<OddsClassification, Double> oddsConfigurations = new HashMap<OddsClassification, Double>();
 
-        String prop = ApiNGDemo.getProp().getProperty(getAlgoType() + "_ODDS_CLASSIFICATION");
+        String prop = ApiNGDemo.getProp().getProperty(getAlgoType() + "_" + type + "_ODDS_CLASSIFICATION");
 
         rawOddsConfigurations = gson.fromJson(prop, rawOddsConfigurations.getClass());
 

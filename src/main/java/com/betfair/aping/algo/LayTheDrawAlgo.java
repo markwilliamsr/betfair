@@ -8,6 +8,7 @@ import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.MarketTemp;
+import com.betfair.aping.enums.OddsClassification;
 import com.betfair.aping.enums.Side;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,18 +20,46 @@ import java.util.List;
  * Created by markwilliams on 12/14/14.
  */
 public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
+    public static final String DRAW = "DRAW";
     private static final String ALGO_TYPE = "LTD";
     private Logger logger = LoggerFactory.getLogger(LayTheDrawAlgo.class);
+
+    @Override
+    protected void classifyMarket(Event event) throws Exception {
+        super.classifyMarket(event);
+
+        MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.MATCH_ODDS);
+        if (marketCatalogue != null) {
+            MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+
+            Runner draw = mom.getDrawRunner();
+
+            Double bestDrawBack = mom.getBack(draw, 0).getPrice();
+            OddsClassification drawClassification = classifyOdds(bestDrawBack, DRAW);
+
+            MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
+
+            if (marketTemp.equals(MarketTemp.HOT)
+                    && (drawClassification.equals(OddsClassification.MED) || drawClassification.equals(OddsClassification.LOW))) {
+                event.getMarketClassification().setMarketTemp(MarketTemp.WARM);
+            }
+            if (marketTemp.equals(MarketTemp.WARM)
+                    && drawClassification.equals(OddsClassification.LOW)) {
+                event.getMarketClassification().setMarketTemp(MarketTemp.COLD);
+            }
+
+        }
+    }
+
 
     @Override
     public void process(Event event) throws Exception {
         BetPlacer betPlacer = new BetPlacer();
 
-        updateEventScore(event);
-        classifyMarket(event);
-        logEventName(event);
-
         try {
+            updateEventScore(event);
+            classifyMarket(event);
+            logEventName(event);
             if (event.getPreviousScores().size() == MAX_PREV_SCORES) {
 
                 if (event.getScore().equals(ScoreEnum.NIL_NIL)) {
@@ -289,7 +318,11 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
         Double layLimit = getLayTheDrawLayLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType());
-        if (mom.getLay(runner, 0).getPrice() <= layLimit) {
+        if (event.getMarketClassification().getMarketTemp().equals(MarketTemp.COLD)) {
+            return false;
+        }
+
+        if (mom.getLay(runner, 0).getPrice() >= layLimit) {
             logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), layLimit);
             return true;
         }
