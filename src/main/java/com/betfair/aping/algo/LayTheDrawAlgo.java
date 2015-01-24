@@ -299,15 +299,16 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private boolean isCoveringLossWithinBounds(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Double expProfitPercentage = calcPercentageProfitExposure(event, marketCatalogue, mom);
+        Double stakeProfitPercentage = calcPercentageProfitStake(event, marketCatalogue, mom);
 
         if (Math.abs(expProfitPercentage) >= getLayTheDrawLossLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType())) {
-            logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d));
+            logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp. Profit%: {}, St. Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
+                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d), roundUpToNearestFraction(stakeProfitPercentage, 0.01d));
             return true;
         }
 
-        logger.info("{}; {}; Reg. Closeout Not OK. Best Lay: {}, {}, Exp Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d));
+        logger.info("{}; {}; Reg. Closeout Not OK. Best Lay: {}, {}, Exp. Profit%: {}, St. Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
+                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d), roundUpToNearestFraction(stakeProfitPercentage, 0.01d));
 
         return false;
     }
