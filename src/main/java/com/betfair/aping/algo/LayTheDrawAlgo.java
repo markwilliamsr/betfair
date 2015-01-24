@@ -36,6 +36,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
             Double bestDrawBack = mom.getBack(draw, 0).getPrice();
             OddsClassification drawClassification = classifyOdds(bestDrawBack, DRAW);
+            event.getMarketClassification().setDrawOddsClassification(drawClassification);
 
             MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
 
@@ -47,7 +48,6 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                     && drawClassification.equals(OddsClassification.LOW)) {
                 event.getMarketClassification().setMarketTemp(MarketTemp.COLD);
             }
-
         }
     }
 
@@ -349,11 +349,28 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     private boolean isBestCoveringLayPriceWithinBounds(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Double profitPercentage = calcPercentageProfitStake(event, marketCatalogue, mom);
 
-        if (profitPercentage >= getCashOutProfitPercentage()) {
-            //some kind of profit on the closest market, close it out
-            logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
-                    mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 0.01d));
-            return true;
+        ScoreEnum score = event.getScore();
+
+        MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
+
+        if (profitPercentage > getCashOutProfitPercentage()) {
+            if (marketTemp.equals(MarketTemp.XHOT) || marketTemp.equals(MarketTemp.HOT)) {
+                if (score.isHomeTeamWinning() && event.getMarketClassification().isHomeFavourite()) {
+                    if (score.goalDifference() == 1) {
+                        if (getTimeSinceMarketStart(event) > 80) {
+                            logger.info("{}, {}; Home Favourite Winning by 1 with {} mins gone, closing winning Bet.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
+                            return true;
+                        } else {
+                            logger.info("{}, {}; Home Favourite Winning by 1 with {} mins gone, leaving Bet open.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
+                            return false;
+                        }
+                    }
+                    if (score.goalDifference() >= 2) {
+                        logger.info("{}, {}; Home Favourite Winning by 2 or more, leaving Bet open.", event.getName(), marketCatalogue.getMarketName());
+                        return false;
+                    }
+                }
+            }
         }
 
         logger.info("{}; {}; Cov. Lay Not OK. Best Lay: {}, {}, Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),

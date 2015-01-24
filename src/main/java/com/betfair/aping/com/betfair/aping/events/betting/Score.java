@@ -50,11 +50,11 @@ public class Score {
     }
 
     public ScoreEnum findScoreFromMarketOdds() {
-        return findCorrectScoreFromMarketOdds(event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners(),
+        return findScoreFromMarketOdds(event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners(),
                 event.getMarket().get(MarketType.CORRECT_SCORE));
     }
 
-    private ScoreEnum findCorrectScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {
+    private ScoreEnum findScoreFromMarketOdds(List<Runner> runners, MarketCatalogue m) {
         ScoreEnum correctScore = ScoreEnum.ANY_UNQUOTED;
         int minGoalsSoFar = Integer.MAX_VALUE;
         for (Runner r : runners) {

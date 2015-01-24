@@ -88,6 +88,8 @@ public abstract class MarketAlgo {
                 marketClassification.setAwayOdds(bestAwayBack);
                 marketClassification.setHomeOdds(bestHomeBack);
                 marketClassification.setDrawOdds(bestDrawBack);
+                marketClassification.setHomeOddsClassification(homeClassification);
+                marketClassification.setAwayOddsClassification(awayClassification);
             }
         } catch (RuntimeException e) {
             logger.error("Exception Classifying Market: ", e);
