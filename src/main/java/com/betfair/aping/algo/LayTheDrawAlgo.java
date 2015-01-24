@@ -230,7 +230,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
         Runner runner = mom.getDrawRunner();
 
-        if (isBasicCoverCandidate(event, marketCatalogue)) {
+        if (!isBasicCoverCandidate(event, marketCatalogue)) {
             return false;
         }
 
