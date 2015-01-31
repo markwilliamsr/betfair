@@ -327,7 +327,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             return false;
         }
 
-        if (mom.getLay(runner, 0).getPrice() >= layLimit) {
+        if (mom.getLay(runner, 0).getPrice() <= layLimit) {
             logger.info("{}, {}; Lay Price within bounds. Best Price: {}; Lay Limit: {}", event.getName(), mom.getDrawRunnerName(), mom.getLay(runner, 0).toString(), layLimit);
             return true;
         }

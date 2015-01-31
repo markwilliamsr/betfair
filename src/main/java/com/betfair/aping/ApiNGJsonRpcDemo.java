@@ -91,7 +91,7 @@ public class ApiNGJsonRpcDemo {
                 logger.debug("Reloading Properties");
                 ApiNGDemo.loadProperties();
             }
-            if (i > 0 && i % 100 == 0) {
+            if (i > 0 && i % 10 == 0) {
                 events = refreshEvents(events);
             }
             refreshOdds(events);
@@ -106,19 +106,9 @@ public class ApiNGJsonRpcDemo {
         boolean found = false;
 
         for (Event currentEvent : currentEvents) {
-            for (Event newEvent : newEvents) {
-                if (currentEvent.getId().equals(newEvent.getId())) {
-                    found = true;
-                }
-            }
-            if (!found) {
+            if (currentEvent.getMarket().get(MarketType.MATCH_ODDS).getMarketBook().getStatus().equals(MarketStatus.CLOSED)) {
                 oldEvents.add(currentEvent);
             }
-        }
-
-        for (Event event : oldEvents) {
-            currentEvents.remove(event);
-            logger.info("Event Removed " + event.getName());
         }
 
         for (Event newEvent : newEvents) {
@@ -131,6 +121,11 @@ public class ApiNGJsonRpcDemo {
                 currentEvents.add(newEvent);
                 logger.info("Event Added " + newEvent.getName());
             }
+        }
+
+        for (Event event : oldEvents) {
+            currentEvents.remove(event);
+            logger.info("Event Removed " + event.getName());
         }
 
         logger.info("Refreshing Event List. Complete");
