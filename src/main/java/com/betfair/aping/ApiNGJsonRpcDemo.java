@@ -91,7 +91,7 @@ public class ApiNGJsonRpcDemo {
                 logger.debug("Reloading Properties");
                 ApiNGDemo.loadProperties();
             }
-            if (i > 0 && i % 10 == 0) {
+            if (i > 0 && i % 20 == 0) {
                 events = refreshEvents(events);
             }
             refreshOdds(events);
@@ -106,8 +106,12 @@ public class ApiNGJsonRpcDemo {
         boolean found = false;
 
         for (Event currentEvent : currentEvents) {
-            if (currentEvent.getMarket().get(MarketType.MATCH_ODDS).getMarketBook().getStatus().equals(MarketStatus.CLOSED)) {
-                oldEvents.add(currentEvent);
+            MarketCatalogue mc = currentEvent.getMarket().get(MarketType.MATCH_ODDS);
+            if (mc != null) {
+                MarketBook mb = mc.getMarketBook();
+                if (mb != null && mb.getStatus().equals(MarketStatus.CLOSED)) {
+                    oldEvents.add(currentEvent);
+                }
             }
         }
 
@@ -125,7 +129,8 @@ public class ApiNGJsonRpcDemo {
 
         for (Event event : oldEvents) {
             currentEvents.remove(event);
-            logger.info("Event Removed " + event.getName());
+            logger.debug("Event Removed " + event.getName());
+            logger.info("Final Score: {}, [{}]; Score: {}", event.getName(), event.getMarketClassification().getMarketTemp(), event.getScore());
         }
 
         logger.info("Refreshing Event List. Complete");
@@ -149,14 +154,14 @@ public class ApiNGJsonRpcDemo {
     }
 
     private void printMarketBooks(List<Event> events) {
-        logger.info("Full MarketBook Listing Start");
+        logger.debug("Full MarketBook Listing Start");
         for (Event e : events) {
-            logger.info(e.getName());
+            logger.debug(e.getName());
             for (MarketType mt : e.getMarket().keySet()) {
-                logger.info("  " + mt + ": " + gson.toJson(e.getMarket().get(mt)));
+                logger.debug("  " + mt + ": " + gson.toJson(e.getMarket().get(mt)));
             }
         }
-        logger.info("Full MarketBook Listing End");
+        logger.debug("Full MarketBook Listing End");
     }
 
     protected long getTimeSinceBetPlaced(Order order) {
@@ -253,11 +258,11 @@ public class ApiNGJsonRpcDemo {
     }
 
     private void printEvents(List<Event> events) {
-        logger.info("Full Event Listing Start");
+        logger.debug("Full Event Listing Start");
         for (Event e : events) {
-            logger.info(gson.toJson(e));
+            logger.debug(gson.toJson(e));
         }
-        logger.info("Full Event Listing End");
+        logger.debug("Full Event Listing End");
     }
 
     private List<Event> getCurrentEventsWithCatalogues() throws APINGException {
@@ -279,11 +284,11 @@ public class ApiNGJsonRpcDemo {
     }
 
     private List<EventResult> getEvents() throws APINGException {
-        logger.info("3.1 (listEvents) Get all events for " + gson.toJson(getMarketFilter().getMarketTypeCodes()) + "...");
+        logger.debug("3.1 (listEvents) Get all events for " + gson.toJson(getMarketFilter().getMarketTypeCodes()) + "...");
 
         List<EventResult> events = jsonOperations.listEvents(getMarketFilter());
 
-        logger.info("3.2 (listEvents) Events Returned: " + events.size() + "\n");
+        logger.debug("3.2 (listEvents) Events Returned: " + events.size() + "\n");
 
         return events;
     }
@@ -335,13 +340,13 @@ public class ApiNGJsonRpcDemo {
         MarketFilter marketFilter = getMarketFilter();
         marketFilter.setEventIds(eventIds);
 
-        logger.info("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
+        logger.debug("4.1 (listMarketCataloque) Get all markets for " + gson.toJson(marketFilter.getMarketTypeCodes()) + "...");
 
         String maxResults = getProps().getProperty("MAX_RESULTS");
 
         List<MarketCatalogue> mks = jsonOperations.listMarketCatalogue(marketFilter, marketProjection, MarketSort.FIRST_TO_START, maxResults);
 
-        logger.info("4.2. Print Event, Market Info, name and runners...\n");
+        logger.debug("4.2. Print Event, Market Info, name and runners...\n");
         //printMarketCatalogue(mks);
         return mks;
     }
@@ -352,16 +357,16 @@ public class ApiNGJsonRpcDemo {
         Set<String> competitions = new HashSet<String>();
         competitions = gson.fromJson(getProps().getProperty("COMPETITIONS"), competitions.getClass());
 
-        logger.info("2.1.(listCompetitions) Get all Competitions...");
+        logger.debug("2.1.(listCompetitions) Get all Competitions...");
         List<CompetitionResult> c = jsonOperations.listCompetitions(marketFilter);
-        logger.info("2.2. Extract Competition Ids...");
+        logger.debug("2.2. Extract Competition Ids...");
         for (CompetitionResult competitionResult : c) {
             if (competitions.contains(competitionResult.getCompetition().getName())) {
-                logger.info("2.3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId());
+                logger.debug("2.3. Competition Id for " + competitionResult.getCompetition().getName() + " is: " + competitionResult.getCompetition().getId());
                 competitionIds.add(competitionResult.getCompetition().getId().toString());
             }
         }
-        logger.info("");
+        logger.debug("");
         return competitionIds;
     }
 
@@ -372,12 +377,12 @@ public class ApiNGJsonRpcDemo {
 
         eventTypes = gson.fromJson(getProps().getProperty("EVENT_TYPES"), eventTypes.getClass());
 
-        logger.info("1.1.(listEventTypes) Get all Event Types...");
+        logger.debug("1.1.(listEventTypes) Get all Event Types...");
         List<EventTypeResult> r = jsonOperations.listEventTypes(marketFilter);
-        logger.info("1.2. Extract Event Type Ids...");
+        logger.debug("1.2. Extract Event Type Ids...");
         for (EventTypeResult eventTypeResult : r) {
             if (eventTypes.contains(eventTypeResult.getEventType().getName())) {
-                logger.info("1.3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
+                logger.debug("1.3. EventTypeId for " + eventTypeResult.getEventType().getName() + " is: " + eventTypeResult.getEventType().getId() + "\n");
                 eventTypeIds.add(eventTypeResult.getEventType().getId().toString());
             }
         }
@@ -386,13 +391,13 @@ public class ApiNGJsonRpcDemo {
 
     private void printMarketCatalogue(List<MarketCatalogue> mks) {
         for (MarketCatalogue mk : mks) {
-            logger.info("Event: " + mk.getEvent().getName() + ", Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
+            logger.debug("Event: " + mk.getEvent().getName() + ", Market Name: " + mk.getMarketName() + "; Id: " + mk.getMarketId() + "\n");
             List<RunnerCatalog> runners = mk.getRunners();
             if (runners != null) {
                 for (RunnerCatalog rCat : runners) {
-                    logger.info("  Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId());
+                    logger.debug("  Runner Name: " + rCat.getRunnerName() + "; Selection Id: " + rCat.getSelectionId());
                 }
-                logger.info("");
+                logger.debug("");
             }
         }
     }

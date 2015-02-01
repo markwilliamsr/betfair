@@ -323,8 +323,13 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
         Double layLimit = getLayTheDrawLayLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType());
+
         if (event.getMarketClassification().getMarketTemp().equals(MarketTemp.COLD)) {
-            return false;
+            if (mom.getLay(runner, 0).getPrice() >= layLimit) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         if (mom.getLay(runner, 0).getPrice() <= layLimit) {
@@ -360,7 +365,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
         if (profitPercentage > getCashOutProfitPercentage(marketTemp, mom.getMarketType())) {
             if (marketTemp.equals(MarketTemp.XHOT) || marketTemp.equals(MarketTemp.HOT)) {
-                if (score.isHomeTeamWinning() && event.getMarketClassification().isHomeFavourite()) {
+                if (isFavoutiteWinning(event, score)) {
                     if (score.goalDifference() == 1) {
                         if (getTimeSinceMarketStart(event) > 80) {
                             logger.info("{}, {}; Home Favourite Winning by 1 with {} mins gone, closing winning Bet.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
@@ -374,6 +379,41 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                         logger.info("{}, {}; Home Favourite Winning by 2 or more, leaving Bet open.", event.getName(), marketCatalogue.getMarketName());
                         return false;
                     }
+                } else {
+                    if (score.goalDifference() == 1) {
+                        logger.info("{}, {}; Away Underdog Winning, closing out.", event.getName(), marketCatalogue.getMarketName());
+                        return true;
+                    }
+                    if (score.goalDifference() >= 2) {
+                        logger.info("{}, {}; Away Underdog Winning by 2 or more, leaving Bet open.", event.getName(), marketCatalogue.getMarketName());
+                        return false;
+                    }
+                }
+            }
+            if (marketTemp.equals(MarketTemp.WARM) || marketTemp.equals(MarketTemp.COLD)) {
+                if (isFavoutiteWinning(event, score)) {
+                    if (score.goalDifference() == 1) {
+                        if (getTimeSinceMarketStart(event) > 60) {
+                            logger.info("{}, {}; Favourite Winning by 1 with {} mins gone, closing winning Bet.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
+                            return true;
+                        } else {
+                            logger.info("{}, {}; Favourite Winning by 1 with {} mins gone, leaving Bet open.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
+                            return false;
+                        }
+                    }
+                    if (score.goalDifference() >= 2) {
+                        logger.info("{}, {}; Favourite Winning by 2 or more, leaving Bet open.", event.getName(), marketCatalogue.getMarketName());
+                        return false;
+                    }
+                } else {
+                    if (score.goalDifference() == 1) {
+                        logger.info("{}, {}; Underdog winning by 1 with {} mins gone, closing winning Bet.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
+                        return true;
+                    }
+                    if (score.goalDifference() >= 2) {
+                        logger.info("{}, {}; Underdog Winning by 2 or more, leaving Bet open.", event.getName(), marketCatalogue.getMarketName());
+                        return false;
+                    }
                 }
             }
         }
@@ -382,6 +422,11 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                 mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 0.01d));
 
         return false;
+    }
+
+    private boolean isFavoutiteWinning(Event event, ScoreEnum score) {
+        return (score.isHomeTeamWinning() && event.getMarketClassification().isHomeFavourite()) ||
+                (score.isAwayTeamWinning() && event.getMarketClassification().isAwayFavourite());
     }
 
     private Double calcPercentageProfitStake(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
