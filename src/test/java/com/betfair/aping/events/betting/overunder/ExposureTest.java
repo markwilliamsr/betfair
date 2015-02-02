@@ -6,6 +6,7 @@ import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.Side;
 import com.google.gson.Gson;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class ExposureTest {
     }
 
     @Test
-    public void layTheDrawTest() throws Exception {
+    public void layTheDrawLayTheWinnerTest() throws Exception {
         Event event = new Event();
         event.setName("Test Event");
         MarketCatalogue marketCatalogue = new MarketCatalogue();
@@ -103,8 +104,43 @@ public class ExposureTest {
         marketCatalogue.setMarketBook(marketBook);
         event.getMarket().put(MarketType.MATCH_ODDS, marketCatalogue);
         Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
-        logger.info("Exposure: {}", exposure.calcWorstCastMatchOddsExposure().toString());
-        logger.info("Exposure: {}", exposure.calcBestCastMatchOddsExposure().toString());
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
+        Assert.assertEquals(true, Math.abs(exposure.calcBestCaseMatchOddsExposure()) > 14.0);
+    }
+
+    @Test
+    public void layTheDrawBackTheDrawTest() throws Exception {
+        Event event = new Event();
+        event.setName("Test Event");
+        MarketCatalogue marketCatalogue = new MarketCatalogue();
+        marketCatalogue.setMarketName(MarketType.MATCH_ODDS.getMarketName());
+        MarketBook marketBook = new MarketBook();
+        Runner home = createRunner(1l);
+        Runner away = createRunner(2l);
+        Runner draw = createRunner(3l);
+
+        List<Order> layOrders = getOrder(2.0, 3.55, Side.LAY);
+        List<Order> backOrders = getOrder(3.5, 2.0, Side.BACK);
+
+        layOrders.addAll(backOrders);
+
+        draw.setOrders(layOrders);
+
+        List<Runner> runners = new ArrayList<Runner>(Arrays.asList(home, away, draw));
+        List<RunnerCatalog> runnerCatalogs = new ArrayList<RunnerCatalog>(Arrays.asList(
+                createRunnerCatalog(1l, "Home"),
+                createRunnerCatalog(2l, "Away"),
+                createRunnerCatalog(3l, "Draw")));
+        marketCatalogue.setRunners(runnerCatalogs);
+        marketBook.setRunners(runners);
+        marketCatalogue.setMarketBook(marketBook);
+        event.getMarket().put(MarketType.MATCH_ODDS, marketCatalogue);
+        Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
     }
 
     private Runner createRunner(long selectionId) {
@@ -114,12 +150,14 @@ public class ExposureTest {
     }
 
     private List<Order> getOrder(double sizeMatched, double price, Side lay) {
-        Order drawOrder = new Order();
-        drawOrder.setSizeMatched(sizeMatched);
-        drawOrder.setSizeRemaining(0d);
-        drawOrder.setSide(lay);
-        drawOrder.setPrice(price);
-        return Arrays.asList(drawOrder);
+        Order order = new Order();
+        order.setSizeMatched(sizeMatched);
+        order.setSizeRemaining(0d);
+        order.setSide(lay);
+        order.setPrice(price);
+        List<Order> orders = new ArrayList<Order>();
+        orders.add(order);
+        return orders;
     }
 
 

@@ -153,7 +153,7 @@ public class Exposure {
         return totalExposure;
     }
 
-    public Double calcWorstCastMatchOddsExposure() throws Exception {
+    public Double calcWorstCaseMatchOddsExposure() throws Exception {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
 
         Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());
@@ -171,7 +171,7 @@ public class Exposure {
         return worstCaseExposure;
     }
 
-    public Double calcBestCastMatchOddsExposure() throws Exception {
+    public Double calcBestCaseMatchOddsExposure() throws Exception {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
 
         Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());

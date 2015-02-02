@@ -335,7 +335,7 @@ public abstract class MarketAlgo {
                 marketConfig.setExpLossLimit(type.getValue().get("EXP_LOSS_LIMIT"));
                 marketConfig.setStakeLossLimit(type.getValue().get("STAKE_LOSS_LIMIT"));
                 marketConfig.setCashOutProfitPercentage(type.getValue().get("CASH_OUT_PROFIT_PERCENTAGE"));
-                marketConfig.setSingleGoalTimeLimit(type.getValue().get("SINGLE_GOAL_TIME_LIMIT").intValue());
+                marketConfig.setSingleGoalTimeLimit(type.getValue().get("SINGLE_GOAL_TIME_LIMIT"));
                 marketConfigs.put(MarketType.valueOf(type.getKey()), marketConfig);
             }
             marketConfigurations.put(MarketTemp.valueOf(classification.getKey()), marketConfigs);

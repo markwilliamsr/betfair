@@ -27,6 +27,12 @@ public class MarketConfig {
         this.singleGoalTimeLimit = singleGoalTimeLimit;
     }
 
+    public void setSingleGoalTimeLimit(Double singleGoalTimeLimit) {
+        if (singleGoalTimeLimit != null) {
+            this.singleGoalTimeLimit = singleGoalTimeLimit.intValue();
+        }
+    }
+
     public Double getExpLossLimit() {
         return expLossLimit;
     }
