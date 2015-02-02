@@ -153,12 +153,49 @@ public class Exposure {
         return totalExposure;
     }
 
+    public Double calcWorstCastMatchOddsExposure() throws Exception {
+        MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+
+        Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());
+        Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
+        Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
+
+        Double ifDraw = drawExposure - homeExposure - awayExposure;
+        Double ifHome = homeExposure - drawExposure - awayExposure;
+        Double ifAway = awayExposure - drawExposure - homeExposure;
+
+        Double worstCaseExposure = Math.min(Math.min(ifDraw, ifHome), ifAway);
+
+        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), worstCaseExposure);
+
+        return worstCaseExposure;
+    }
+
+    public Double calcBestCastMatchOddsExposure() throws Exception {
+        MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+
+        Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());
+        Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
+        Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
+
+        Double ifDraw = drawExposure - homeExposure - awayExposure;
+        Double ifHome = homeExposure - drawExposure - awayExposure;
+        Double ifAway = awayExposure - drawExposure - homeExposure;
+
+        Double bestCaseExposure = Math.max(Math.max(ifDraw, ifHome), ifAway);
+
+        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), bestCaseExposure);
+
+        return bestCaseExposure;
+    }
+
+
     private Double calcExposureForRunner(boolean includeUnMatched, Runner r) throws Exception {
         Double backUnderExposure = calcExposureForSide(r, Side.BACK, includeUnMatched);
         Double layUnderExposure = calcExposureForSide(r, Side.LAY, includeUnMatched);
         Double totalExposure = backUnderExposure - layUnderExposure;
 
-        totalExposure = Math.abs(totalExposure);
+        //totalExposure = Math.abs(totalExposure);
         return totalExposure;
     }
 
