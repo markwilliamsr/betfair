@@ -2,10 +2,7 @@ package com.betfair.aping;
 
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
-import com.betfair.aping.entities.Bet;
-import com.betfair.aping.entities.LimitOrder;
-import com.betfair.aping.entities.PlaceExecutionReport;
-import com.betfair.aping.entities.PlaceInstruction;
+import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.ExecutionReportStatus;
 import com.betfair.aping.enums.OrderType;
 import com.betfair.aping.enums.PersistenceType;
@@ -68,12 +65,22 @@ public class BetPlacer implements IBetPlacer {
         }
     }
 
-    private boolean isSafetyOff() {
+    public boolean isSafetyOff() {
         try {
             return Boolean.valueOf(ApiNGDemo.getProp().getProperty("SAFETY_OFF"));
         } catch (Exception e) {
             //returning the default value
             return true;
         }
+    }
+
+    @Override
+    public Event getEvent() {
+        throw new UnsupportedOperationException("getEvent not available in Live mode class");
+    }
+
+    @Override
+    public void setEvent(Event event) {
+        throw new UnsupportedOperationException("setEvent not available in Live mode class");
     }
 }

@@ -1,7 +1,7 @@
 package com.betfair.aping.algo;
 
 import com.betfair.aping.ApiNGDemo;
-import com.betfair.aping.BetPlacer;
+import com.betfair.aping.IBetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.*;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketTemp;
@@ -26,13 +26,13 @@ public abstract class MarketAlgo {
     protected Logger logger = LoggerFactory.getLogger(MarketAlgo.class);
     protected Gson gson = new Gson();
     protected int MAX_PREV_SCORES = getScoreStabalizationIteration();
-    BetPlacer betPlacer;
+    IBetPlacer betPlacer;
 
-    public BetPlacer getBetPlacer() {
+    public IBetPlacer getBetPlacer() {
         return betPlacer;
     }
 
-    public void setBetPlacer(BetPlacer betPlacer) {
+    public void setBetPlacer(IBetPlacer betPlacer) {
         this.betPlacer = betPlacer;
     }
 

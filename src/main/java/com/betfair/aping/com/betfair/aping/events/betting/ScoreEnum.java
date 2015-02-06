@@ -43,6 +43,9 @@ public enum ScoreEnum {
     public String getName() {
         return name();
     }
+    public String getScore() {
+        return score;
+    }
     public int getTotalGoals() {
         return homeGoals + awayGoals;
     }

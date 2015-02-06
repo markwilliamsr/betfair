@@ -152,7 +152,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private double calcBackRunnerCashOutBetSize(MatchOddsMarket mom, Double netExposure) throws Exception {
         Runner runner = mom.getDrawRunner();
-        return roundUpToNearestFraction(netExposure / mom.getPrice(runner, 0, Side.BACK).getPrice(), 0.01);
+        return roundUpToNearestFraction(netExposure / (mom.getPrice(runner, 0, Side.BACK).getPrice() -1), 0.01);
     }
 
     private double calcLayHomeRunnerCashOutBetSize(MatchOddsMarket mom, Double netExposure) throws Exception {
@@ -217,7 +217,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Exception:", ex);
             return false;
         }
 
@@ -233,10 +233,6 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         Runner runner = mom.getDrawRunner();
 
         if (!isBasicCoverCandidate(event, marketCatalogue)) {
-            return false;
-        }
-
-        if (!isBetAlreadyOpen(marketCatalogue, event)) {
             return false;
         }
 
@@ -428,7 +424,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private Double calcPercentageProfitStake(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        Double worstCaseMatchOddsExposure = exposure.calcWorstCaseMatchOddsExposure();
+        Double worstCaseMatchOddsExposure = Math.abs(exposure.calcWorstCaseMatchOddsExposure());
         Double cashOutStake = calcBackRunnerCashOutBetSize(mom, worstCaseMatchOddsExposure);
         Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
@@ -451,7 +447,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private boolean isBetAlreadyOpen(MarketCatalogue marketCatalogue, Event event) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        if (exposure.calcNetLtdExposure(true) > 0.1) {
+        if (Math.abs(exposure.calcWorstCaseMatchOddsExposure()) > 0.1) {
             logger.debug("{}; {}; Bet already open in the Market. Exposure: {}", event.getName(), marketCatalogue.getMarketName(), exposure.calcNetLtdExposure(true));
             return true;
         }

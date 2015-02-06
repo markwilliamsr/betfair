@@ -94,7 +94,15 @@ public class Exposure {
     }
 
     public Double calcTotalStake(Runner runner) throws Exception {
-        return calcStakeForSide(runner, Side.BACK) + calcStakeForSide(runner, Side.LAY);
+        return calcStakeForSide(runner, Side.LAY) - calcStakeForSide(runner, Side.BACK);
+    }
+
+    public Double calcTotalStake(MarketBook marketBook) throws Exception {
+        Double stake = 0.0;
+        for (Runner runner : marketBook.getRunners()) {
+            stake += calcTotalStake(runner);
+        }
+        return stake;
     }
 
     public Double calcStakeForSide(Runner runner, Side side) throws Exception {
@@ -160,9 +168,11 @@ public class Exposure {
         Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
         Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
 
-        Double ifDraw = drawExposure - homeExposure - awayExposure;
-        Double ifHome = homeExposure - drawExposure - awayExposure;
-        Double ifAway = awayExposure - drawExposure - homeExposure;
+        Double totalStake = calcTotalStake(marketCatalogue.getMarketBook());
+
+        Double ifDraw = drawExposure + totalStake;
+        Double ifHome = homeExposure + totalStake;
+        Double ifAway = awayExposure + totalStake;
 
         Double worstCaseExposure = Math.min(Math.min(ifDraw, ifHome), ifAway);
 
