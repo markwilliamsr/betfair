@@ -33,9 +33,10 @@ public class ApiNGJsonRpcDemo {
 
     public void start() throws Exception {
 
-        IMarketAlgo marketAlgo1 = new BackUnderMarketAlgo();
-        IMarketAlgo marketAlgo2 = new LayAndCoverAlgo();
-        IMarketAlgo marketAlgo3 = new LayTheDrawAlgo();
+        IMarketAlgo backUnderMarketAlgo = new BackUnderMarketAlgo();
+        IMarketAlgo layAndCoverAlgo = new LayAndCoverAlgo();
+        IMarketAlgo layTheDrawAlgo = new LayTheDrawAlgo();
+        layTheDrawAlgo.setBetPlacer(new BetPlacer());
 
         List<Event> events = getCurrentEventsWithCatalogues();
 
@@ -68,21 +69,21 @@ public class ApiNGJsonRpcDemo {
             if (isBackUnderEnabled()) {
                 logger.info("--------------------Back Under Mkt Iteration " + i + " Start--------------------");
                 for (Event event : events) {
-                    marketAlgo1.process(event);
+                    backUnderMarketAlgo.process(event);
                 }
                 logger.info("--------------------Back Under Mkt Iteration " + i + " End--------------------");
             }
             if (isLayAndCoverEnabled()) {
                 logger.info("--------------------Lay and Cover Iteration " + i + " Start--------------------");
                 for (Event event : events) {
-                    marketAlgo2.process(event);
+                    layAndCoverAlgo.process(event);
                 }
                 logger.info("--------------------Lay and Cover Iteration " + i + " End--------------------");
             }
             if (isLayTheDrawEnabled()) {
                 logger.info("--------------------Lay The Draw Iteration " + i + " Start--------------------");
                 for (Event event : events) {
-                    marketAlgo3.process(event);
+                    layTheDrawAlgo.process(event);
                 }
                 logger.info("--------------------Lay The Draw Iteration " + i + " End--------------------");
             }

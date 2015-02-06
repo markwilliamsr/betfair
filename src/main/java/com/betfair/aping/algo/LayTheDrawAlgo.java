@@ -1,6 +1,5 @@
 package com.betfair.aping.algo;
 
-import com.betfair.aping.BetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.MatchOddsMarket;
 import com.betfair.aping.com.betfair.aping.events.betting.ScoreEnum;
@@ -59,8 +58,6 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     @Override
     public void process(Event event) throws Exception {
-        BetPlacer betPlacer = new BetPlacer();
-
         try {
             updateEventScore(event);
             classifyMarket(event);
@@ -80,7 +77,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
                         initialLayBet.add(initialBet);
                         if (isSafetyOff()) {
                             logger.info("{}, {}, OPEN: Candidate Mkt Found. Placing Bet: {}", event.getName(), marketCatalogue.getMarketName(), initialBet.toString());
-                            betPlacer.placeBets(initialLayBet);
+                            getBetPlacer().placeBets(initialLayBet);
                         }
                     }
                 }
@@ -431,26 +428,24 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private Double calcPercentageProfitStake(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        Double layExposure = exposure.calcNetLtdExposure(true);
-        Double cashOutStake = calcBackRunnerCashOutBetSize(mom, layExposure);
+        Double worstCaseMatchOddsExposure = exposure.calcWorstCaseMatchOddsExposure();
+        Double cashOutStake = calcBackRunnerCashOutBetSize(mom, worstCaseMatchOddsExposure);
         Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
         Double profit = initialStake - cashOutStake;
-
-        profit = roundUpToNearestFraction(profit, 0.01);
 
         return (profit / initialStake) * 100;
     }
 
-    private Double calcPercentageProfitExposure(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
+    public Double calcPercentageProfitExposure(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        Double layExposure = exposure.calcNetLtdExposure(true);
-        Double cashOutStake = calcBackRunnerCashOutBetSize(mom, layExposure);
+        Double worstCaseMatchOddsExposure = exposure.calcWorstCaseMatchOddsExposure();
+        Double cashOutStake = calcBackRunnerCashOutBetSize(mom, worstCaseMatchOddsExposure);
         Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
         Double profit = initialStake - cashOutStake;
 
-        return roundUpToNearestFraction((profit / layExposure) * 100, 0.01);
+        return (profit / worstCaseMatchOddsExposure) * 100;
 
     }
 

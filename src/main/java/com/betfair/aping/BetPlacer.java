@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class BetPlacer {
+public class BetPlacer implements IBetPlacer {
     private Logger logger = LoggerFactory.getLogger(BetPlacer.class);
             Gson gson = new Gson();
     SimpleDateFormat dtf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");

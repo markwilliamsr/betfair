@@ -44,14 +44,6 @@ public class ExposureTest {
         placedBet.setSide(Side.BACK);
         placedBet.setMarketId(mb.getMarketId());
         placedBet.setSelectionId(r.getSelectionId());
-
-//
-//        Bet cob = .calcCashOutBet(placedBet, 10d);
-//        assertEquals(3.7d, cob.getPriceSize().getPrice(), 0);
-//        assertEquals(2.21d, cob.getPriceSize().getSize(), 0);
-//        assertEquals(Side.LAY, cob.getSide());
-//        assertEquals(mc.getMarketId(), cob.getMarketId());
-//        assertEquals(r.getSelectionId(), cob.getSelectionId());
     }
 
     @Test
@@ -59,50 +51,34 @@ public class ExposureTest {
         Double val = 1.9090909090d;
         val = 21.4823;
 
-        logger.info(roundDownToNearestFraction(val, 0.01).toString());
-        logger.info(roundDownToNearestFraction(val, 0.02).toString());
-        logger.info(roundDownToNearestFraction(val, 0.05).toString());
-        logger.info(roundDownToNearestFraction(val, 0.1).toString());
-        logger.info(roundDownToNearestFraction(val, 0.2).toString());
-        logger.info(roundDownToNearestFraction(val, 0.5).toString());
-        logger.info(roundDownToNearestFraction(val, 1.0).toString());
-        logger.info(roundDownToNearestFraction(val, 2.0).toString());
+        Assert.assertEquals(21.48, roundDownToNearestFraction(val, 0.01), 0);
+        Assert.assertEquals(21.48, roundDownToNearestFraction(val, 0.02), 0);
+        Assert.assertEquals(21.45, roundDownToNearestFraction(val, 0.05), 0);
+        Assert.assertEquals(21.4, roundDownToNearestFraction(val, 0.1), 0);
+        Assert.assertEquals(21.4, roundDownToNearestFraction(val, 0.2), 0);
+        Assert.assertEquals(21.0, roundDownToNearestFraction(val, 0.5), 0);
+        Assert.assertEquals(21.0, roundDownToNearestFraction(val, 1.0), 0);
+        Assert.assertEquals(20.0, roundDownToNearestFraction(val, 2.0), 0);
 
-        logger.info("");
-
-        logger.info(roundUpToNearestFraction(val, 0.01).toString());
-        logger.info(roundUpToNearestFraction(val, 0.02).toString());
-        logger.info(roundUpToNearestFraction(val, 0.05).toString());
-        logger.info(roundUpToNearestFraction(val, 0.1).toString());
-        logger.info(roundUpToNearestFraction(val, 0.2).toString());
-        logger.info(roundUpToNearestFraction(val, 0.5).toString());
-        logger.info(roundUpToNearestFraction(val, 1.0).toString());
-        logger.info(roundUpToNearestFraction(val, 2.0).toString());
+        Assert.assertEquals(21.49, roundUpToNearestFraction(val, 0.01), 0);
+        Assert.assertEquals(21.5, roundUpToNearestFraction(val, 0.02), 0);
+        Assert.assertEquals(21.5, roundUpToNearestFraction(val, 0.05), 0);
+        Assert.assertEquals(21.5, roundUpToNearestFraction(val, 0.1), 0);
+        Assert.assertEquals(21.6, roundUpToNearestFraction(val, 0.2), 0);
+        Assert.assertEquals(21.5, roundUpToNearestFraction(val, 0.5), 0);
+        Assert.assertEquals(22.0, roundUpToNearestFraction(val, 1.0), 0);
+        Assert.assertEquals(22.0, roundUpToNearestFraction(val, 2.0), 0);
     }
 
     @Test
     public void layTheDrawLayTheWinnerTest() throws Exception {
-        Event event = new Event();
-        event.setName("Test Event");
-        MarketCatalogue marketCatalogue = new MarketCatalogue();
-        marketCatalogue.setMarketName(MarketType.MATCH_ODDS.getMarketName());
-        MarketBook marketBook = new MarketBook();
-        Runner home = createRunner(1l);
-        Runner away = createRunner(2l);
-        Runner draw = createRunner(3l);
+        Event event = getBasicEvent();
 
-        draw.setOrders(getOrder(2.0, 3.55, Side.LAY));
-        home.setOrders(getOrder(5.51, 1.29, Side.LAY));
+        event.getMarket().get(MarketType.MATCH_ODDS).getMarketBook().getRunners()
+                .get(2).setOrders(getOrder(2.0, 3.55, Side.LAY));
+        event.getMarket().get(MarketType.MATCH_ODDS).getMarketBook().getRunners()
+                .get(0).setOrders(getOrder(5.51, 1.29, Side.LAY));
 
-        List<Runner> runners = new ArrayList<Runner>(Arrays.asList(home, away, draw));
-        List<RunnerCatalog> runnerCatalogs = new ArrayList<RunnerCatalog>(Arrays.asList(
-                createRunnerCatalog(1l, "Home"),
-                createRunnerCatalog(2l, "Away"),
-                createRunnerCatalog(3l, "Draw")));
-        marketCatalogue.setRunners(runnerCatalogs);
-        marketBook.setRunners(runners);
-        marketCatalogue.setMarketBook(marketBook);
-        event.getMarket().put(MarketType.MATCH_ODDS, marketCatalogue);
         Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
         logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
         logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
@@ -112,6 +88,32 @@ public class ExposureTest {
 
     @Test
     public void layTheDrawBackTheDrawTest() throws Exception {
+        Event event = getBasicEvent();
+
+        List<Order> layOrders = getOrder(2.0, 3.55, Side.LAY);
+        List<Order> backOrders = getOrder(3.5, 2.0, Side.BACK);
+
+        layOrders.addAll(backOrders);
+
+        event.getMarket().get(MarketType.MATCH_ODDS).getMarketBook().getRunners()
+                .get(2).setOrders(layOrders);
+
+        Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
+    }
+
+    @Test
+    public void layTheDrawProfitTest() throws Exception {
+        Event event = getBasicEvent();
+        Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
+    }
+
+    private Event getBasicEvent() {
         Event event = new Event();
         event.setName("Test Event");
         MarketCatalogue marketCatalogue = new MarketCatalogue();
@@ -120,13 +122,6 @@ public class ExposureTest {
         Runner home = createRunner(1l);
         Runner away = createRunner(2l);
         Runner draw = createRunner(3l);
-
-        List<Order> layOrders = getOrder(2.0, 3.55, Side.LAY);
-        List<Order> backOrders = getOrder(3.5, 2.0, Side.BACK);
-
-        layOrders.addAll(backOrders);
-
-        draw.setOrders(layOrders);
 
         List<Runner> runners = new ArrayList<Runner>(Arrays.asList(home, away, draw));
         List<RunnerCatalog> runnerCatalogs = new ArrayList<RunnerCatalog>(Arrays.asList(
@@ -137,10 +132,7 @@ public class ExposureTest {
         marketBook.setRunners(runners);
         marketCatalogue.setMarketBook(marketBook);
         event.getMarket().put(MarketType.MATCH_ODDS, marketCatalogue);
-        Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
-        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
-        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
-        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
+        return event;
     }
 
     private Runner createRunner(long selectionId) {
