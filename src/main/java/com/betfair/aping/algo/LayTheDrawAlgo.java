@@ -338,12 +338,12 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         Double stakeProfitPercentage = calcPercentageProfitStake(event, marketCatalogue, mom);
 
         if (Math.abs(expProfitPercentage) >= getLayTheDrawLossLimit(event.getMarketClassification().getMarketTemp(), mom.getMarketType())) {
-            logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp. Profit%: {}, St. Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
+            logger.info("{}; {}; Reg. Closeout. Best Lay: {}, {}, Exp. Profit%: {}%, St. Profit%: {}%", event.getName(), mom.getMarketType().getMarketName(),
                     mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d), roundUpToNearestFraction(stakeProfitPercentage, 0.01d));
             return true;
         }
 
-        logger.info("{}; {}; Reg. Closeout Not OK. Best Lay: {}, {}, Exp. Profit%: {}, St. Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
+        logger.info("{}; {}; Reg. Closeout Not OK. Best Lay: {}, {}, Exp. Profit%: {}%, St. Profit%: {}%", event.getName(), mom.getMarketType().getMarketName(),
                 mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(expProfitPercentage, 0.01d), roundUpToNearestFraction(stakeProfitPercentage, 0.01d));
 
         return false;
@@ -411,7 +411,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             }
         }
 
-        logger.info("{}; {}; Cov. Lay Not OK. Best Lay: {}, {}, Profit%: {}", event.getName(), mom.getMarketType().getMarketName(),
+        logger.info("{}; {}; Cov. Lay Not OK. Best Lay: {}, {}, Profit%: {}%", event.getName(), mom.getMarketType().getMarketName(),
                 mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 0.01d));
 
         return false;
@@ -426,16 +426,20 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         Exposure exposure = new Exposure(event, marketCatalogue);
         Double worstCaseMatchOddsExposure = Math.abs(exposure.calcWorstCaseMatchOddsExposure());
         Double cashOutStake = calcBackRunnerCashOutBetSize(mom, worstCaseMatchOddsExposure);
-        Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
+        Double initialStake = calcInitialStake(mom, exposure);
 
         Double profit = initialStake - cashOutStake;
 
         return (profit / initialStake) * 100;
     }
 
+    private Double calcInitialStake(MatchOddsMarket mom, Exposure exposure) throws Exception {
+        return exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
+    }
+
     public Double calcPercentageProfitExposure(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        Double worstCaseMatchOddsExposure = exposure.calcWorstCaseMatchOddsExposure();
+        Double worstCaseMatchOddsExposure = Math.abs(exposure.calcWorstCaseMatchOddsExposure());
         Double cashOutStake = calcBackRunnerCashOutBetSize(mom, worstCaseMatchOddsExposure);
         Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
