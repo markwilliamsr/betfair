@@ -152,7 +152,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     private double calcBackRunnerCashOutBetSize(MatchOddsMarket mom, Double netExposure) throws Exception {
         Runner runner = mom.getDrawRunner();
-        return roundUpToNearestFraction(netExposure / (mom.getPrice(runner, 0, Side.BACK).getPrice() -1), 0.01);
+        return roundUpToNearestFraction(netExposure / (mom.getPrice(runner, 0, Side.BACK).getPrice()), 0.01);
     }
 
     private double calcLayHomeRunnerCashOutBetSize(MatchOddsMarket mom, Double netExposure) throws Exception {
@@ -350,13 +350,13 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     }
 
     private boolean isBestCoveringLayPriceWithinBounds(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
-        Double profitPercentage = calcPercentageProfitStake(event, marketCatalogue, mom);
+        Double percentageProfitStake = calcPercentageProfitStake(event, marketCatalogue, mom);
 
         ScoreEnum score = event.getScore();
 
         MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
 
-        if (profitPercentage > getCashOutProfitPercentage(marketTemp, mom.getMarketType())) {
+        if (percentageProfitStake > getCashOutProfitPercentage(marketTemp, mom.getMarketType())) {
             if (marketTemp.equals(MarketTemp.XHOT) || marketTemp.equals(MarketTemp.HOT)) {
                 if (isFavoutiteWinning(event, score)) {
                     if (score.goalDifference() == 1) {
@@ -411,8 +411,8 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             }
         }
 
-        logger.info("{}; {}; Cov. Lay Not OK. Best Lay: {}, {}, Profit%: {}%", event.getName(), mom.getMarketType().getMarketName(),
-                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 0.01d));
+        logger.info("{}; {}; Cov. Lay Not OK. Best Lay: {}, {}, St. Profit%: {}%", event.getName(), mom.getMarketType().getMarketName(),
+                mom.getDrawRunnerName(), mom.getLay(mom.getDrawRunner(), 0).toString(), roundUpToNearestFraction(percentageProfitStake, 0.01d));
 
         return false;
     }
@@ -439,8 +439,8 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
 
     public Double calcPercentageProfitExposure(Event event, MarketCatalogue marketCatalogue, MatchOddsMarket mom) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        Double worstCaseMatchOddsExposure = Math.abs(exposure.calcWorstCaseMatchOddsExposure());
-        Double cashOutStake = calcBackRunnerCashOutBetSize(mom, worstCaseMatchOddsExposure);
+        Double worstCaseMatchOddsExposure = Math.abs(exposure.calcWorstCaseMatchOddsLiability());
+        Double cashOutStake = calcBackRunnerCashOutBetSize(mom, Math.abs(exposure.calcWorstCaseMatchOddsExposure()));
         Double initialStake = exposure.calcPlacedBetsForSide(mom.getDrawRunner(), Side.LAY, true);
 
         Double profit = initialStake - cashOutStake;

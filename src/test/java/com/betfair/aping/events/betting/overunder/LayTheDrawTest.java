@@ -23,6 +23,10 @@ import java.util.List;
  * Created by markwilliams on 25/08/2014.
  */
 public class LayTheDrawTest {
+    private static final long NIL_NIL = 0l;
+    private static final long ONE_NIL = 1l;
+    private static final long NIL_ONE = 2l;
+    private static final long ONE_ONE = 3l;
     private final int HOME_INDEX = 0;
     private final int AWAY_INDEX = 1;
     private final int DRAW_INDEX = 2;
@@ -38,8 +42,9 @@ public class LayTheDrawTest {
     public void layTheDrawLayTheWinnerTest() throws Exception {
         IMarketAlgo layTheDrawAlgo = new LayTheDrawAlgo();
         TestBetPlacer betPlacer = new TestBetPlacer();
-        Event event = getBasicEvent();
-        event.setScore(ScoreEnum.NIL_NIL);
+        Calendar calendar = Calendar.getInstance();
+        Event event = getBasicEvent(ScoreEnum.NIL_NIL);
+
         betPlacer.setEvent(event);
         layTheDrawAlgo.setBetPlacer(betPlacer);
 
@@ -48,15 +53,47 @@ public class LayTheDrawTest {
 
         getMatchOddsRunner(event, HOME_INDEX).setEx(getExchangePrices(1.3, 1.4));
         getMatchOddsRunner(event, AWAY_INDEX).setEx(getExchangePrices(6.3, 6.4));
-        getMatchOddsRunner(event, DRAW_INDEX).setEx(getExchangePrices(3.3, 3.4));
+        getMatchOddsRunner(event, DRAW_INDEX).setEx(getExchangePrices(4.2, 4.3));
 
         layTheDrawAlgo.process(event);
 
+        getMatchOddsRunner(event, HOME_INDEX).setEx(getExchangePrices(1.2, 1.21));
+        getMatchOddsRunner(event, AWAY_INDEX).setEx(getExchangePrices(28, 32));
+        getMatchOddsRunner(event, DRAW_INDEX).setEx(getExchangePrices(7.0, 7.6));
+
+        updateScore(event, ScoreEnum.ONE_NIL);
+        event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners().get((int) NIL_NIL)
+                .getEx().setAvailableToLay(new ArrayList<PriceSize>());
+        event.getMarket().get(MarketType.CORRECT_SCORE).getMarketBook().getRunners().get((int) NIL_ONE)
+                .getEx().setAvailableToLay(new ArrayList<PriceSize>());
+
+        calendar.add(Calendar.MINUTE, -5);
+        event.setOpenDate(calendar.getTime());
+
+        layTheDrawAlgo.process(event);
+
+        getMatchOddsRunner(event, HOME_INDEX).setEx(getExchangePrices(1.3, 1.4));
+        getMatchOddsRunner(event, AWAY_INDEX).setEx(getExchangePrices(6.3, 6.4));
+        getMatchOddsRunner(event, DRAW_INDEX).setEx(getExchangePrices(2.3, 2.4));
+
+        calendar.add(Calendar.MINUTE, -60);
+        event.setOpenDate(calendar.getTime());
+
+        layTheDrawAlgo.process(event);
+        layTheDrawAlgo.process(event);
+        layTheDrawAlgo.process(event);
+
         Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
-        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
-        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
-        //Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
-        //Assert.assertEquals(true, Math.abs(exposure.calcBestCaseMatchOddsExposure()) > 14.0);
+        logger.info("Worst Case Exposure: {}", exposure.calcWorstCaseMatchOddsLiability().toString());
+        logger.info("Best Case Exposure: {}", exposure.calcBestCaseMatchOddsLiability().toString());
+        //Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsLiability()) < 0.1);
+        //Assert.assertEquals(true, Math.abs(exposure.calcBestCaseMatchOddsLiability()) > 14.0);
+    }
+
+    private void updateScore(Event event, ScoreEnum score) {
+        event.setScore(score);
+        event.getPreviousScores().clear();
+        event.getPreviousScores().addAll(Arrays.asList(score, score));
     }
 
     private ExchangePrices getExchangePrices(double back, double lay) {
@@ -71,11 +108,14 @@ public class LayTheDrawTest {
                 .get(runner);
     }
 
-    private Event getBasicEvent() {
+    private Event getBasicEvent(ScoreEnum score) {
         Event event = new Event();
         event.setName("Test Event");
-        event.getPreviousScores().addAll(Arrays.asList(ScoreEnum.NIL_NIL, ScoreEnum.NIL_NIL));
-        event.setOpenDate(Calendar.getInstance().getTime());
+        event.setScore(score);
+        event.getPreviousScores().addAll(Arrays.asList(score, score));
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -5);
+        event.setOpenDate(calendar.getTime());
         MarketCatalogue matchOdds = getMatchOddsMarketCatalogue();
         event.getMarket().put(MarketType.MATCH_ODDS, matchOdds);
         MarketCatalogue correctScore = getCorrectScoreMarketCatalogue();
@@ -123,19 +163,24 @@ public class LayTheDrawTest {
     }
 
     private void setCorrectScoreRunners(MarketCatalogue marketCatalogue, MarketBook marketBook) {
-        Runner nilNil = createRunner(1l);
-        Runner oneNil = createRunner(2l);
-        Runner nilOne = createRunner(3l);
-        Runner oneOne = createRunner(4l);
+        Runner nilNil = createRunner(NIL_NIL);
+        Runner oneNil = createRunner(ONE_NIL);
+        Runner nilOne = createRunner(NIL_ONE);
+        Runner oneOne = createRunner(ONE_ONE);
 
-        List<Runner> runners = new ArrayList<Runner>(Arrays.asList(nilNil, nilOne, oneNil, oneOne));
+        List<Runner> runners = new ArrayList<Runner>();
+        runners.add((int) NIL_NIL, nilNil);
+        runners.add((int) ONE_NIL, oneNil);
+        runners.add((int) NIL_ONE, nilOne);
+        runners.add((int) ONE_ONE, oneOne);
+
         marketBook.setRunners(runners);
 
-        List<RunnerCatalog> runnerCatalogs = new ArrayList<RunnerCatalog>(Arrays.asList(
-                createRunnerCatalog(1l, ScoreEnum.NIL_NIL.getScore()),
-                createRunnerCatalog(2l, ScoreEnum.ONE_NIL.getScore()),
-                createRunnerCatalog(3l, ScoreEnum.NIL_ONE.getScore()),
-                createRunnerCatalog(4l, ScoreEnum.ONE_ONE.getScore())));
+        List<RunnerCatalog> runnerCatalogs = new ArrayList<RunnerCatalog>();
+        runnerCatalogs.add((int) NIL_NIL, createRunnerCatalog(NIL_NIL, ScoreEnum.NIL_NIL.getScore()));
+        runnerCatalogs.add((int) ONE_NIL, createRunnerCatalog(ONE_NIL, ScoreEnum.ONE_NIL.getScore()));
+        runnerCatalogs.add((int) NIL_ONE, createRunnerCatalog(NIL_ONE, ScoreEnum.NIL_ONE.getScore()));
+        runnerCatalogs.add((int) ONE_ONE, createRunnerCatalog(ONE_ONE, ScoreEnum.ONE_ONE.getScore()));
         marketCatalogue.setRunners(runnerCatalogs);
     }
 

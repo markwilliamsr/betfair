@@ -49,7 +49,7 @@ public class Exposure {
 
         for (Order order : orders) {
             if (order.getSide().equals(side)) {
-                exposure += (order.getPrice() * order.getSizeMatched());
+                exposure += (order.getAvgPriceMatched() * order.getSizeMatched());
                 if (includeUnMatched) {
                     exposure += (order.getPrice() * order.getSizeRemaining());
                 }
@@ -145,20 +145,17 @@ public class Exposure {
     }
 
     public Double calcNetLtdExposure(boolean includeUnMatched) throws Exception {
-        MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+        return calcWorstCaseMatchOddsExposure();
+    }
 
-        Double drawExposure = calcExposureForRunner(includeUnMatched, mom.getDrawRunner());
-        Double homeExposure = calcExposureForRunner(includeUnMatched, mom.getHomeRunner());
-        Double awayExposure = calcExposureForRunner(includeUnMatched, mom.getAwayRunner());
+    public Double calcWorstCaseMatchOddsLiability() throws Exception {
+        Double worstCaseExposure = calcWorstCaseMatchOddsExposure();
 
-        Double totalExposure = drawExposure + homeExposure + awayExposure;
+        Double worstCaseLiability = worstCaseExposure + calcTotalStake(marketCatalogue.getMarketBook());
 
-        //round to nearest penny
-        totalExposure = totalExposure != 0 ? roundDownToNearestFraction(totalExposure, 0.01) : 0d;
+        logger.debug("{}; {}; Total Exposure: {}, Total Liability: {}", event.getName(), marketCatalogue.getMarketName(), worstCaseExposure, worstCaseLiability);
 
-        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), totalExposure);
-
-        return totalExposure;
+        return worstCaseLiability;
     }
 
     public Double calcWorstCaseMatchOddsExposure() throws Exception {
@@ -168,20 +165,14 @@ public class Exposure {
         Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
         Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
 
-        Double totalStake = calcTotalStake(marketCatalogue.getMarketBook());
+        Double ifDraw = drawExposure;
+        Double ifHome = homeExposure;
+        Double ifAway = awayExposure;
 
-        Double ifDraw = drawExposure + totalStake;
-        Double ifHome = homeExposure + totalStake;
-        Double ifAway = awayExposure + totalStake;
-
-        Double worstCaseExposure = Math.min(Math.min(ifDraw, ifHome), ifAway);
-
-        logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), worstCaseExposure);
-
-        return worstCaseExposure;
+        return Math.min(Math.min(ifDraw, ifHome), ifAway);
     }
 
-    public Double calcBestCaseMatchOddsExposure() throws Exception {
+    public Double calcBestCaseMatchOddsLiability() throws Exception {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
 
         Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());
@@ -193,6 +184,7 @@ public class Exposure {
         Double ifAway = awayExposure - drawExposure - homeExposure;
 
         Double bestCaseExposure = Math.max(Math.max(ifDraw, ifHome), ifAway);
+        bestCaseExposure = bestCaseExposure + calcTotalStake(marketCatalogue.getMarketBook());
 
         logger.debug("{}; {}; Total Exposure: {}", event.getName(), marketCatalogue.getMarketName(), bestCaseExposure);
 

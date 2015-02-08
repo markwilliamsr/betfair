@@ -72,14 +72,14 @@ public class MarketClassification {
     }
 
     public boolean isHomeFavourite(){
-        if (homeOddsClassification.equals(OddsClassification.LOW)) {
+        if (homeOdds < awayOdds) {
             return true;
         }
         return false;
     }
 
     public boolean isAwayFavourite(){
-        if (awayOddsClassification.equals(OddsClassification.LOW)) {
+        if (awayOdds > homeOdds) {
             return true;
         }
         return false;

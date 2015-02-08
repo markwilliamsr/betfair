@@ -80,10 +80,10 @@ public class ExposureTest {
                 .get(0).setOrders(getOrder(5.51, 1.29, Side.LAY));
 
         Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
-        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
-        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
-        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
-        Assert.assertEquals(true, Math.abs(exposure.calcBestCaseMatchOddsExposure()) > 14.0);
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsLiability().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsLiability().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsLiability()) < 0.1);
+        Assert.assertEquals(true, Math.abs(exposure.calcBestCaseMatchOddsLiability()) > 14.0);
     }
 
     @Test
@@ -99,18 +99,18 @@ public class ExposureTest {
                 .get(2).setOrders(layOrders);
 
         Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
-        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
-        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
-        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsLiability().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsLiability().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsLiability()) < 0.1);
     }
 
     @Test
     public void layTheDrawProfitTest() throws Exception {
         Event event = getBasicEvent();
         Exposure exposure = new Exposure(event, event.getMarket().get(MarketType.MATCH_ODDS));
-        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsExposure().toString());
-        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsExposure().toString());
-        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsExposure()) < 0.1);
+        logger.info("Exposure: {}", exposure.calcWorstCaseMatchOddsLiability().toString());
+        logger.info("Exposure: {}", exposure.calcBestCaseMatchOddsLiability().toString());
+        Assert.assertEquals(true, Math.abs(exposure.calcWorstCaseMatchOddsLiability()) < 0.1);
     }
 
     private Event getBasicEvent() {
