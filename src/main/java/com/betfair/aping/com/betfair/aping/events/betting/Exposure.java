@@ -172,6 +172,24 @@ public class Exposure {
         return Math.min(Math.min(ifDraw, ifHome), ifAway);
     }
 
+    public boolean isMarketClosedOut() throws Exception {
+        MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
+
+        Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());
+        Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
+        Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
+
+        Double ifDraw = drawExposure - homeExposure - awayExposure;
+        Double ifHome = homeExposure - drawExposure - awayExposure;
+        Double ifAway = awayExposure - drawExposure - homeExposure;
+
+        if ((ifDraw >=0 && ifHome >=0 && ifAway >= 0) ||
+                (ifDraw <=0 && ifHome <=0 && ifAway <= 0)) {
+            return true;
+        }
+        return false;
+    }
+
     public Double calcBestCaseMatchOddsLiability() throws Exception {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
 

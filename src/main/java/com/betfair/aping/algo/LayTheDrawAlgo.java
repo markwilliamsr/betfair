@@ -306,12 +306,22 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             return false;
         }
 
+        if (!isMarketClosedOut(marketCatalogue, event)) {
+            logger.debug("{}; {}; Market is already closed out", event.getName(), marketCatalogue.getMarketName());
+            return false;
+        }
+
         if (isScoreChanging(event)) {
             logger.info("{}; Score is currently changing. Previous scores: {}", event.getName(), event.getPreviousScores());
             return false;
         }
 
         return true;
+    }
+
+    private boolean isMarketClosedOut(MarketCatalogue marketCatalogue, Event event) throws Exception {
+        Exposure exposure = new Exposure(event, marketCatalogue);
+        return exposure.isMarketClosedOut();
     }
 
     private boolean isBestOpeningLayPriceWithinBounds(Event event, MatchOddsMarket mom, Runner runner) {
@@ -386,7 +396,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             if (marketTemp.equals(MarketTemp.WARM) || marketTemp.equals(MarketTemp.COLD)) {
                 if (isFavoutiteWinning(event, score)) {
                     if (score.goalDifference() == 1) {
-                        if (getTimeSinceMarketStart(event) > 60) {
+                        if (getTimeSinceMarketStart(event) > 50) {
                             logger.info("{}, {}; Favourite Winning by 1 with {} mins gone, closing winning Bet.", event.getName(), marketCatalogue.getMarketName(), getTimeSinceMarketStart(event));
                             return true;
                         } else {
