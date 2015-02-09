@@ -179,9 +179,11 @@ public class Exposure {
         Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
         Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
 
-        Double ifDraw = drawExposure - homeExposure - awayExposure;
-        Double ifHome = homeExposure - drawExposure - awayExposure;
-        Double ifAway = awayExposure - drawExposure - homeExposure;
+        Double totalStake = calcTotalStake(marketCatalogue.getMarketBook());
+
+        Double ifDraw = drawExposure + totalStake;
+        Double ifHome = homeExposure + totalStake;
+        Double ifAway = awayExposure + totalStake;
 
         if ((ifDraw >=0 && ifHome >=0 && ifAway >= 0) ||
                 (ifDraw <=0 && ifHome <=0 && ifAway <= 0)) {

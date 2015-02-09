@@ -306,7 +306,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
             return false;
         }
 
-        if (!isMarketClosedOut(marketCatalogue, event)) {
+        if (isMarketClosedOut(marketCatalogue, event)) {
             logger.debug("{}; {}; Market is already closed out", event.getName(), marketCatalogue.getMarketName());
             return false;
         }
