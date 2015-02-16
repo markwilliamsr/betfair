@@ -48,24 +48,33 @@ public class ApiNGJsonRpcDemo {
         Comparator<Event> comp = new Comparator<Event>() {
             @Override
             public int compare(Event o1, Event o2) {
+                     try {
+                         if (o1.getMarketClassification() == null || o2.getMarketClassification() == null) {
+                             return o1.getName().compareTo(o2.getName());
+                         }
 
-                if (o1.getMarketClassification() == null || o2.getMarketClassification() == null) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-
-                if (o1.getMarketClassification().getMarketTemp() == null || o2.getMarketClassification().getMarketTemp() == null
-                        || o1.getMarketClassification().getMarketTemp().equals(o2.getMarketClassification().getMarketTemp())) {
-                    return o1.getName().compareTo(o2.getName());
-                } else {
-                    return o1.getMarketClassification().getMarketTemp().compareTo(o2.getMarketClassification().getMarketTemp());
-                }
+                         if (o1.getMarketClassification().getMarketTemp() == null || o2.getMarketClassification().getMarketTemp() == null
+                                 || o1.getMarketClassification().getMarketTemp().equals(o2.getMarketClassification().getMarketTemp())) {
+                             return o1.getName().compareTo(o2.getName());
+                         } else {
+                             return o1.getMarketClassification().getMarketTemp().compareTo(o2.getMarketClassification().getMarketTemp());
+                         }
+                     } catch (Exception e) {
+                         logger.warn("Exception in sorting.. carrying on:", e);
+                         return 0;
+                     }
             }
         };
 
         Collections.sort(events, comp);
 
         for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
-            Collections.sort(events, comp);
+            try {
+                Collections.sort(events, comp);
+            }
+            catch (IllegalArgumentException exception) {
+
+            }
             if (isBackUnderEnabled()) {
                 logger.info("--------------------Back Under Mkt Iteration " + i + " Start--------------------");
                 for (Event event : events) {
