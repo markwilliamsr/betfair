@@ -291,6 +291,9 @@ public abstract class MarketAlgo {
 
     protected Integer getMinutesAfterMarketStartTimeToBet(Event event, MarketType marketType) {
         MarketConfig marketConfig = getMarketConfigs().get(event.getMarketClassification().getMarketTemp()).get(marketType);
+        if (marketConfig == null) {
+            return 0;
+        }
         return marketConfig.getLayTimeLimit();
     }
 
@@ -341,7 +344,10 @@ public abstract class MarketAlgo {
             for (Map.Entry<String, Map<String, Double>> type : classification.getValue().entrySet()) {
                 MarketConfig marketConfig = new MarketConfig();
                 marketConfig.setLayLimit(type.getValue().get("LAY_LIMIT"));
-                marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT").intValue());
+                marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT") != null ? type.getValue().get("LAY_TIME_LIMIT").intValue() : 0);
+                marketConfig.setEligibleMarket(type.getValue().get("ELIGIBLE") == 1 ? true : false);
+                marketConfig.setBackLimit(type.getValue().get("BACK_LIMIT"));
+                marketConfig.setBackTimeLimit(type.getValue().get("BACK_TIME_LIMIT") != null ? type.getValue().get("BACK_TIME_LIMIT").intValue() : 0);
                 marketConfig.setExpLossLimit(type.getValue().get("EXP_LOSS_LIMIT"));
                 marketConfig.setStakeLossLimit(type.getValue().get("STAKE_LOSS_LIMIT"));
                 marketConfig.setCashOutProfitPercentage(type.getValue().get("CASH_OUT_PROFIT_PERCENTAGE"));

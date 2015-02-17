@@ -1,9 +1,6 @@
 package com.betfair.aping;
 
-import com.betfair.aping.algo.BackUnderMarketAlgo;
-import com.betfair.aping.algo.IMarketAlgo;
-import com.betfair.aping.algo.LayAndCoverAlgo;
-import com.betfair.aping.algo.LayTheDrawAlgo;
+import com.betfair.aping.algo.*;
 import com.betfair.aping.api.ApiNgJsonRpcOperations;
 import com.betfair.aping.api.ApiNgOperations;
 import com.betfair.aping.entities.*;
@@ -36,6 +33,7 @@ public class ApiNGJsonRpcDemo {
         IMarketAlgo backUnderMarketAlgo = new BackUnderMarketAlgo();
         IMarketAlgo layAndCoverAlgo = new LayAndCoverAlgo();
         IMarketAlgo layTheDrawAlgo = new LayTheDrawAlgo();
+        IMarketAlgo backAndCoverAlgo = new BackAndCoverAlgo();
         layTheDrawAlgo.setBetPlacer(new BetPlacer());
 
         List<Event> events = getCurrentEventsWithCatalogues();
@@ -96,6 +94,13 @@ public class ApiNGJsonRpcDemo {
                 }
                 logger.info("--------------------Lay The Draw Iteration " + i + " End--------------------");
             }
+            if (isBackAndCoverEnabled()) {
+                logger.info("--------------------Back And Cover Iteration " + i + " Start--------------------");
+                for (Event event : events) {
+                    backAndCoverAlgo.process(event);
+                }
+                logger.info("--------------------Back And Cover Iteration " + i + " End--------------------");
+            }
             Thread.sleep(5000);
             if (isReloadPropertiesEnabled()) {
                 logger.debug("Reloading Properties");
@@ -153,6 +158,10 @@ public class ApiNGJsonRpcDemo {
 
     private Boolean isLayTheDrawEnabled() {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty("LTD_ENABLED", "false"));
+    }
+
+    private Boolean isBackAndCoverEnabled() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("BNC_ENABLED", "false"));
     }
 
     private Boolean isReloadPropertiesEnabled() {

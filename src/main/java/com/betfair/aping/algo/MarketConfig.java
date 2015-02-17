@@ -6,10 +6,37 @@ package com.betfair.aping.algo;
 public class MarketConfig {
     Double layLimit;
     Integer layTimeLimit;
+    Boolean eligibleMarket;
+    Double backLimit;
+    Integer backTimeLimit;
     Double expLossLimit;
     Double stakeLossLimit;
     Double cashOutProfitPercentage;
     Integer singleGoalTimeLimit;
+
+    public Boolean getEligibleMarket() {
+        return eligibleMarket;
+    }
+
+    public void setEligibleMarket(Boolean eligibleMarket) {
+        this.eligibleMarket = eligibleMarket;
+    }
+
+    public Double getBackLimit() {
+        return backLimit;
+    }
+
+    public void setBackLimit(Double backLimit) {
+        this.backLimit = backLimit;
+    }
+
+    public Integer getBackTimeLimit() {
+        return backTimeLimit;
+    }
+
+    public void setBackTimeLimit(Integer backTimeLimit) {
+        this.backTimeLimit = backTimeLimit;
+    }
 
     public Double getCashOutProfitPercentage() {
         return cashOutProfitPercentage;

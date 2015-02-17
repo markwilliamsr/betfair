@@ -66,6 +66,7 @@ public class ApiNGDemo {
                 logger.error("****************** Fatal error, Restarting *******************", i);
                 logger.error("Error:", e);
                 logger.error("****************** Restart Count {} **************************", i);
+                ApiNGDemo.loadProperties();
                 i++;
             }
         }
