@@ -6,6 +6,7 @@ import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
+import com.betfair.aping.enums.MarketTemp;
 import com.betfair.aping.enums.Side;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -281,7 +282,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
 
         int goalDifference = oum.getMarketType().getTotalGoals() - event.getScore().getTotalGoals();
 
-        if (goalDifference == 0 && profitPercentage >= getCashOutProfitPercentage()) {
+        if (goalDifference == 0 && profitPercentage >= getCashOutProfitPercentage(event.getMarketClassification().getMarketTemp(), oum.getMarketType())) {
             //some kind of profit on the closest market, close it out
             logger.info("{}; {}; Regular Next Mkt Closeout. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
@@ -361,8 +362,8 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
         return false;
     }
 
-    private Double getCashOutProfitPercentage() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_CLOSE_OUT_PROFIT_PERCENTAGE"));
+    protected Double getCashOutProfitPercentage(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
     }
 
     private Double getLosingCashOutProfitPercentage() {

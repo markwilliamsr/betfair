@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
 
-    protected Logger logger = LoggerFactory.getLogger(BackAndCoverAlgo.class);
     private static final String ALGO_TYPE = "BNC";
+    protected Logger logger = LoggerFactory.getLogger(BackAndCoverAlgo.class);
 
     @Override
     public void process(Event event) throws Exception {
@@ -120,6 +120,14 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         return roundUpToNearestFraction(netExposure / oum.getPrice(runner, 0, Side.BACK).getPrice(), 0.01);
     }
 
+    protected Integer getMinutesAfterMarketStartTimeToBet(Event event, MarketType marketType) {
+        MarketConfig marketConfig = getMarketConfigs().get(event.getMarketClassification().getMarketTemp()).get(marketType);
+        if (marketConfig == null) {
+            return 0;
+        }
+        return marketConfig.getBackTimeLimit();
+    }
+
     private boolean isCandidateBackMarket(Event event, MarketCatalogue marketCatalogue) throws Exception {
 
         if (marketCatalogue == null) {
@@ -127,7 +135,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         }
 
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        Runner runner = oum.getUnderRunner();
+        Runner runner = oum.getOverRunner();
 
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
             logger.info("{}; {}; Market is not OPEN", event.getName(), marketCatalogue.getMarketName());
@@ -159,11 +167,6 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
             return false;
         }
 
-        if (!isEligibleMarket(event, marketCatalogue)) {
-            logger.info("{}; Ineligible Market for this Market Classification: {}", event.getName(), marketCatalogue.getMarketName(),  event.getMarketClassification().getMarketTemp());
-            return false;
-        }
-
         try {
             if (!isBestOpeningBackPriceWithinBounds(event, oum, runner)) {
                 return false;
@@ -183,15 +186,6 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         }
 
         return true;
-    }
-
-    private boolean isEligibleMarket(Event event, MarketCatalogue marketCatalogue) {
-        MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
-        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
-        if (getMarketConfig(marketTemp, oum.getMarketType()).getEligibleMarket()) {
-            return true;
-        };
-        return false;
     }
 
     private boolean isCandidateCoverMarket(Event event, MarketCatalogue marketCatalogue) throws Exception {
@@ -282,12 +276,12 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
     }
 
     private boolean isBestOpeningBackPriceWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
-        Double backLimit = getMarketConfig(event.getMarketClassification().getMarketTemp(), oum.getMarketType()).getLayLimit();
+        Double backLimit = getMarketConfig(event.getMarketClassification().getMarketTemp(), oum.getMarketType()).getBackLimit();
         if (oum.getBack(runner, 0).getPrice() >= backLimit) {
-            logger.info("{}, {}; Back Price within bounds. Best Price: {}; Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), backLimit);
+            logger.info("{}, {}; Back Price within bounds. Best Price: {}; Limit: {}", event.getName(), oum.getOverRunnerName(), oum.getBack(runner, 0).toString(), backLimit);
             return true;
         }
-        logger.info("{}, {}; Back Price not within bounds. Best Price: {}; Limit: {}; Time Limit: {}", event.getName(), oum.getUnderRunnerName(), oum.getLay(runner, 0).toString(), backLimit, getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
+        logger.info("{}, {}; Back Price not within bounds. Best Price: {}; Limit: {}; Time Limit: {}", event.getName(), oum.getOverRunnerName(), oum.getLay(runner, 0).toString(), backLimit, getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
         return false;
     }
 
@@ -296,24 +290,17 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
 
         int goalDifference = oum.getMarketType().getTotalGoals() - event.getScore().getTotalGoals();
 
-        if (goalDifference == 0 && profitPercentage >= getCashOutProfitPercentage()) {
+        if (goalDifference == 0 && profitPercentage >= getCashOutProfitPercentage(event.getMarketClassification().getMarketTemp(), oum.getMarketType())) {
             //some kind of profit on the closest market, close it out
             logger.info("{}; {}; Regular Next Mkt Closeout. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
-        if (goalDifference == 1 && profitPercentage >= 0.0
-                && getTimeSinceMarketStart(event) > getSmallWinCloseoutMarketTimeSinceStart()) {
-            //only close the next market up if we have some kind of gangbuster profit right off the bat
+        //If we have any profit and there is more than one goal needed to close it then cash out
+        if (goalDifference >= 1 && profitPercentage >= 0.0
+                && getTimeSinceMarketStart(event) > getCashOutTimeLimit(event.getMarketClassification().getMarketTemp(), oum.getMarketType())) {
             logger.info("{}; {}; Small Win Cover: Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
-            return true;
-        }
-
-        if (goalDifference == 1 && profitPercentage >= getBestCaseCashOutProfitPercentage()) {
-            //only close the next market up if we have some kind of gangbuster profit right off the bat
-            logger.info("{}; {}; Large Profit Skip Mkt Closeout. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
@@ -351,12 +338,12 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
 
     private Double calcPercentageProfit(Event event, MarketCatalogue marketCatalogue, OverUnderMarket oum) throws Exception {
         Exposure exposure = new Exposure(event, marketCatalogue);
-        Double layExposure = exposure.calcNetExposure(true);
+        Double netExposure = exposure.calcNetExposure(true);
 
-        Double cashOutStake = calcOverRunnerCashOutBetSize(oum, layExposure);
+        Double cashOutStake = calcUnderRunnerCashOutBetSize(oum, netExposure);
         Double initialStake = getSize();
 
-        Double profit = cashOutStake + initialStake - layExposure;
+        Double profit = netExposure - cashOutStake - initialStake;
 
         return (profit / initialStake) * 100;
     }
@@ -376,8 +363,8 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         return false;
     }
 
-    private Double getCashOutProfitPercentage() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_CLOSE_OUT_PROFIT_PERCENTAGE"));
+    protected Double getCashOutTimeLimit(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
     }
 
     private Double getLosingCashOutProfitPercentage() {
@@ -389,7 +376,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
     }
 
     private Double getSmallWinCloseoutMarketTimeSinceStart() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_SMALL_WIN_CLOSE_OUT_TIME_SINCE_START"));
+        return Double.valueOf(ApiNGDemo.getProp().getProperty("BNC_SMALL_WIN_CLOSE_OUT_TIME_SINCE_START"));
     }
 
     private Double getLosingMarketFinalCloseOutTime() {

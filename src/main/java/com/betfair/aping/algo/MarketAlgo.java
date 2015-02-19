@@ -345,13 +345,12 @@ public abstract class MarketAlgo {
                 MarketConfig marketConfig = new MarketConfig();
                 marketConfig.setLayLimit(type.getValue().get("LAY_LIMIT"));
                 marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT") != null ? type.getValue().get("LAY_TIME_LIMIT").intValue() : 0);
-                marketConfig.setEligibleMarket(type.getValue().get("ELIGIBLE") == 1 ? true : false);
-                marketConfig.setBackLimit(type.getValue().get("BACK_LIMIT"));
+                marketConfig.setBackLimit(type.getValue().get("BACK_LIMIT") != null ? type.getValue().get("BACK_LIMIT") : 0.0);
                 marketConfig.setBackTimeLimit(type.getValue().get("BACK_TIME_LIMIT") != null ? type.getValue().get("BACK_TIME_LIMIT").intValue() : 0);
                 marketConfig.setExpLossLimit(type.getValue().get("EXP_LOSS_LIMIT"));
                 marketConfig.setStakeLossLimit(type.getValue().get("STAKE_LOSS_LIMIT"));
                 marketConfig.setCashOutProfitPercentage(type.getValue().get("CASH_OUT_PROFIT_PERCENTAGE"));
-                marketConfig.setSingleGoalTimeLimit(type.getValue().get("SINGLE_GOAL_TIME_LIMIT"));
+                marketConfig.setSingleGoalTimeLimit(type.getValue().get("CASH_OUT_TIME_LIMIT"));
                 marketConfigs.put(MarketType.valueOf(type.getKey()), marketConfig);
             }
             marketConfigurations.put(MarketTemp.valueOf(classification.getKey()), marketConfigs);
