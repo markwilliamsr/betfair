@@ -12,6 +12,15 @@ public class MarketConfig {
     Double stakeLossLimit;
     Double cashOutProfitPercentage;
     Integer cashOutTimeLimit;
+    Integer losingTimeLimit;
+
+    public Integer getLosingTimeLimit() {
+        return losingTimeLimit;
+    }
+
+    public void setLosingTimeLimit(Integer losingTimeLimit) {
+        this.losingTimeLimit = losingTimeLimit;
+    }
 
     public Double getBackLimit() {
         return backLimit;

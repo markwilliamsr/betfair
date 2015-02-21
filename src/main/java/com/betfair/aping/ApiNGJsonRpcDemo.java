@@ -46,21 +46,36 @@ public class ApiNGJsonRpcDemo {
         Comparator<Event> comp = new Comparator<Event>() {
             @Override
             public int compare(Event o1, Event o2) {
-                     try {
-                         if (o1.getMarketClassification() == null || o2.getMarketClassification() == null) {
-                             return o1.getName().compareTo(o2.getName());
-                         }
+                try {
+                    if (o1.getMarketClassification() == null && o2.getMarketClassification() != null) {
+                        return -1;
+                    }
+                    if (o1.getMarketClassification() != null && o2.getMarketClassification() == null) {
+                        return 1;
+                    }
+                    if (o1.getMarketClassification() == null && o2.getMarketClassification() == null) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                    if (o1.getMarketClassification().getMarketTemp() == null
+                            && o2.getMarketClassification().getMarketTemp() != null) {
+                        return -1;
+                    }
+                    if (o1.getMarketClassification().getMarketTemp() != null
+                            && o2.getMarketClassification().getMarketTemp() == null) {
+                        return 1;
+                    }
 
-                         if (o1.getMarketClassification().getMarketTemp() == null || o2.getMarketClassification().getMarketTemp() == null
-                                 || o1.getMarketClassification().getMarketTemp().equals(o2.getMarketClassification().getMarketTemp())) {
-                             return o1.getName().compareTo(o2.getName());
-                         } else {
-                             return o1.getMarketClassification().getMarketTemp().compareTo(o2.getMarketClassification().getMarketTemp());
-                         }
-                     } catch (Exception e) {
-                         logger.warn("Exception in sorting.. carrying on:", e);
-                         return 0;
-                     }
+                    if (o1.getMarketClassification().getMarketTemp() == null
+                            && o2.getMarketClassification().getMarketTemp() == null) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+
+                    return o1.getMarketClassification().getMarketTemp().compareTo(o2.getMarketClassification().getMarketTemp());
+
+                } catch (Exception e) {
+                    logger.warn("Exception in sorting.. carrying on:", e);
+                    return 0;
+                }
             }
         };
 
@@ -69,8 +84,7 @@ public class ApiNGJsonRpcDemo {
         for (int i = 0; i < Integer.valueOf(getProps().getProperty("LOOP_COUNT", "100")); i++) {
             try {
                 Collections.sort(events, comp);
-            }
-            catch (IllegalArgumentException exception) {
+            } catch (IllegalArgumentException exception) {
 
             }
             if (isBackUnderEnabled()) {

@@ -129,7 +129,7 @@ public abstract class MarketAlgo {
         SimpleDateFormat dtf = new SimpleDateFormat("MMM dd HH:mm");
         DecimalFormat def = new DecimalFormat("0.00");
 
-        if (isMarketStartingSoon(event)) {
+        if (isMarketStartingSoon(event, 10)) {
             logger.info("{}; {} [H:{} A:{} D:{}]: Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
                     String.format("%1$-35s", event.getName()),
                     String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
@@ -222,8 +222,12 @@ public abstract class MarketAlgo {
     }
 
     protected boolean isMarketStartingSoon(Event event) {
+        return isMarketStartingSoon(event, getMinutesBeforeMarketStartTimeToBet());
+    }
+
+    protected boolean isMarketStartingSoon(Event event, int offset) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, getMinutesBeforeMarketStartTimeToBet());
+        calendar.add(Calendar.MINUTE, offset);
         if (!isMarketStartTimeLimitOn()) {
             return true;
         }
@@ -347,6 +351,7 @@ public abstract class MarketAlgo {
                 marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT") != null ? type.getValue().get("LAY_TIME_LIMIT").intValue() : 0);
                 marketConfig.setBackLimit(type.getValue().get("BACK_LIMIT") != null ? type.getValue().get("BACK_LIMIT") : 0.0);
                 marketConfig.setBackTimeLimit(type.getValue().get("BACK_TIME_LIMIT") != null ? type.getValue().get("BACK_TIME_LIMIT").intValue() : 0);
+                marketConfig.setLosingTimeLimit(type.getValue().get("LOSING_TIME_LIMIT") != null ? type.getValue().get("LOSING_TIME_LIMIT").intValue() : 0);
                 marketConfig.setExpLossLimit(type.getValue().get("EXP_LOSS_LIMIT"));
                 marketConfig.setStakeLossLimit(type.getValue().get("STAKE_LOSS_LIMIT"));
                 marketConfig.setCashOutProfitPercentage(type.getValue().get("CASH_OUT_PROFIT_PERCENTAGE"));

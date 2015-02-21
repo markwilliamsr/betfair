@@ -1,6 +1,5 @@
 package com.betfair.aping.algo;
 
-import com.betfair.aping.ApiNGDemo;
 import com.betfair.aping.BetPlacer;
 import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
@@ -300,12 +299,12 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         //If we have any profit and there is more than one goal needed to close it then cash out
         if (goalDifference >= 1 && profitPercentage >= 0.0
                 && getTimeSinceMarketStart(event) > getCashOutTimeLimit(event.getMarketClassification().getMarketTemp(), oum.getMarketType())) {
-            logger.info("{}; {}; Small Win Cover: Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+            logger.info("{}; {}; Sm. Win: GD:{}, Best Lay: {}, {}, Profit %: {}", event.getName(), oum.getMarketType().getMarketName(),
                     goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
-        logger.info("{}; {}; Covering Lay not yet within bounds. Goal Difference:{}, Best Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+        logger.info("{}; {}; Covering Lay not yet within bounds. GD:{}, Best Lay: {}, {}, Profit %: {}", event.getName(), oum.getMarketType().getMarketName(),
                 goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
 
         return false;
@@ -313,25 +312,18 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
 
     private boolean isLosingCoverLayPriceWithinBounds(Event event, MarketCatalogue marketCatalogue, OverUnderMarket oum) throws Exception {
         Double profitPercentage = calcPercentageProfit(event, marketCatalogue, oum);
-
-        if (profitPercentage <= getLosingCashOutProfitPercentage()
-                && getTimeSinceMarketStart(event) > getLosingMarketTimeSinceStart()) {
+        Double losingCashOutProfitPercentage = getLosingCashOutProfitPercentage(event.getMarketClassification().getMarketTemp(), oum.getMarketType());
+        Integer losingMarketTimeSinceStart = getLosingMarketTimeSinceStart(event.getMarketClassification().getMarketTemp(), oum.getMarketType());
+        if (profitPercentage <= losingCashOutProfitPercentage
+                && getTimeSinceMarketStart(event) > losingMarketTimeSinceStart) {
             //you lose...
             logger.info("{}; {}; Losing Cover. Under getLosingCashOutProfitPercentage() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    getLosingCashOutProfitPercentage(), oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+                    losingCashOutProfitPercentage, oum.getOverRunner(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
             return true;
         }
 
-        if (profitPercentage <= 0
-                && getTimeSinceMarketStart(event) > getLosingMarketFinalCloseOutTime()) {
-            //you lose...
-            logger.info("{}; {}; Losing Cover. After getLosingMarketFinalCloseOutTime() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    getLosingMarketFinalCloseOutTime(), oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
-            return true;
-        }
-
-        logger.info("{}; {}; Not Yet Closing Losing Cover. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                oum.getUnderRunnerName(), oum.getLay(oum.getUnderRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+        logger.debug("{}; {}; Not Yet Closing Losing Cover. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                oum.getOverRunner(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
 
         return false;
     }
@@ -363,28 +355,16 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         return false;
     }
 
-    protected Double getCashOutTimeLimit(MarketTemp marketTemp, MarketType marketType) {
-        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
+    protected Integer getCashOutTimeLimit(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutTimeLimit();
     }
 
-    private Double getLosingCashOutProfitPercentage() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_LOSING_CLOSE_OUT_PROFIT_PERCENTAGE"));
+    private Double getLosingCashOutProfitPercentage(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getStakeLossLimit();
     }
 
-    private Double getLosingMarketTimeSinceStart() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_LOSING_CLOSE_OUT_TIME_SINCE_START"));
-    }
-
-    private Double getSmallWinCloseoutMarketTimeSinceStart() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("BNC_SMALL_WIN_CLOSE_OUT_TIME_SINCE_START"));
-    }
-
-    private Double getLosingMarketFinalCloseOutTime() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_LOSING_CLOSE_OUT_FINAL_TIME"));
-    }
-
-    private Double getBestCaseCashOutProfitPercentage() {
-        return Double.valueOf(ApiNGDemo.getProp().getProperty("LNC_BEST_CASE_CLOSE_OUT_PROFIT_PERCENTAGE"));
+    private Integer getLosingMarketTimeSinceStart(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getLosingTimeLimit();
     }
 
     @Override
