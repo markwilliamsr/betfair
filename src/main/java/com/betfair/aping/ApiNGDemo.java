@@ -50,7 +50,7 @@ public class ApiNGDemo {
         try {
             loginResponse = sso.login();
         } catch (Exception e) {
-            logger.info(e.toString());
+            logger.error("Exception Logging in to Betfair: ", e);
             System.exit(-1);
         }
 

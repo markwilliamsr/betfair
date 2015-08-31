@@ -6,7 +6,6 @@ import com.betfair.aping.com.betfair.aping.events.betting.Exposure;
 import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
-import com.betfair.aping.enums.MarketTemp;
 import com.betfair.aping.enums.Side;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,7 +163,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error finding opening Lay within bounds: ", ex);
             return false;
         }
 
@@ -173,7 +172,7 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error checking the back / lay spread: ", ex);
             return false;
         }
 
@@ -360,10 +359,6 @@ public class LayAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
             return true;
         }
         return false;
-    }
-
-    protected Double getCashOutProfitPercentage(MarketTemp marketTemp, MarketType marketType) {
-        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
     }
 
     private Double getLosingCashOutProfitPercentage() {

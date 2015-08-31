@@ -1,5 +1,7 @@
 package com.betfair.aping.com.betfair.aping.events.betting;
 
+import com.betfair.aping.enums.MarketTemp;
+
 /**
  * Created by markwilliams on 8/25/14.
  */
@@ -68,6 +70,22 @@ public enum ScoreEnum {
 
     public int goalDifference() {
         return Math.abs(homeGoals - awayGoals);
+    }
+
+    public MarketTemp goalDifferenceAsTemp() {
+        if (this.goalDifference() == 0) {
+            return MarketTemp.GD0;
+        }
+        if (this.goalDifference() == 1) {
+            return MarketTemp.GD1;
+        }
+        if (this.goalDifference() == 2) {
+            return MarketTemp.GD2;
+        }
+        if (this.goalDifference() >= 2) {
+            return MarketTemp.GD3;
+        }
+        return MarketTemp.GD0;
     }
 
 }

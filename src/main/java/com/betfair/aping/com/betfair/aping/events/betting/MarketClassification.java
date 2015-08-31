@@ -14,6 +14,15 @@ public class MarketClassification {
     private OddsClassification homeOddsClassification;
     private OddsClassification awayOddsClassification;
     private OddsClassification drawOddsClassification;
+    private OddsClassification oumOddsClassification;
+
+    public OddsClassification getOumOddsClassification() {
+        return oumOddsClassification;
+    }
+
+    public void setOumOddsClassification(OddsClassification oumOddsClassification) {
+        this.oumOddsClassification = oumOddsClassification;
+    }
 
     public OddsClassification getAwayOddsClassification() {
         return awayOddsClassification;
@@ -71,14 +80,14 @@ public class MarketClassification {
         this.drawOdds = drawOdds;
     }
 
-    public boolean isHomeFavourite(){
+    public boolean isHomeFavourite() {
         if (homeOdds < awayOdds) {
             return true;
         }
         return false;
     }
 
-    public boolean isAwayFavourite(){
+    public boolean isAwayFavourite() {
         if (awayOdds > homeOdds) {
             return true;
         }

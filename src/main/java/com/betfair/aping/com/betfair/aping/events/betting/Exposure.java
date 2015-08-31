@@ -185,19 +185,23 @@ public class Exposure {
         Double ifHome = homeExposure + totalStake;
         Double ifAway = awayExposure + totalStake;
 
-        if ((ifDraw >=0 && ifHome >=0 && ifAway >= 0) ||
-                (ifDraw <=0 && ifHome <=0 && ifAway <= 0)) {
+        if ((ifDraw >= 0 && ifHome >= 0 && ifAway >= 0) ||
+                (ifDraw <= 0 && ifHome <= 0 && ifAway <= 0)) {
             return true;
         }
         return false;
     }
 
     public Double calcBestCaseMatchOddsLiability() throws Exception {
+        return calcBestCaseMatchOddsLiability(true);
+    }
+
+    public Double calcBestCaseMatchOddsLiability(boolean includeUnmatched) throws Exception {
         MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
 
-        Double drawExposure = calcExposureForRunner(true, mom.getDrawRunner());
-        Double homeExposure = calcExposureForRunner(true, mom.getHomeRunner());
-        Double awayExposure = calcExposureForRunner(true, mom.getAwayRunner());
+        Double drawExposure = calcExposureForRunner(includeUnmatched, mom.getDrawRunner());
+        Double homeExposure = calcExposureForRunner(includeUnmatched, mom.getHomeRunner());
+        Double awayExposure = calcExposureForRunner(includeUnmatched, mom.getAwayRunner());
 
         Double ifDraw = drawExposure - homeExposure - awayExposure;
         Double ifHome = homeExposure - drawExposure - awayExposure;

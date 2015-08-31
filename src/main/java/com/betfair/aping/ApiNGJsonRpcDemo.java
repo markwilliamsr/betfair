@@ -34,6 +34,7 @@ public class ApiNGJsonRpcDemo {
         IMarketAlgo layAndCoverAlgo = new LayAndCoverAlgo();
         IMarketAlgo layTheDrawAlgo = new LayTheDrawAlgo();
         IMarketAlgo backAndCoverAlgo = new BackAndCoverAlgo();
+        IMarketAlgo backLikelyOutcomeAlgo = new BackLikelyOutcomeAlgo();
         layTheDrawAlgo.setBetPlacer(new BetPlacer());
 
         List<Event> events = getCurrentEventsWithCatalogues();
@@ -115,6 +116,13 @@ public class ApiNGJsonRpcDemo {
                 }
                 logger.info("--------------------Back And Cover Iteration " + i + " End--------------------");
             }
+            if (isBackLikelyOutcomeEnabled()) {
+                logger.info("--------------------Back Likely Outcome Iteration " + i + " Start--------------------");
+                for (Event event : events) {
+                    backLikelyOutcomeAlgo.process(event);
+                }
+                logger.info("--------------------Back Likely Outcome Iteration " + i + " End--------------------");
+            }
             Thread.sleep(5000);
             if (isReloadPropertiesEnabled()) {
                 logger.debug("Reloading Properties");
@@ -124,7 +132,7 @@ public class ApiNGJsonRpcDemo {
                 events = refreshEvents(events);
             }
             refreshOdds(events);
-            cancelUnmatchedBets(events);
+            //cancelUnmatchedBets(events);
         }
     }
 
@@ -178,6 +186,10 @@ public class ApiNGJsonRpcDemo {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty("BNC_ENABLED", "false"));
     }
 
+    private Boolean isBackLikelyOutcomeEnabled() {
+        return Boolean.valueOf(ApiNGDemo.getProp().getProperty("BLO_ENABLED", "false"));
+    }
+
     private Boolean isReloadPropertiesEnabled() {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty("RELOAD_PROPERTIES", "false"));
     }
@@ -216,11 +228,13 @@ public class ApiNGJsonRpcDemo {
                     if (runner.getOrders() != null) {
                         for (Order order : runner.getOrders()) {
                             if (order.getSizeRemaining() > 0) {
-                                if (getTimeSinceBetPlaced(order) > 20) {
-                                    CancelInstruction cancelInstruction = new CancelInstruction();
-                                    cancelInstruction.setBetId(order.getBetId());
-                                    cancelInstructions.add(cancelInstruction);
-                                    logger.warn("{}, {}; Cancelling Bet: ID: {}, Side: {}, Rem: {}", event.getName(), mc.getMarketName(), order.getBetId(), order.getSide(), order.getSizeRemaining());
+                                if (order.getSide().equals(Side.BACK)) {
+                                    if (getTimeSinceBetPlaced(order) > 20) {
+                                        CancelInstruction cancelInstruction = new CancelInstruction();
+                                        cancelInstruction.setBetId(order.getBetId());
+                                        cancelInstructions.add(cancelInstruction);
+                                        logger.warn("{}, {}; Cancelling Bet: ID: {}, Side: {}, Rem: {}", event.getName(), mc.getMarketName(), order.getBetId(), order.getSide(), order.getSizeRemaining());
+                                    }
                                 }
                             }
                         }

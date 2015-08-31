@@ -7,5 +7,9 @@ public enum MarketTemp {
     XHOT,
     HOT,
     WARM,
-    COLD
+    COLD,
+    GD0,
+    GD1,
+    GD2,
+    GD3
 }

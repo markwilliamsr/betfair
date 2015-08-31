@@ -6,6 +6,7 @@ import com.betfair.aping.com.betfair.aping.events.betting.OverUnderMarket;
 import com.betfair.aping.entities.*;
 import com.betfair.aping.enums.MarketStatus;
 import com.betfair.aping.enums.MarketTemp;
+import com.betfair.aping.enums.OddsClassification;
 import com.betfair.aping.enums.Side;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +17,55 @@ import java.util.List;
 /**
  * Created by markwilliams on 12/14/14.
  */
-public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
+public class BackAndCoverAlgo extends MarketAlgo implements IMarketAlgo {
 
     private static final String ALGO_TYPE = "BNC";
+    private static final String OU25 = "OU25";
     protected Logger logger = LoggerFactory.getLogger(BackAndCoverAlgo.class);
+
+    @Override
+    protected void classifyMarket(Event event) throws Exception {
+        if (event.getMarketClassification() != null
+                && event.getMarketClassification().getMarketTemp() != null
+                && getTimeSinceMarketStart(event) >= 1) {
+            return;
+        }
+
+        super.classifyMarket(event);
+
+        MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.OVER_UNDER_25);
+        if (marketCatalogue != null) {
+            OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
+
+            Runner overRunner = oum.getOverRunner();
+
+            Double bestOverBack = oum.getBack(overRunner, 0).getPrice();
+            OddsClassification oumClassification = classifyOdds(bestOverBack, OU25);
+            event.getMarketClassification().setOumOddsClassification(oumClassification);
+
+            MarketTemp marketTemp = event.getMarketClassification().getMarketTemp();
+
+            if (marketTemp.equals(MarketTemp.HOT)) {
+                if (oumClassification.equals(OddsClassification.HIGH)) {
+                    event.getMarketClassification().setMarketTemp(MarketTemp.WARM);
+                }
+            }
+
+            if (marketTemp.equals(MarketTemp.WARM)) {
+                if (oumClassification.equals(OddsClassification.LOW)) {
+                    event.getMarketClassification().setMarketTemp(MarketTemp.HOT);
+                } else if (oumClassification.equals(OddsClassification.HIGH)) {
+                    event.getMarketClassification().setMarketTemp(MarketTemp.COLD);
+                }
+            }
+
+            if (marketTemp.equals(MarketTemp.COLD)) {
+                if (oumClassification.equals(OddsClassification.LOW)) {
+                    event.getMarketClassification().setMarketTemp(MarketTemp.WARM);
+                }
+            }
+        }
+    }
 
     @Override
     public void process(Event event) throws Exception {
@@ -171,7 +217,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error finding opening Lay within bounds: ", ex);
             return false;
         }
 
@@ -180,7 +226,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error checking the back / lay spread: ", ex);
             return false;
         }
 
@@ -195,14 +241,16 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner runner = oum.getUnderRunner();
 
-        if (isBasicCoverCandidate(event, marketCatalogue)) return false;
+        if (!isBasicCoverCandidate(event, marketCatalogue)){
+            return false;
+        }
 
         try {
             if (!isBestCoveringLayPriceWithinBounds(event, marketCatalogue, oum)) {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error checking covering Lay Price: ", ex);
             return false;
         }
 
@@ -211,7 +259,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error checking the back / lay spread: ", ex);
             return false;
         }
 
@@ -226,7 +274,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
         Runner runner = oum.getUnderRunner();
 
-        if (isBasicCoverCandidate(event, marketCatalogue)) {
+        if (!isBasicCoverCandidate(event, marketCatalogue)) {
             return false;
         }
 
@@ -235,7 +283,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error checking losing Cover Price is within Bounds: ", ex);
             return false;
         }
 
@@ -244,7 +292,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
                 return false;
             }
         } catch (RuntimeException ex) {
-            logger.info(ex.toString());
+            logger.error("Error checking the back / lay spread: ", ex);
             return false;
         }
 
@@ -254,33 +302,37 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
     private boolean isBasicCoverCandidate(Event event, MarketCatalogue marketCatalogue) throws Exception {
         if (!marketCatalogue.getMarketBook().getStatus().equals(MarketStatus.OPEN)) {
             logger.debug("{}; {}; Market is not OPEN", event.getName(), marketCatalogue.getMarketName());
-            return true;
+            return false;
         }
 
         if (!isMarketStartingSoon(event)) {
             logger.debug("{}; {}; Market is not starting soon enough", event.getName(), marketCatalogue.getMarketName());
-            return true;
+            return false;
         }
 
         if (!isBetAlreadyOpen(marketCatalogue, event)) {
             logger.debug("{}; {}; No Lay Bets already open in the Market", event.getName(), marketCatalogue.getMarketName());
-            return true;
+            return false;
         }
 
         if (isScoreChanging(event)) {
             logger.info("{}; Score is currently changing. Previous scores: {}", event.getName(), event.getPreviousScores());
             return false;
         }
-        return false;
+        return true;
     }
 
     private boolean isBestOpeningBackPriceWithinBounds(Event event, OverUnderMarket oum, Runner runner) {
-        Double backLimit = getMarketConfig(event.getMarketClassification().getMarketTemp(), oum.getMarketType()).getBackLimit();
+        MarketConfig marketConfig = getMarketConfig(event.getMarketClassification().getMarketTemp(), oum.getMarketType());
+        if (marketConfig == null) {
+            return false;
+        }
+        Double backLimit = marketConfig.getBackLimit();
         if (oum.getBack(runner, 0).getPrice() >= backLimit) {
             logger.info("{}, {}; Back Price within bounds. Best Price: {}; Limit: {}", event.getName(), oum.getOverRunnerName(), oum.getBack(runner, 0).toString(), backLimit);
             return true;
         }
-        logger.info("{}, {}; Back Price not within bounds. Best Price: {}; Limit: {}; Time Limit: {}", event.getName(), oum.getOverRunnerName(), oum.getLay(runner, 0).toString(), backLimit, getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
+        logger.info("{}, {}; Back Price not within bounds. Best Price: {}; Limit: {}; Time Limit: {}", event.getName(), oum.getOverRunnerName(), oum.getBack(runner, 0).toString(), backLimit, getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()));
         return false;
     }
 
@@ -304,7 +356,7 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
             return true;
         }
 
-        logger.info("{}; {}; Covering Lay not yet within bounds. GD:{}, Best Lay: {}, {}, Profit %: {}", event.getName(), oum.getMarketType().getMarketName(),
+        logger.info("{}; {}; Cover not OK. GD:{}, Best Lay: {}, {}, Profit %: {}", event.getName(), oum.getMarketType().getMarketName(),
                 goalDifference, oum.getOverRunnerName(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
 
         return false;
@@ -314,12 +366,25 @@ public class BackAndCoverAlgo extends LayAndCoverAlgo implements IMarketAlgo {
         Double profitPercentage = calcPercentageProfit(event, marketCatalogue, oum);
         Double losingCashOutProfitPercentage = getLosingCashOutProfitPercentage(event.getMarketClassification().getMarketTemp(), oum.getMarketType());
         Integer losingMarketTimeSinceStart = getLosingMarketTimeSinceStart(event.getMarketClassification().getMarketTemp(), oum.getMarketType());
-        if (profitPercentage <= losingCashOutProfitPercentage
-                && getTimeSinceMarketStart(event) > losingMarketTimeSinceStart) {
-            //you lose...
-            logger.info("{}; {}; Losing Cover. Under getLosingCashOutProfitPercentage() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
-                    losingCashOutProfitPercentage, oum.getOverRunner(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
-            return true;
+        int goalDifference = oum.getMarketType().getTotalGoals() - event.getScore().getTotalGoals();
+
+        if (goalDifference <= 1) {
+            if (profitPercentage < 0 && Math.abs(profitPercentage) >= losingCashOutProfitPercentage
+                    && getTimeSinceMarketStart(event) > losingMarketTimeSinceStart) {
+                //you lose...
+                logger.info("{}; {}; Losing Cover. Under getLosingCashOutProfitPercentage() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                        losingCashOutProfitPercentage, oum.getOverRunner(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+                return true;
+            }
+        }
+
+        if (goalDifference > 1) {
+            if (profitPercentage < 0 && Math.abs(profitPercentage) >= losingCashOutProfitPercentage) {
+                //you lose...
+                logger.info("{}; {}; Losing Cover. Under getLosingCashOutProfitPercentage() {}. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),
+                        losingCashOutProfitPercentage, oum.getOverRunner(), oum.getLay(oum.getOverRunner(), 0).toString(), roundUpToNearestFraction(profitPercentage, 2d));
+                return true;
+            }
         }
 
         logger.debug("{}; {}; Not Yet Closing Losing Cover. Lay Price: {}, {}, Profit Percentage: {}", event.getName(), oum.getMarketType().getMarketName(),

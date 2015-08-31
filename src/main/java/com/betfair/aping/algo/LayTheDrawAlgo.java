@@ -26,7 +26,7 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
     protected void classifyMarket(Event event) throws Exception {
         if (event.getMarketClassification() != null
                 && event.getMarketClassification().getMarketTemp() != null
-                && getTimeSinceMarketStart(event) > 1) {
+                && getTimeSinceMarketStart(event) >= 1) {
             return;
         }
 
@@ -476,7 +476,4 @@ public class LayTheDrawAlgo extends MarketAlgo implements IMarketAlgo {
         return getMarketConfigs().get(marketTemp).get(marketType).getExpLossLimit();
     }
 
-    private Double getCashOutProfitPercentage(MarketTemp marketTemp, MarketType marketType) {
-        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
-    }
 }

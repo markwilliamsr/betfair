@@ -46,16 +46,21 @@ public abstract class MarketAlgo {
     }
 
     protected void classifyMarket(Event event) throws Exception {
+        classifyMarket(event, false);
+    }
+
+    protected void classifyMarket(Event event, boolean updateOdds) throws Exception {
         MarketClassification marketClassification = new MarketClassification();
 
         if (event.getMarketClassification() != null
                 && event.getMarketClassification().getMarketTemp() != null
-                && getTimeSinceMarketStart(event) > 1) {
+                && getTimeSinceMarketStart(event) >= 1
+                && !updateOdds) {
             return;
         }
         try {
             MarketCatalogue marketCatalogue = event.getMarket().get(MarketType.MATCH_ODDS);
-            if (marketCatalogue != null) {
+            if (marketCatalogue != null || updateOdds) {
                 MatchOddsMarket mom = new MatchOddsMarket(marketCatalogue);
                 Runner home = mom.getHomeRunner();
                 Runner away = mom.getAwayRunner();
@@ -102,7 +107,7 @@ public abstract class MarketAlgo {
                 marketClassification.setAwayOddsClassification(awayClassification);
             }
         } catch (RuntimeException e) {
-            logger.error("Exception Classifying Market: ", e);
+            logger.error("{}: Exception Classifying Market (Not Enough Depth)", event.getName());
             marketClassification.setMarketTemp(MarketTemp.COLD);
         }
         event.setMarketClassification(marketClassification);
@@ -132,7 +137,7 @@ public abstract class MarketAlgo {
         if (isMarketStartingSoon(event, 10)) {
             logger.info("{}; {} [H:{} A:{} D:{}]: Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
                     String.format("%1$-35s", event.getName()),
-                    String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
+                    String.format("%1$4s", event.getScore().goalDifferenceAsTemp()),
                     def.format(event.getMarketClassification().getHomeOdds()),
                     def.format(event.getMarketClassification().getAwayOdds()),
                     def.format(event.getMarketClassification().getDrawOdds()),
@@ -141,7 +146,7 @@ public abstract class MarketAlgo {
         } else {
             logger.debug("{}; {} [H:{} A:{} D:{}]: Start: [{}], Elapsed [{}], C. Score: {}, P. Score: {}",
                     String.format("%1$-35s", event.getName()),
-                    String.format("%1$4s", event.getMarketClassification().getMarketTemp()),
+                    String.format("%1$4s", event.getScore().goalDifferenceAsTemp()),
                     def.format(event.getMarketClassification().getHomeOdds()),
                     def.format(event.getMarketClassification().getAwayOdds()),
                     def.format(event.getMarketClassification().getDrawOdds()),
@@ -244,7 +249,8 @@ public abstract class MarketAlgo {
         if (!isMarketStartTimeLimitOn()) {
             return true;
         }
-        if (event.getOpenDate().after(calendar.getTime())) {
+        if (getMinutesAfterMarketStartTimeToBet(event, oum.getMarketType()) > 0
+                && event.getOpenDate().after(calendar.getTime())) {
             //bet on something that has been in  play for only up to the required time.
             //need to leave some time for goals to be scored :)
             return true;
@@ -273,11 +279,11 @@ public abstract class MarketAlgo {
     }
 
     protected Bet getBetForMarket(MarketCatalogue marketCatalogue, Runner runner, Side side) {
-        OverUnderMarket oum = new OverUnderMarket(marketCatalogue);
+        MatchOddsMarket matchOddsMarket = new MatchOddsMarket(marketCatalogue);
         Bet bet = new Bet();
         PriceSize priceSize = new PriceSize();
 
-        priceSize.setPrice(oum.getPrice(runner, 0, side).getPrice());
+        priceSize.setPrice(matchOddsMarket.getPrice(runner, 0, side).getPrice());
 
         bet.setMarketId(marketCatalogue.getMarketId());
         bet.setPriceSize(priceSize);
@@ -313,7 +319,7 @@ public abstract class MarketAlgo {
         return Integer.valueOf(ApiNGDemo.getProp().getProperty("GOAL_STABALIZATION_ITERATION_COUNT"));
     }
 
-    private Boolean isMarketStartTimeLimitOn() {
+    protected Boolean isMarketStartTimeLimitOn() {
         return Boolean.valueOf(ApiNGDemo.getProp().getProperty(getAlgoType() + "_MARKET_START_TIME_LIMIT_ON", "true"));
     }
 
@@ -350,6 +356,8 @@ public abstract class MarketAlgo {
                 marketConfig.setLayLimit(type.getValue().get("LAY_LIMIT"));
                 marketConfig.setLayTimeLimit(type.getValue().get("LAY_TIME_LIMIT") != null ? type.getValue().get("LAY_TIME_LIMIT").intValue() : 0);
                 marketConfig.setBackLimit(type.getValue().get("BACK_LIMIT") != null ? type.getValue().get("BACK_LIMIT") : 0.0);
+                marketConfig.setBackUpperLimit(type.getValue().get("BACK_UPPER_LIMIT") != null ? type.getValue().get("BACK_UPPER_LIMIT") : 0.0);
+                marketConfig.setBackLowerLimit(type.getValue().get("BACK_LOWER_LIMIT") != null ? type.getValue().get("BACK_LOWER_LIMIT") : 0.0);
                 marketConfig.setBackTimeLimit(type.getValue().get("BACK_TIME_LIMIT") != null ? type.getValue().get("BACK_TIME_LIMIT").intValue() : 0);
                 marketConfig.setLosingTimeLimit(type.getValue().get("LOSING_TIME_LIMIT") != null ? type.getValue().get("LOSING_TIME_LIMIT").intValue() : 0);
                 marketConfig.setExpLossLimit(type.getValue().get("EXP_LOSS_LIMIT"));
@@ -377,5 +385,9 @@ public abstract class MarketAlgo {
         }
 
         return oddsConfigurations;
+    }
+
+    protected Double getCashOutProfitPercentage(MarketTemp marketTemp, MarketType marketType) {
+        return getMarketConfigs().get(marketTemp).get(marketType).getCashOutProfitPercentage();
     }
 }

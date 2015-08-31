@@ -7,12 +7,30 @@ public class MarketConfig {
     Double layLimit;
     Integer layTimeLimit;
     Double backLimit;
+    Double backLowerLimit;
+    Double backUpperLimit;
     Integer backTimeLimit;
     Double expLossLimit;
     Double stakeLossLimit;
     Double cashOutProfitPercentage;
     Integer cashOutTimeLimit;
     Integer losingTimeLimit;
+
+    public Double getBackUpperLimit() {
+        return backUpperLimit;
+    }
+
+    public void setBackUpperLimit(Double backUpperLimit) {
+        this.backUpperLimit = backUpperLimit;
+    }
+
+    public Double getBackLowerLimit() {
+        return backLowerLimit;
+    }
+
+    public void setBackLowerLimit(Double backLowerLimit) {
+        this.backLowerLimit = backLowerLimit;
+    }
 
     public Integer getLosingTimeLimit() {
         return losingTimeLimit;
